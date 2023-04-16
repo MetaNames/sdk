@@ -1,8 +1,8 @@
 // TEST LOOKUP OF A DOMAIN
 
-import { MetaNamesContract } from './contract'
-import { testNetRpcConfig } from './config'
-import { RecordClassEnum } from './interface'
+import { MetaNamesContract } from '../src/contract'
+import { testNetRpcConfig } from '../src/config'
+import { RecordClassEnum } from '../src/interface'
 import assert from 'assert'
 
 const addressContract = '02085dec3ccfc0a573289db11b4dd703b39f1614a2'

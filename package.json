@@ -16,6 +16,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "prepare": "yarn run build",
     "version": "yarn run format && git add -A src",
+    "test": "yarn ts-node test/lookup.ts",
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
