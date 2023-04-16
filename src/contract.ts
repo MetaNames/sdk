@@ -48,7 +48,7 @@ export class MetaNamesContract {
     return JsonValueConverter.toJson(struct) as any
   }
 
-  async lookUpRecord(domain: string, recordClass: RecordClassEnum): Promise<string> {
+  async recordLookup(recordClass: RecordClassEnum, domain: string): Promise<string> {
     const state = await this.getMetaNamesState()
     // console.log(state.pns.records)
 

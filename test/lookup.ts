@@ -12,7 +12,7 @@ const expectedLookup = '00373c68dfed999aec39063194e2d3e0870f9899fa'
 const metaNamesContract = new MetaNamesContract(testNetConfig.contractAddress, testNetConfig.rpcConfig)
 
 const main = async () => {
-  const data = await metaNamesContract.lookUpRecord(domain, recordClass)
+  const data = await metaNamesContract.recordLookup(recordClass, domain)
   assert(data === expectedLookup, 'Lookup failed')
 }
 
