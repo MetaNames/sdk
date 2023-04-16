@@ -1,0 +1,12 @@
+{
+  "name": "meta-names-sdk",
+  "version": "0.0.1",
+  "description": "Meta Names SDK",
+  "main": "index.js",
+  "repository": "https://github.com/MetaNames/sdk.git",
+  "author": "Yeboster <marco@yeboster.com>",
+  "license": "MIT",
+  "dependencies": {
+    "partisia-sdk": "^0.1.1"
+  }
+}
