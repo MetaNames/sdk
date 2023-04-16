@@ -2,14 +2,30 @@
   "name": "meta-names-sdk",
   "version": "0.0.1",
   "description": "Meta Names SDK",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "repository": "https://github.com/MetaNames/sdk.git",
   "author": "Yeboster <marco@yeboster.com>",
   "license": "MIT",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "prepare": "yarn run build",
+    "version": "yarn run format && git add -A src",
+    "postversion": "git push && git push --tags"
+  },
   "dependencies": {
+    "abi-client-ts": "^3.1.0-3",
+    "partisia-rpc": "^1.0.9",
     "partisia-sdk": "^0.1.1"
   },
   "devDependencies": {
-    "typescript": "^5.0.4"
+    "prettier": "^2.8.7",
+    "typescript": "^5.0.4",
+    "@types/node": "^18.11.18"
   }
 }

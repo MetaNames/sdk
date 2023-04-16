@@ -7,14 +7,21 @@
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.3.0.tgz#085fd70f6d7d9d109671090ccae1d3bec62554a1"
   integrity sha512-ilHEACi9DwqJB0pw7kv+Apvh50jiiSyR/cQ3y4W7lOR5mhvn/50FLUfsnfJz0BDZtl/RR16kXvptiv6q1msYZg==
 
-"@types/bn.js@^5.1.0":
+"@types/bn.js@*", "@types/bn.js@^5.1.0":
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/@types/bn.js/-/bn.js-5.1.1.tgz#b51e1b55920a4ca26e9285ff79936bbdec910682"
   integrity sha512-qNrYbZqMx0uJAfKnKclPh+dTwK33KfLHYqtyODwd5HnXOjnkhc4qgn3BrK6RWyGZm5+sIFE7Q7Vz6QQtJB7w7g==
   dependencies:
     "@types/node" "*"
 
-"@types/node@*":
+"@types/elliptic@^6.4.14":
+  version "6.4.14"
+  resolved "https://registry.yarnpkg.com/@types/elliptic/-/elliptic-6.4.14.tgz#7bbaad60567a588c1f08b10893453e6b9b4de48e"
+  integrity sha512-z4OBcDAU0GVwDTuwJzQCiL6188QvZMkvoERgcVjq0/mPM8jCfdwZ3x5zQEVoL9WCAru3aG5wl3Z5Ww5wBWn7ZQ==
+  dependencies:
+    "@types/bn.js" "*"
+
+"@types/node@*", "@types/node@^18.11.18":
   version "18.15.11"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.15.11.tgz#b3b790f09cb1696cffcec605de025b088fa4225f"
   integrity sha512-E5Kwq2n4SbMzQOn6wnmBjuK9ouqlURrcZDVfbo9ftDDTFt3nk7ZKK4GMOzoYgnpQJKcxwQw+lGaBvvlMo0qN/Q==
@@ -37,6 +44,27 @@
   integrity sha512-Da66lEIFeIz9ltsdMZcpQvmrmmoqrfju8pm1BH8WbYjZSwUgCwXLb9C+9XYogwBITnbsSaMdVPb2ekf7TV+03w==
   dependencies:
     "@types/node" "*"
+
+abi-client-ts@^3.1.0-3:
+  version "3.1.0-3"
+  resolved "https://registry.yarnpkg.com/abi-client-ts/-/abi-client-ts-3.1.0-3.tgz#3ff764b892df41940e2f967f0b18676d155d63d6"
+  integrity sha512-MslElQHdeHrC3NdcLk0zkVCEqENODjqul2IO+e4sEY6C+Nw+olTCKB9p08liyUzBtBUf7IegalsI+8e+rRwl1g==
+  dependencies:
+    "@types/bn.js" "^5.1.0"
+    "@types/elliptic" "^6.4.14"
+    bitmanipulation-ts "^3.0.2-1"
+    bn.js "^5.2.0"
+    elliptic "^6.5.4"
+    hash.js "^1.1.7"
+    prettier "^2.6.2"
+    unfetch "^4.2.0"
+
+axios@^0.21.1:
+  version "0.21.4"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
+  integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==
+  dependencies:
+    follow-redirects "^1.14.0"
 
 base-x@^3.0.2:
   version "3.0.9"
@@ -86,6 +114,15 @@ bip39@^3.0.4:
   integrity sha512-c9kiwdk45Do5GL0vJMe7tS95VjCii65mYAH7DfWl3uW8AVzXKQVUm64i3hzVybBDMp9r7j9iNxR85+ul8MdN/A==
   dependencies:
     "@noble/hashes" "^1.2.0"
+
+bitmanipulation-ts@^3.0.2-1:
+  version "3.0.2-1"
+  resolved "https://registry.yarnpkg.com/bitmanipulation-ts/-/bitmanipulation-ts-3.0.2-1.tgz#e9727e47b979f43558cc137a6dda2b1b42bf8d06"
+  integrity sha512-wLNrQXJ8c5drUujCBiEvwispnEVM4SPk/vC7uZiz7sQ7iNEuJYNs/FzFPeDoKrLoGdTOmkr6CU635jzKTuBWPA==
+  dependencies:
+    "@types/bn.js" "^5.1.0"
+    bn.js "^5.2.0"
+    prettier "^2.6.2"
 
 blakejs@^1.1.0:
   version "1.2.1"
@@ -274,6 +311,11 @@ file-uri-to-path@1.0.0:
   resolved "https://registry.yarnpkg.com/file-uri-to-path/-/file-uri-to-path-1.0.0.tgz#553a7b8446ff6f684359c445f1e37a05dacc33dd"
   integrity sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw==
 
+follow-redirects@^1.14.0:
+  version "1.15.2"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.2.tgz#b460864144ba63f2681096f274c4e57026da2c13"
+  integrity sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==
+
 fsevents@^2.0.7:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
@@ -409,6 +451,13 @@ partisia-crypto@^1.0.2:
     merkletreejs "^0.2.31"
     noble-bls12-381 "^0.15.0"
 
+partisia-rpc@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/partisia-rpc/-/partisia-rpc-1.0.9.tgz#209d73debd591bc865af0600204d7a6a0fcdbe12"
+  integrity sha512-uwtbwIXOF46N9NnujWkphpM4aj8WfrqnPPSKAKKE8Ecfc/bVnpO3m7W63G0kvQ/jHnSpJWD8VkOucoS5nvq47Q==
+  dependencies:
+    axios "^0.21.1"
+
 partisia-sdk@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/partisia-sdk/-/partisia-sdk-0.1.1.tgz#c8fa299795c8c1961a4adddb8a335d91fe36c735"
@@ -430,6 +479,11 @@ pbkdf2@^3.0.17:
     ripemd160 "^2.0.1"
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
+
+prettier@^2.6.2, prettier@^2.8.7:
+  version "2.8.7"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.7.tgz#bb79fc8729308549d28fe3a98fce73d2c0656450"
+  integrity sha512-yPngTo3aXUUmyuTjeTUT75txrf+aMh9FiD7q9ZE/i6r0bPb22g4FsE6Y338PQX1bmfy08i9QQCB7/rcUAVntfw==
 
 randombytes@^2.1.0:
   version "2.1.0"
@@ -533,6 +587,11 @@ typescript@^5.0.4:
   version "5.0.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.0.4.tgz#b217fd20119bd61a94d4011274e0ab369058da3b"
   integrity sha512-cW9T5W9xY37cc+jfEnaUvX91foxtHkza3Nw3wkoF4sSlKn0MONdkdEndig/qPBWXNkmplh3NzayQzCiHM4/hqw==
+
+unfetch@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/unfetch/-/unfetch-4.2.0.tgz#7e21b0ef7d363d8d9af0fb929a5555f6ef97a3be"
+  integrity sha512-F9p7yYCn6cIW9El1zi0HI6vqpeIvBsr3dSuRO6Xuppb1u5rXpCPmMvLSyECLhybr9isec8Ohl0hPekMVrEinDA==
 
 utf8@3.0.0:
   version "3.0.0"
