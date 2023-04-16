@@ -13,10 +13,6 @@ export interface IDomain {
   approvals: Address[]
 }
 
-export interface ITokens {
-  [domain: string]: IDomain
-}
-
 export enum RecordClassEnum {
   Wallet = 0,
   Uri = 1,
@@ -30,10 +26,6 @@ export interface IRecord {
   class: RecordClassEnum
   // Data
   data: string
-}
-
-export interface IRecords {
-  [record: string]: IRecord
 }
 
 export interface IOperatorApprovals {
@@ -55,9 +47,9 @@ export interface IPartisiaNameSystemState {
   supply: number
   // domains are token id
   // Token id is currently a string (the domain name)
-  tokens: ITokens
+  tokens: { key: string; value: IDomain }[]
   // record info by record_class.token_id
-  records: IRecords
+  records: { key: string; value: IRecord }[]
   // token approvals
   operator_approvals: IOperatorApprovals
 }
