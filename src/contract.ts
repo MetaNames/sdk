@@ -15,27 +15,24 @@ export class MetaNamesContract {
     this.rpc = PartisiaAccount(rpc)
   }
 
-  async getContract() {
-    if (!this.contract) {
+  async getContract(force = true) {
+    if (force || !this.contract) {
       this.contract = await this.rpc.getContract(
         this.contractAddress,
         this.rpc.deriveShardId(this.contractAddress),
         true
       )
+      this.updateAbi(this.contract)
     }
 
     return this.contract
   }
 
-  async initAbi() {
-    const contract = await this.getContract()
-    if (!contract) throw new Error('Contract not found')
-
+  updateAbi(contract: any) {
     this.abi = contract.data.abi
   }
 
   async getMetaNamesState(): Promise<IMetaNamesState> {
-    if (!this.abi) await this.initAbi()
     const contract = await this.getContract()
 
     // deserialize state
