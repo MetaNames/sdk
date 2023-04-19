@@ -1,4 +1,4 @@
-import { AbiParser, JsonValueConverter, StateReader } from 'abi-client-ts'
+import { AbiParser, JsonValueConverter, StateReader } from '@partisiablockchain/abi-client-ts'
 import { PartisiaAccount } from 'partisia-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-rpc/lib/main/accountInfo'
 import { IMetaNamesState, IRecord, RecordClassEnum } from './interface'
