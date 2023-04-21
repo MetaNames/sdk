@@ -1,7 +1,8 @@
-import { AbiParser, JsonValueConverter, StateReader } from '@partisiablockchain/abi-client-ts'
+import { AbiParser, ScValueStruct, StateReader } from '@partisiablockchain/abi-client-ts'
 import { PartisiaAccount } from 'partisia-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-rpc/lib/main/accountInfo'
-import { IMetaNamesState, IRecord, RecordClassEnum } from './interface'
+import { RecordClassEnum } from './interface'
+import { getPnsRecords, lookUpRecord } from './partisia-name-system'
 
 export class MetaNamesContract {
   abi?: string
@@ -22,17 +23,13 @@ export class MetaNamesContract {
         this.rpc.deriveShardId(this.contractAddress),
         true
       )
-      this.updateAbi(this.contract)
+      this.abi = this.contract.data.abi
     }
 
     return this.contract
   }
 
-  updateAbi(contract: any) {
-    this.abi = contract.data.abi
-  }
-
-  async getMetaNamesState(): Promise<IMetaNamesState> {
+  async getMetaNamesStruct(): Promise<ScValueStruct> {
     const contract = await this.getContract()
 
     // deserialize state
@@ -42,18 +39,19 @@ export class MetaNamesContract {
       fileAbi.contract
     )
     const struct = reader.readStruct(fileAbi.contract.getStateStruct())
-    return JsonValueConverter.toJson(struct) as any
+
+    return struct
   }
 
   async recordLookup(recordClass: RecordClassEnum, domain: string): Promise<string> {
-    const state = await this.getMetaNamesState()
-    // console.log(state.pns.records)
+    const struct = await this.getMetaNamesStruct()
+    const records = getPnsRecords(struct)
 
     const qualifiedName = this.getQualifiedName(domain, recordClass)
-    const record = state.pns.records.find((record) => record.key === qualifiedName)?.value
+    const record = lookUpRecord(records, qualifiedName)
     if (!record) throw new Error('Record not found')
 
-    return record.data
+    return record
   }
 
   getQualifiedName(domain: string, recordClass: RecordClassEnum) {
