@@ -1,5 +1,6 @@
 import { AbiParser, ScValueStruct, StateReader } from '@partisiablockchain/abi-client-ts'
 import { PartisiaAccount } from 'partisia-rpc'
+import { createHash } from 'crypto'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-rpc/lib/main/accountInfo'
 import { RecordClassEnum } from './interface'
 import { getPnsRecords, lookUpRecord } from './partisia-name-system'
@@ -47,7 +48,8 @@ export class MetaNamesContract {
     const struct = await this.getMetaNamesStruct()
     const records = getPnsRecords(struct)
 
-    const qualifiedName = this.getQualifiedName(domain, recordClass)
+    const hashedDomain = this.hashDomain(domain)
+    const qualifiedName = this.getQualifiedName(hashedDomain, recordClass)
     const record = lookUpRecord(records, qualifiedName)
     if (!record) throw new Error('Record not found')
 
@@ -63,5 +65,9 @@ export class MetaNamesContract {
       case RecordClassEnum.Twitter:
         return `twitter.${domain}`
     }
+  }
+
+  private hashDomain(domain: string) {
+    return createHash('sha256').update(domain).digest('hex')
   }
 }
