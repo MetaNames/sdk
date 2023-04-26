@@ -32,10 +32,10 @@
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.3.0.tgz#085fd70f6d7d9d109671090ccae1d3bec62554a1"
   integrity sha512-ilHEACi9DwqJB0pw7kv+Apvh50jiiSyR/cQ3y4W7lOR5mhvn/50FLUfsnfJz0BDZtl/RR16kXvptiv6q1msYZg==
 
-"@partisiablockchain/abi-client-ts@^3.11.0":
-  version "3.11.0"
-  resolved "https://gitlab.com/api/v4/projects/36918028/packages/npm/@partisiablockchain/abi-client-ts/-/@partisiablockchain/abi-client-ts-3.11.0.tgz#92a3386309af19d5ed5d69c99036b21f29e18304"
-  integrity sha1-kqM4YwmvGdXtXWnJkDayHynhgwQ=
+"@partisiablockchain/abi-client-ts@^3.13.0":
+  version "3.13.0"
+  resolved "https://gitlab.com/api/v4/projects/36918028/packages/npm/@partisiablockchain/abi-client-ts/-/@partisiablockchain/abi-client-ts-3.13.0.tgz#bf71d327bfac06738c7eefb108145ff962b2de8f"
+  integrity sha1-v3HTJ7+sBnOMfu+xCBRf+WKy3o8=
   dependencies:
     "@secata-public/bitmanipulation-ts" "^3.0.1"
     "@types/bn.js" "^5.1.0"
@@ -113,20 +113,6 @@
   dependencies:
     "@types/node" "*"
 
-abi-client-ts@^3.1.0-3:
-  version "3.1.0-3"
-  resolved "https://registry.yarnpkg.com/abi-client-ts/-/abi-client-ts-3.1.0-3.tgz#3ff764b892df41940e2f967f0b18676d155d63d6"
-  integrity sha512-MslElQHdeHrC3NdcLk0zkVCEqENODjqul2IO+e4sEY6C+Nw+olTCKB9p08liyUzBtBUf7IegalsI+8e+rRwl1g==
-  dependencies:
-    "@types/bn.js" "^5.1.0"
-    "@types/elliptic" "^6.4.14"
-    bitmanipulation-ts "^3.0.2-1"
-    bn.js "^5.2.0"
-    elliptic "^6.5.4"
-    hash.js "^1.1.7"
-    prettier "^2.6.2"
-    unfetch "^4.2.0"
-
 acorn-walk@^8.1.1:
   version "8.2.0"
   resolved "https://registry.yarnpkg.com/acorn-walk/-/acorn-walk-8.2.0.tgz#741210f2e2426454508853a2f44d0ab83b7f69c1"
@@ -197,15 +183,6 @@ bip39@^3.0.4:
   integrity sha512-c9kiwdk45Do5GL0vJMe7tS95VjCii65mYAH7DfWl3uW8AVzXKQVUm64i3hzVybBDMp9r7j9iNxR85+ul8MdN/A==
   dependencies:
     "@noble/hashes" "^1.2.0"
-
-bitmanipulation-ts@^3.0.2-1:
-  version "3.0.2-1"
-  resolved "https://registry.yarnpkg.com/bitmanipulation-ts/-/bitmanipulation-ts-3.0.2-1.tgz#e9727e47b979f43558cc137a6dda2b1b42bf8d06"
-  integrity sha512-wLNrQXJ8c5drUujCBiEvwispnEVM4SPk/vC7uZiz7sQ7iNEuJYNs/FzFPeDoKrLoGdTOmkr6CU635jzKTuBWPA==
-  dependencies:
-    "@types/bn.js" "^5.1.0"
-    bn.js "^5.2.0"
-    prettier "^2.6.2"
 
 blakejs@^1.1.0:
   version "1.2.1"
