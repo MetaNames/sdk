@@ -21,7 +21,7 @@ export enum RecordClassEnum {
 
 export interface IRecord {
   // Related domain
-  domain: String
+  domain: string
   // Class type
   class: RecordClassEnum
   // Data
@@ -62,4 +62,20 @@ export interface IContractVersionState {
 export interface IMetaNamesState {
   pns: IPartisiaNameSystemState
   version: IContractVersionState
+}
+
+export interface IActionMint {
+  token_id: string
+  to: Buffer
+  parent?: string
+}
+
+export interface IArgMint {
+  typeIndex: number
+  valStruct: IStructMint[]
+}
+
+export interface IStructMint {
+  typeIndex: number
+  valPrimitive: string
 }
