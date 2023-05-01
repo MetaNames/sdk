@@ -10,9 +10,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    env:
-      TEST_PRIVATE_KEY: "{{ secrets.TEST_PRIVATE_KEY }}"
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -26,7 +23,12 @@ jobs:
       - name: Install project dependencies
         run: yarn
 
-      - name: Run tests and collect coverage
+      - name: Create env file
+        run: |
+          touch .env
+          echo TEST_PRIVATE_KEY=${{ secrets.TEST_PRIVATE_KEY }} >> .env
+
+      - name: Run tests with coverage
         run: yarn test --coverage
 
       - name: Upload coverage to Codecov
