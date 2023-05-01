@@ -14,9 +14,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install dependencies
-        run: yarn install
-
       - name: Cache Yarn packages
         uses: actions/cache@v2
         with:
@@ -24,6 +21,9 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        run: yarn install
 
       - name: Run tests and collect coverage
         run: yarn test --coverage
