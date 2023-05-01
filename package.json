@@ -16,17 +16,23 @@
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "prepare": "yarn run build",
     "version": "yarn run format && git add -A src",
-    "test": "yarn ts-node test/lookup.ts",
+    "test": "jest",
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
-    "@partisiablockchain/abi-client-ts": "^3.11.0",
+    "@partisiablockchain/abi-client-ts": "^3.13.0",
+    "@secata-public/bitmanipulation-ts": "^3.0.2",
+    "dotenv": "^16.0.3",
     "partisia-rpc": "^1.0.9",
     "partisia-sdk": "^0.1.1"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.1",
     "@types/node": "^18.11.18",
+    "jest": "^29.5.0",
+    "jest-environment-jsdom": "^29.5.0",
     "prettier": "^2.8.7",
+    "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   }

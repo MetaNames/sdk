@@ -1,0 +1,41 @@
+name: Run Tests and Display Coverage
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    permissions: write-all
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: "yarn"
+
+      - name: Install project dependencies
+        run: yarn
+
+      - name: Run tests with coverage
+        run: yarn test --coverage
+        env:
+          TEST_PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
+
+      - name: Upload coverage to Codecov
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage.lcov
+          path: coverage/lcov.info
+
+      - name: Code Coverage Report
+        uses: romeovs/lcov-reporter-action@v0.2.11
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
