@@ -1,9 +1,7 @@
 import { AbiParser, FileAbi, ScValueStruct, StateReader } from '@partisiablockchain/abi-client-ts'
-import assert from 'assert'
-import { partisiaCrypto } from 'partisia-crypto'
-import { PartisiaAccount, PartisiaRpc } from 'partisia-rpc'
+import { PartisiaAccount } from 'partisia-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-rpc/lib/main/accountInfo'
-import { actionMintPayload, broadcastTransactionPoller } from './actions'
+import { actionMintPayload, createTransaction } from './actions'
 import { IActionMint, RecordClassEnum } from './interface'
 import { getPnsRecords, lookUpRecord } from './partisia-name-system'
 
@@ -68,52 +66,11 @@ export class MetaNamesContract {
     return record
   }
 
-  async actionMint(privateKey: string, params: IActionMint, cost: number | string = 40960) {
+  async actionMint(privateKey: string, params: IActionMint) {
     const fileAbi = await this.getFileAbi()
     const payload = actionMintPayload(fileAbi.contract, params)
 
-    const address = partisiaCrypto.wallet.privateKeyToAccountAddress(privateKey)
-
-    const shardId = this.rpc.deriveShardId(address)
-    const url = this.rpc.getShardUrl(shardId)
-    const nonce = await this.rpc.getNonce(address, shardId)
-
-    const serializedTransaction = partisiaCrypto.transaction.serializedTransaction(
-      { nonce, cost },
-      { contract: this.contractAddress },
-      payload
-    )
-
-    const digest = partisiaCrypto.transaction.deriveDigest(
-      `Partisia Blockchain${this.isMainnet ? '' : ' Testnet'}`,
-      serializedTransaction
-    )
-    const signature = partisiaCrypto.wallet.signTransaction(digest, privateKey)
-    const trx = partisiaCrypto.transaction.getTransactionPayloadData(serializedTransaction, signature)
-
-    const trxHash = partisiaCrypto.transaction.getTrxHash(digest, signature)
-    const rpcShard = PartisiaRpc({ baseURL: url })
-    const isValid = await rpcShard.broadcastTransaction(trx)
-    assert(isValid, 'Unknown Error')
-
-    const isFinalOnChain = await broadcastTransactionPoller(trxHash, rpcShard)
-
-    // check for errors
-    let res
-    if (isFinalOnChain) {
-      res = await this.rpc.getTransactionEventTrace(trxHash)
-    } else {
-      res = {
-        hasError: true,
-        errorMessage: 'unable to broadcast to chain',
-      }
-    }
-
-    return {
-      isFinalOnChain,
-      trxHash,
-      ...res,
-    }
+    return await createTransaction(this.rpc, this.contractAddress, privateKey, payload)
   }
 
   getQualifiedName(domain: string, recordClass: RecordClassEnum) {

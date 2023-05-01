@@ -79,3 +79,10 @@ export interface IStructMint {
   typeIndex: number
   valPrimitive: string
 }
+
+export interface ITransactionResult {
+  isFinalOnChain: boolean
+  trxHash: string
+  hasError: boolean
+  errorMessage?: string
+}
