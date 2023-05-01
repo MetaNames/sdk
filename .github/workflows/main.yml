@@ -10,25 +10,24 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      TEST_PRIVATE_KEY: "{{ secrets.TEST_PRIVATE_KEY }}"
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Cache Yarn packages
-        uses: actions/cache@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          path: ~/.cache/yarn
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: "18"
+          cache: "yarn"
 
-      - name: Install dependencies
-        run: yarn install
+      - name: Install project dependencies
+        run: yarn
 
       - name: Run tests and collect coverage
         run: yarn test --coverage
-        env:
-          TEST_PRIVATE_KEY: "{{ secrets.TEST_PRIVATE_KEY }}"
 
       - name: Upload coverage to Codecov
         uses: actions/upload-artifact@v3
