@@ -1,5 +1,5 @@
 {
-  "exclude": ["test"] /* Exclude files and folders from the program. */,
+  "exclude": ["test", "jest.config.ts"] /* Exclude files and folders from the program. */,
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
 
