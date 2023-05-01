@@ -17,8 +17,15 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      - name: Test with coverage
-        uses: ziishaned/jest-reporter-action@v0.0.1
+      - name: Run tests and collect coverage
+        run: yarn test --coverage
+      - name: Upload coverage to Codecov
+        uses: actions/upload-artifact@v3
         with:
-          github-token: ${{ secrets.GH_TOKEN }}
-          test-command: "yarn jest --coverage"
+          name: coverage.lcov
+          path: coverage/lcov.info
+
+      - name: Code Coverage Report
+        uses: romeovs/lcov-reporter-action@v0.2.11
+        with:
+          github_token: "{{ secrets.GH_TOKEN }}"
