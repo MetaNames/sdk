@@ -27,7 +27,7 @@ test('run action mint', async () => {
 
   // Load .env
   dotenv.config()
-  const privateKey = process.env.TEST_PRIVATE_KEY
+  const privateKey = `${process.env.TEST_PRIVATE_KEY}`
   if (!privateKey) throw new Error('TEST_PRIVATE_KEY is not set')
 
   const randomActionMint: IActionMint = {
