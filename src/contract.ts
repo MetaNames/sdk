@@ -1,15 +1,16 @@
 import { AbiParser, FileAbi, ScValueStruct, StateReader } from '@partisiablockchain/abi-client-ts'
 import { PartisiaAccount } from 'partisia-rpc'
-import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-rpc/lib/main/accountInfo'
+import { IContractInfo, IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-rpc/lib/main/accountInfo'
 import { actionMintPayload, createTransaction } from './actions'
 import { IActionMint, RecordClassEnum } from './interface'
 import { getPnsRecords, lookUpRecord } from './partisia-name-system'
+import { IContractZk } from 'partisia-rpc/lib/main/interface-zk'
 
 export class MetaNamesContract {
   abi?: string
   contractAddress: string
   rpc: PartisiaAccountClass
-  contract: any
+  contract?: { shard_id: number; data: IContractInfo | IContractZk }
   isMainnet: boolean
 
   constructor(contractAddress: string, rpc: IPartisiaRpcConfig, isMainnet?: boolean, abi?: string) {
@@ -21,11 +22,14 @@ export class MetaNamesContract {
 
   async getContract(force = false) {
     if (force || !this.contract) {
-      this.contract = await this.rpc.getContract(
+      const contract = await this.rpc.getContract(
         this.contractAddress,
         this.rpc.deriveShardId(this.contractAddress),
         true
       )
+      if (!contract) throw new Error('Contract not found')
+
+      this.contract = contract
       this.abi = this.contract.data.abi
     }
 
@@ -34,11 +38,12 @@ export class MetaNamesContract {
 
   async getFileAbi(): Promise<FileAbi> {
     if (!this.contract) {
-      await this.getContract()
-      this.abi = this.contract.data.abi
+      const contract = await this.getContract()
+      this.abi = contract.data.abi
     }
+    if (!this.abi) throw new Error('Abi not found')
 
-    return new AbiParser(Buffer.from(this.abi!, 'base64')).parseAbi()
+    return new AbiParser(Buffer.from(this.abi, 'base64')).parseAbi()
   }
 
   async getMetaNamesStruct(): Promise<ScValueStruct> {
@@ -46,10 +51,11 @@ export class MetaNamesContract {
 
     // deserialize state
     const fileAbi = await this.getFileAbi()
-    const reader = new StateReader(
-      Buffer.from(contract.data.serializedContract!.state.data, 'base64'),
-      fileAbi.contract
-    )
+    const serializedContract = contract.data.serializedContract
+    if (!serializedContract) throw new Error('Contract state not found')
+    if (!('state' in serializedContract)) throw new Error('Contract state not found')
+
+    const reader = new StateReader(Buffer.from(serializedContract.state.data, 'base64'), fileAbi.contract)
     const struct = reader.readStruct(fileAbi.contract.getStateStruct())
 
     return struct
