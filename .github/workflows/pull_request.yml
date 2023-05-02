@@ -1,9 +1,7 @@
-name: Run Tests
+name: Run Tests And display coverage
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
 
 jobs:
   eslint:
@@ -49,3 +47,14 @@ jobs:
         run: yarn test --coverage
         env:
           TEST_PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
+
+      - name: Upload coverage to Codecov
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage.lcov
+          path: coverage/lcov.info
+
+      - name: Code Coverage Report
+        uses: romeovs/lcov-reporter-action@v0.2.11
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

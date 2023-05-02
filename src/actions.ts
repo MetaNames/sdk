@@ -90,6 +90,7 @@ export const broadcastTransactionPoller = async (
       if (resTx.finalized) {
         break
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (!error.message.includes('404')) console.error(error.message)
     } finally {

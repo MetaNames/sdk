@@ -1,5 +1,3 @@
-// TEST LOOKUP OF A DOMAIN
-
 import { MetaNamesContract } from '../src/contract'
 import { testNetConfig } from '../src/config'
 import { RecordClassEnum } from '../src/interface'
