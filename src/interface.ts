@@ -65,9 +65,10 @@ export interface IMetaNamesState {
 }
 
 export interface IActionMint {
-  token_id: string
+  domain: string
   to: Buffer
-  parent?: string
+  token_uri?: string
+  parent_id?: string
 }
 
 export interface IArgMint {

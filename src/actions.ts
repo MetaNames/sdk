@@ -17,10 +17,17 @@ export const actionMintPayload = (contractAbi: ContractAbi, params: IActionMint)
   if (!contractAbi.getFunctionByName('mint')) throw new Error('Function mint not found in contract abi')
 
   const rpc = new FnRpcBuilder('mint', contractAbi)
-  rpc.addString(params.token_id)
+  const domainBytes = Buffer.from(params.domain)
+  rpc.addVecU8(domainBytes)
   rpc.addAddress(params.to)
-  const option = rpc.addOption()
-  if (params.parent) option.addString(params.parent)
+  const tokenUriOption = rpc.addOption()
+  if (params.token_uri) tokenUriOption.addString(params.token_uri)
+
+  const parentOption = rpc.addOption()
+  if (params.parent_id) {
+    const parentBytes = Buffer.from(params.parent_id)
+    parentOption.addVecU8(parentBytes)
+  }
 
   return builderToBytesBe(rpc)
 }

@@ -7,13 +7,14 @@ import { IActionMint } from '../src/interface'
 import { generateRandomString } from './helper'
 
 test('payload for action mint', async () => {
-  const expectedHex = '09000000096e616d652e6d65746100000000000000000000000000000000000000000000'
+  const expectedHex = '09000000096e616d652e6d6574610000000000000000000000000000000000000000000000'
 
   const metaNamesContract = new MetaNamesContract(testNetConfig.contractAddress, testNetConfig.rpcConfig)
   const params: IActionMint = {
-    token_id: 'name.meta',
+    domain: 'name.meta',
     to: Buffer.alloc(21),
-    parent: undefined,
+    token_uri: undefined,
+    parent_id: undefined,
   }
   const fileAbi = await metaNamesContract.getFileAbi()
   const data = actionMintPayload(fileAbi.contract, params)
@@ -31,11 +32,12 @@ test('run action mint', async () => {
   if (!privateKey) throw new Error('TEST_PRIVATE_KEY is not set')
 
   const randomActionMint: IActionMint = {
-    token_id: `${generateRandomString(15)}.meta`,
+    domain: `${generateRandomString(15)}.meta`,
     to: address,
-    parent: undefined,
+    token_uri: undefined,
+    parent_id: undefined,
   }
-  console.log(`mint domain: ${randomActionMint.token_id}`)
+  console.log(`mint domain: ${randomActionMint.domain}`)
   const result = await metaNamesContract.actionMint(privateKey, randomActionMint)
 
   expect(result.isFinalOnChain).toBe(true)
