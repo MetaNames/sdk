@@ -17,13 +17,10 @@ export const actionMintRecordPayload = (contractAbi: ContractAbi, params: IActio
   if (!contractAbi.getFunctionByName('mint_record')) throw new Error('Function mint_record not found in contract abi')
 
   const rpc = new FnRpcBuilder('mint_record', contractAbi)
-  const domainBytes = Buffer.from(params.domain)
-  rpc.addVecU8(domainBytes)
+  rpc.addString(params.domain)
   rpc.addEnumVariant(params.class)
-  if (typeof params.data === 'string') {
-    const dataBytes = Buffer.from(params.data)
-    rpc.addVecU8(dataBytes)
-  } else rpc.addVecU8(params.data)
+  const dataBytes = typeof params.data === 'string' ? Buffer.from(params.data) : params.data
+  rpc.addVecU8(dataBytes)
 
   return builderToBytesBe(rpc)
 }
@@ -32,17 +29,13 @@ export const actionMintPayload = (contractAbi: ContractAbi, params: IActionMint)
   if (!contractAbi.getFunctionByName('mint')) throw new Error('Function mint not found in contract abi')
 
   const rpc = new FnRpcBuilder('mint', contractAbi)
-  const domainBytes = Buffer.from(params.domain)
-  rpc.addVecU8(domainBytes)
+  rpc.addString(params.domain)
   rpc.addAddress(params.to)
   const tokenUriOption = rpc.addOption()
   if (params.token_uri) tokenUriOption.addString(params.token_uri)
 
   const parentOption = rpc.addOption()
-  if (params.parent_id) {
-    const parentBytes = Buffer.from(params.parent_id)
-    parentOption.addVecU8(parentBytes)
-  }
+  if (params.parent_domain) parentOption.addString(params.parent_domain)
 
   return builderToBytesBe(rpc)
 }

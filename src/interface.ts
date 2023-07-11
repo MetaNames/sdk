@@ -81,7 +81,7 @@ export interface IActionMint {
   domain: string
   to: Buffer
   token_uri?: string
-  parent_id?: string
+  parent_domain?: string
 }
 
 export interface IArgMint {

@@ -1,6 +1,6 @@
 import { actionMintRecordPayload } from '../src/actions'
 import { IActionMint, IActionMintRecord, RecordClassEnum } from '../src/interface'
-import { config, generateRandomString } from './helper'
+import { config, generateRandomString } from './helpers'
 
 test('payload for action mint record', async () => {
   const expectedHex = '21000000096e616d652e6d657461040000002a303033373363363864666564393939616563343030363331393465326433653038373066393839336262'
@@ -22,7 +22,7 @@ test('run action mint', async () => {
     domain,
     to: config.address,
     token_uri: undefined,
-    parent_id: undefined,
+    parent_domain: undefined,
   }
   const resultMint = await config.metaNamesContract.actionMint(config.privateKey, randomActionMint)
   expect(resultMint.isFinalOnChain).toBe(true)

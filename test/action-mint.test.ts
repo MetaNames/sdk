@@ -3,7 +3,7 @@ import { actionMintPayload } from '../src/actions'
 import { testNetConfig } from '../src/config'
 import { MetaNamesContract } from '../src/contract'
 import { IActionMint } from '../src/interface'
-import { config, generateRandomString } from './helper'
+import { config, generateRandomString } from './helpers'
 
 test('payload for action mint', async () => {
   const expectedHex = '09000000096e616d652e6d6574610000000000000000000000000000000000000000000000'
@@ -12,7 +12,7 @@ test('payload for action mint', async () => {
     domain: 'name.meta',
     to: Buffer.alloc(21),
     token_uri: undefined,
-    parent_id: undefined,
+    parent_domain: undefined,
   }
   const fileAbi = await config.metaNamesContract.getFileAbi()
   const data = actionMintPayload(fileAbi.contract, params)
@@ -26,7 +26,7 @@ test('run action mint', async () => {
     domain: `${generateRandomString(15)}.meta`,
     to: config.address,
     token_uri: undefined,
-    parent_id: undefined,
+    parent_domain: undefined,
   }
   console.log(`mint domain: ${randomActionMint.domain}`)
   const result = await config.metaNamesContract.actionMint(config.privateKey, randomActionMint)
