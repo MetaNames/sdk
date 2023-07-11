@@ -14,9 +14,16 @@ export interface IDomain {
 }
 
 export enum RecordClassEnum {
-  Wallet = 0,
-  Uri = 1,
+  Bio = 0,
+  Discord = 1,
   Twitter = 2,
+  Uri = 3,
+  Wallet = 4,
+  // Custom = 5,
+  // Custom2 = 6,
+  // Custom3 = 7,
+  // Custom4 = 8,
+  // Custom5 = 9,
 }
 
 export interface IRecord {
@@ -62,6 +69,12 @@ export interface IContractVersionState {
 export interface IMetaNamesState {
   pns: IPartisiaNameSystemState
   version: IContractVersionState
+}
+
+export interface IActionMintRecord {
+  domain: string
+  class: RecordClassEnum
+  data: string | Buffer
 }
 
 export interface IActionMint {

@@ -16,7 +16,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "prepare": "yarn run build",
     "version": "yarn run format && git add -A src",
-    "test": "jest",
+    "test": "jest -i",
     "postversion": "git push && git push --tags"
   },
   "dependencies": {

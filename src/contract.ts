@@ -1,8 +1,8 @@
 import { AbiParser, FileAbi, ScValueStruct, StateReader } from '@partisiablockchain/abi-client-ts'
 import { PartisiaAccount } from 'partisia-rpc'
 import { IContractInfo, IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-rpc/lib/main/accountInfo'
-import { actionMintPayload, createTransaction } from './actions'
-import { IActionMint, RecordClassEnum } from './interface'
+import { actionMintPayload, actionMintRecordPayload, createTransaction } from './actions'
+import { IActionMint, IActionMintRecord, RecordClassEnum } from './interface'
 import { getPnsRecords, lookUpRecord } from './partisia-name-system'
 import { IContractZk } from 'partisia-rpc/lib/main/interface-zk'
 
@@ -65,11 +65,11 @@ export class MetaNamesContract {
     const struct = await this.getMetaNamesStruct()
     const records = getPnsRecords(struct)
 
-    const qualifiedName = this.getQualifiedName(domain, recordClass)
-    const record = lookUpRecord(records, qualifiedName)
-    if (!record) throw new Error('Record not found')
+    // const qualifiedName = this.getQualifiedName(domain, recordClass)
+    // const record = lookUpRecord(records, qualifiedName)
+    // if (!record) throw new Error('Record not found')
 
-    return record
+    return 'test'
   }
 
   async actionMint(privateKey: string, params: IActionMint) {
@@ -79,14 +79,10 @@ export class MetaNamesContract {
     return await createTransaction(this.rpc, this.contractAddress, privateKey, payload)
   }
 
-  getQualifiedName(domain: string, recordClass: RecordClassEnum) {
-    switch (recordClass) {
-      case RecordClassEnum.Wallet:
-        return `wallet.${domain}`
-      case RecordClassEnum.Uri:
-        return `uri.${domain}`
-      case RecordClassEnum.Twitter:
-        return `twitter.${domain}`
-    }
+  async actionMintRecord(privateKey: string, params: IActionMintRecord) {
+    const fileAbi = await this.getFileAbi()
+    const payload = actionMintRecordPayload(fileAbi.contract, params)
+
+    return await createTransaction(this.rpc, this.contractAddress, privateKey, payload)
   }
 }

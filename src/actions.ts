@@ -5,12 +5,27 @@ import { partisiaCrypto } from 'partisia-crypto'
 import { PartisiaRpc } from 'partisia-rpc'
 import { PartisiaAccountClass } from 'partisia-rpc/lib/main/accountInfo'
 import { PartisiaRpcClass } from 'partisia-rpc/lib/main/rpc'
-import { IActionMint, ITransactionResult } from './interface'
+import { IActionMint, IActionMintRecord, ITransactionResult } from './interface'
 
 export const builderToBytesBe = (rpc: FnRpcBuilder) => {
   const bufferWriter = new BigEndianByteOutput()
   rpc.write(bufferWriter)
   return bufferWriter.toBuffer()
+}
+
+export const actionMintRecordPayload = (contractAbi: ContractAbi, params: IActionMintRecord): Buffer => {
+  if (!contractAbi.getFunctionByName('mint_record')) throw new Error('Function mint_record not found in contract abi')
+
+  const rpc = new FnRpcBuilder('mint_record', contractAbi)
+  const domainBytes = Buffer.from(params.domain)
+  rpc.addVecU8(domainBytes)
+  rpc.addEnumVariant(params.class)
+  if (typeof params.data === 'string') {
+    const dataBytes = Buffer.from(params.data)
+    rpc.addVecU8(dataBytes)
+  } else rpc.addVecU8(params.data)
+
+  return builderToBytesBe(rpc)
 }
 
 export const actionMintPayload = (contractAbi: ContractAbi, params: IActionMint): Buffer => {
