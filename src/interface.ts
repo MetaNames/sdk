@@ -14,9 +14,16 @@ export interface IDomain {
 }
 
 export enum RecordClassEnum {
-  Wallet = 0,
-  Uri = 1,
+  Bio = 0,
+  Discord = 1,
   Twitter = 2,
+  Uri = 3,
+  Wallet = 4,
+  // Custom = 5,
+  // Custom2 = 6,
+  // Custom3 = 7,
+  // Custom4 = 8,
+  // Custom5 = 9,
 }
 
 export interface IRecord {
@@ -64,10 +71,28 @@ export interface IMetaNamesState {
   version: IContractVersionState
 }
 
-export interface IActionMint {
-  token_id: string
+export interface IActionRecordMint {
+  domain: string
+  class: RecordClassEnum
+  data: string | Buffer
+}
+
+export interface IActionRecordUpdate {
+  domain: string
+  class: RecordClassEnum
+  data: string | Buffer
+}
+
+export interface IActionRecordDelete {
+  domain: string
+  class: RecordClassEnum
+}
+
+export interface IActionDomainMint {
+  domain: string
   to: Buffer
-  parent?: string
+  token_uri?: string
+  parent_domain?: string
 }
 
 export interface IArgMint {

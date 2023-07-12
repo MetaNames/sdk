@@ -1,10 +1,10 @@
 import { AbiParser, FileAbi, ScValueStruct, StateReader } from '@partisiablockchain/abi-client-ts'
 import { PartisiaAccount } from 'partisia-rpc'
 import { IContractInfo, IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-rpc/lib/main/accountInfo'
-import { actionMintPayload, createTransaction } from './actions'
-import { IActionMint, RecordClassEnum } from './interface'
-import { getPnsRecords, lookUpRecord } from './partisia-name-system'
+import { IActionDomainMint, IActionRecordDelete, IActionRecordMint, IActionRecordUpdate, RecordClassEnum } from './interface'
+import { getPnsDomains, lookUpDomain, lookUpRecord } from './partisia-name-system'
 import { IContractZk } from 'partisia-rpc/lib/main/interface-zk'
+import { actionDomainMintPayload, actionRecordDeletePayload, actionRecordMintPayload, actionRecordUpdatePayload, createTransaction } from './actions'
 
 export class MetaNamesContract {
   abi?: string
@@ -61,32 +61,44 @@ export class MetaNamesContract {
     return struct
   }
 
-  async recordLookup(recordClass: RecordClassEnum, domain: string): Promise<string> {
+  async recordLookup(recordClass: RecordClassEnum, domainName: string): Promise<string> {
     const struct = await this.getMetaNamesStruct()
-    const records = getPnsRecords(struct)
+    const domains = getPnsDomains(struct)
 
-    const qualifiedName = this.getQualifiedName(domain, recordClass)
-    const record = lookUpRecord(records, qualifiedName)
+    const domain = lookUpDomain(domains, domainName)
+    if (!domain) throw new Error('Domain not found')
+
+    const record = lookUpRecord(domain, recordClass)
     if (!record) throw new Error('Record not found')
 
     return record
   }
 
-  async actionMint(privateKey: string, params: IActionMint) {
+  async domainMint(privateKey: string, params: IActionDomainMint) {
     const fileAbi = await this.getFileAbi()
-    const payload = actionMintPayload(fileAbi.contract, params)
+    const payload = actionDomainMintPayload(fileAbi.contract, params)
 
     return await createTransaction(this.rpc, this.contractAddress, privateKey, payload)
   }
 
-  getQualifiedName(domain: string, recordClass: RecordClassEnum) {
-    switch (recordClass) {
-      case RecordClassEnum.Wallet:
-        return `wallet.${domain}`
-      case RecordClassEnum.Uri:
-        return `uri.${domain}`
-      case RecordClassEnum.Twitter:
-        return `twitter.${domain}`
-    }
+  async recordMint(privateKey: string, params: IActionRecordMint) {
+    const fileAbi = await this.getFileAbi()
+    const payload = actionRecordMintPayload(fileAbi.contract, params)
+
+    return await createTransaction(this.rpc, this.contractAddress, privateKey, payload)
+  }
+
+  async recordUpdate(privateKey: string, params: IActionRecordUpdate) {
+    const fileAbi = await this.getFileAbi()
+    const payload = actionRecordUpdatePayload(fileAbi.contract, params)
+
+    return await createTransaction(this.rpc, this.contractAddress, privateKey, payload)
+  }
+
+  async recordDelete(privateKey: string, params: IActionRecordDelete) {
+    const fileAbi = await this.getFileAbi()
+    const payload = actionRecordDeletePayload(fileAbi.contract, params)
+
+    return await createTransaction(this.rpc, this.contractAddress, privateKey, payload)
   }
 }
