@@ -1,12 +1,12 @@
 import { Buffer } from 'buffer'
 import { actionMintPayload } from '../src/actions'
-import { IActionMint } from '../src/interface'
+import { IActionDomainMint } from '../src/interface'
 import { config, generateRandomString } from './helpers'
 
 test('payload for action mint', async () => {
   const expectedHex = '09000000096e616d652e6d6574610000000000000000000000000000000000000000000000'
 
-  const params: IActionMint = {
+  const params: IActionDomainMint = {
     domain: 'name.meta',
     to: Buffer.alloc(21),
     token_uri: undefined,
@@ -20,7 +20,7 @@ test('payload for action mint', async () => {
 
 test('run action mint', async () => {
 
-  const randomActionMint: IActionMint = {
+  const randomActionMint: IActionDomainMint = {
     domain: `${generateRandomString(15)}.meta`,
     to: config.address,
     token_uri: undefined,

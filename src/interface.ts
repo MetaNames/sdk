@@ -71,13 +71,14 @@ export interface IMetaNamesState {
   version: IContractVersionState
 }
 
-export interface IActionMintRecord {
+export interface IActionRecordMint {
   domain: string
   class: RecordClassEnum
   data: string | Buffer
 }
 
-export interface IActionMint {
+
+export interface IActionDomainMint {
   domain: string
   to: Buffer
   token_uri?: string

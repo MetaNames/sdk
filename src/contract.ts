@@ -1,7 +1,7 @@
 import { AbiParser, FileAbi, ScValueStruct, StateReader } from '@partisiablockchain/abi-client-ts'
 import { PartisiaAccount } from 'partisia-rpc'
 import { IContractInfo, IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-rpc/lib/main/accountInfo'
-import { IActionMint, IActionMintRecord, RecordClassEnum } from './interface'
+import { IActionDomainMint, IActionRecordMint, RecordClassEnum } from './interface'
 import { getPnsDomains, lookUpDomain, lookUpRecord } from './partisia-name-system'
 import { IContractZk } from 'partisia-rpc/lib/main/interface-zk'
 import { actionMintPayload, actionMintRecordPayload, createTransaction } from './actions'
@@ -74,14 +74,14 @@ export class MetaNamesContract {
     return record
   }
 
-  async actionMint(privateKey: string, params: IActionMint) {
+  async actionMint(privateKey: string, params: IActionDomainMint) {
     const fileAbi = await this.getFileAbi()
     const payload = actionMintPayload(fileAbi.contract, params)
 
     return await createTransaction(this.rpc, this.contractAddress, privateKey, payload)
   }
 
-  async actionMintRecord(privateKey: string, params: IActionMintRecord) {
+  async actionMintRecord(privateKey: string, params: IActionRecordMint) {
     const fileAbi = await this.getFileAbi()
     const payload = actionMintRecordPayload(fileAbi.contract, params)
 
