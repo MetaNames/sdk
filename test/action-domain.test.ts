@@ -25,7 +25,6 @@ test('run action mint', async () => {
     token_uri: undefined,
     parent_domain: undefined,
   }
-  console.log(`mint domain: ${randomActionMint.domain}`)
   const result = await config.metaNamesContract.domainMint(config.privateKey, randomActionMint)
 
   expect(result.isFinalOnChain).toBe(true)
