@@ -1,7 +1,5 @@
 import { Buffer } from 'buffer'
 import { actionMintPayload } from '../src/actions'
-import { testNetConfig } from '../src/config'
-import { MetaNamesContract } from '../src/contract'
 import { IActionMint } from '../src/interface'
 import { config, generateRandomString } from './helpers'
 

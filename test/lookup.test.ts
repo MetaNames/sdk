@@ -1,5 +1,3 @@
-import { MetaNamesContract } from '../src/contract'
-import { testNetConfig } from '../src/config'
 import { RecordClassEnum } from '../src/interface'
 import { config, mintDomainAndRecord } from './helpers'
 

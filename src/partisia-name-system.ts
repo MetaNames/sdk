@@ -27,7 +27,7 @@ export function lookUpRecord(domain: ScValueStruct, recordClass: RecordClassEnum
   const data = records?.get(klass)?.structValue()?.fieldsMap.get('data')
   if (!data) return
 
-  const vectorData = Buffer.from(data!.vecValue().values().map((v) => v.asNumber()))
+  const vectorData = Buffer.from(data?.vecValue().values().map((v) => v.asNumber()))
 
   return vectorData.toString()
 }
