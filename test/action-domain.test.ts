@@ -3,7 +3,7 @@ import { actionDomainMintPayload } from '../src/actions'
 import { IActionDomainMint } from '../src/interface'
 import { config, generateRandomString } from './helpers'
 
-test('payload for action mint', async () => {
+test('payload for action domain mint', async () => {
   const expectedHex = '09000000096e616d652e6d6574610000000000000000000000000000000000000000000000'
 
   const params: IActionDomainMint = {
@@ -19,7 +19,6 @@ test('payload for action mint', async () => {
 })
 
 test('run action mint', async () => {
-
   const randomActionMint: IActionDomainMint = {
     domain: `${generateRandomString(15)}.meta`,
     to: config.address,
@@ -27,7 +26,7 @@ test('run action mint', async () => {
     parent_domain: undefined,
   }
   console.log(`mint domain: ${randomActionMint.domain}`)
-  const result = await config.metaNamesContract.actionMint(config.privateKey, randomActionMint)
+  const result = await config.metaNamesContract.domainMint(config.privateKey, randomActionMint)
 
   expect(result.isFinalOnChain).toBe(true)
   expect(result.hasError).toBe(false)

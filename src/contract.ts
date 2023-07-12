@@ -1,10 +1,10 @@
 import { AbiParser, FileAbi, ScValueStruct, StateReader } from '@partisiablockchain/abi-client-ts'
 import { PartisiaAccount } from 'partisia-rpc'
 import { IContractInfo, IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-rpc/lib/main/accountInfo'
-import { IActionDomainMint, IActionRecordMint, RecordClassEnum } from './interface'
+import { IActionDomainMint, IActionRecordDelete, IActionRecordMint, IActionRecordUpdate, RecordClassEnum } from './interface'
 import { getPnsDomains, lookUpDomain, lookUpRecord } from './partisia-name-system'
 import { IContractZk } from 'partisia-rpc/lib/main/interface-zk'
-import { actionDomainMintPayload, actionRecordMintPayload, createTransaction } from './actions'
+import { actionDomainMintPayload, actionRecordDeletePayload, actionRecordMintPayload, actionRecordUpdatePayload, createTransaction } from './actions'
 
 export class MetaNamesContract {
   abi?: string
@@ -74,16 +74,30 @@ export class MetaNamesContract {
     return record
   }
 
-  async actionMint(privateKey: string, params: IActionDomainMint) {
+  async domainMint(privateKey: string, params: IActionDomainMint) {
     const fileAbi = await this.getFileAbi()
     const payload = actionDomainMintPayload(fileAbi.contract, params)
 
     return await createTransaction(this.rpc, this.contractAddress, privateKey, payload)
   }
 
-  async actionMintRecord(privateKey: string, params: IActionRecordMint) {
+  async recordMint(privateKey: string, params: IActionRecordMint) {
     const fileAbi = await this.getFileAbi()
     const payload = actionRecordMintPayload(fileAbi.contract, params)
+
+    return await createTransaction(this.rpc, this.contractAddress, privateKey, payload)
+  }
+
+  async recordUpdate(privateKey: string, params: IActionRecordUpdate) {
+    const fileAbi = await this.getFileAbi()
+    const payload = actionRecordUpdatePayload(fileAbi.contract, params)
+
+    return await createTransaction(this.rpc, this.contractAddress, privateKey, payload)
+  }
+
+  async recordDelete(privateKey: string, params: IActionRecordDelete) {
+    const fileAbi = await this.getFileAbi()
+    const payload = actionRecordDeletePayload(fileAbi.contract, params)
 
     return await createTransaction(this.rpc, this.contractAddress, privateKey, payload)
   }

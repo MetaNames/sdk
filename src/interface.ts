@@ -77,6 +77,16 @@ export interface IActionRecordMint {
   data: string | Buffer
 }
 
+export interface IActionRecordUpdate {
+  domain: string
+  class: RecordClassEnum
+  data: string | Buffer
+}
+
+export interface IActionRecordDelete {
+  domain: string
+  class: RecordClassEnum
+}
 
 export interface IActionDomainMint {
   domain: string

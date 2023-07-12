@@ -18,13 +18,13 @@ export const mintDomainAndRecord = async (domain: string, recordClass: RecordCla
     token_uri: undefined,
     parent_domain: undefined,
   }
-  await config.metaNamesContract.actionMint(config.privateKey, randomActionMint)
+  await config.metaNamesContract.domainMint(config.privateKey, randomActionMint)
 
   const actionMintRecord: IActionRecordMint = {
     domain,
     class: recordClass,
     data,
   }
-  await config.metaNamesContract.actionMintRecord(config.privateKey, actionMintRecord)
+  await config.metaNamesContract.recordMint(config.privateKey, actionMintRecord)
 }
 
