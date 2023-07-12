@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer'
-import { actionMintPayload } from '../src/actions'
+import { actionDomainMintPayload } from '../src/actions'
 import { IActionDomainMint } from '../src/interface'
 import { config, generateRandomString } from './helpers'
 
@@ -13,7 +13,7 @@ test('payload for action mint', async () => {
     parent_domain: undefined,
   }
   const fileAbi = await config.metaNamesContract.getFileAbi()
-  const data = actionMintPayload(fileAbi.contract, params)
+  const data = actionDomainMintPayload(fileAbi.contract, params)
 
   expect(data.toString('hex')).toBe(expectedHex)
 })

@@ -4,7 +4,7 @@ import { IContractInfo, IPartisiaRpcConfig, PartisiaAccountClass } from 'partisi
 import { IActionDomainMint, IActionRecordMint, RecordClassEnum } from './interface'
 import { getPnsDomains, lookUpDomain, lookUpRecord } from './partisia-name-system'
 import { IContractZk } from 'partisia-rpc/lib/main/interface-zk'
-import { actionMintPayload, actionMintRecordPayload, createTransaction } from './actions'
+import { actionDomainMintPayload, actionRecordMintPayload, createTransaction } from './actions'
 
 export class MetaNamesContract {
   abi?: string
@@ -76,14 +76,14 @@ export class MetaNamesContract {
 
   async actionMint(privateKey: string, params: IActionDomainMint) {
     const fileAbi = await this.getFileAbi()
-    const payload = actionMintPayload(fileAbi.contract, params)
+    const payload = actionDomainMintPayload(fileAbi.contract, params)
 
     return await createTransaction(this.rpc, this.contractAddress, privateKey, payload)
   }
 
   async actionMintRecord(privateKey: string, params: IActionRecordMint) {
     const fileAbi = await this.getFileAbi()
-    const payload = actionMintRecordPayload(fileAbi.contract, params)
+    const payload = actionRecordMintPayload(fileAbi.contract, params)
 
     return await createTransaction(this.rpc, this.contractAddress, privateKey, payload)
   }
