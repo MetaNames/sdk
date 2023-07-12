@@ -1,12 +1,10 @@
 import { AbiParser, FileAbi, ScValueStruct, StateReader } from '@partisiablockchain/abi-client-ts'
 import { PartisiaAccount } from 'partisia-rpc'
 import { IContractInfo, IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-rpc/lib/main/accountInfo'
-import { actionMintRecordPayload } from './actions/record'
-import { actionMintPayload } from './actions/domain'
-import { createTransaction } from './actions/helper'
 import { IActionMint, IActionMintRecord, RecordClassEnum } from './interface'
 import { getPnsDomains, lookUpDomain, lookUpRecord } from './partisia-name-system'
 import { IContractZk } from 'partisia-rpc/lib/main/interface-zk'
+import { actionMintPayload, actionMintRecordPayload, createTransaction } from './actions'
 
 export class MetaNamesContract {
   abi?: string
