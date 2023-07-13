@@ -3,8 +3,8 @@ import { ContractRepository } from './repositories/contract-repository'
 import { DomainRepository } from './repositories/domain-repository'
 
 export class MetaNamesContract {
-  private contractRepository: ContractRepository
-  private domainRepository: DomainRepository
+  contractRepository: ContractRepository
+  domainRepository: DomainRepository
 
   constructor(contractAddress: string, rpc: IPartisiaRpcConfig) {
     this.contractRepository = new ContractRepository(contractAddress, rpc)
@@ -13,9 +13,5 @@ export class MetaNamesContract {
 
   setPrivateKey(privateKey?: string) {
     this.contractRepository.setPrivateKey(privateKey)
-  }
-
-  getDomainRepository(): DomainRepository {
-    return this.domainRepository
   }
 }

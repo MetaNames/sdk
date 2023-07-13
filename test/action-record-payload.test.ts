@@ -10,8 +10,8 @@ test('payload for action record mint', async () => {
     class: RecordClassEnum.Wallet,
     data: '00373c68dfed999aec40063194e2d3e0870f9893bb'
   }
-  const fileAbi = await config.metaNamesContract.getFileAbi()
-  const data = actionRecordMintPayload(fileAbi.contract, params)
+  const contractAbi = await config.metaNamesContract.contractRepository.getContractAbi()
+  const data = actionRecordMintPayload(contractAbi, params)
 
   expect(data.toString('hex')).toBe(expectedHex)
 })
@@ -24,8 +24,8 @@ test('payload for action record update', async () => {
     class: RecordClassEnum.Wallet,
     data: '00373c68dfed999aec40063194e2d3e0870f9893bc'
   }
-  const fileAbi = await config.metaNamesContract.getFileAbi()
-  const data = actionRecordUpdatePayload(fileAbi.contract, params)
+  const contractAbi = await config.metaNamesContract.contractRepository.getContractAbi()
+  const data = actionRecordUpdatePayload(contractAbi, params)
 
   expect(data.toString('hex')).toBe(expectedHex)
 })
@@ -38,8 +38,8 @@ test('payload for action delete record', async () => {
     domain: 'name.meta',
     class: RecordClassEnum.Wallet,
   }
-  const fileAbi = await config.metaNamesContract.getFileAbi()
-  const data = actionRecordDeletePayload(fileAbi.contract, params)
+  const contractAbi = await config.metaNamesContract.contractRepository.getContractAbi()
+  const data = actionRecordDeletePayload(contractAbi, params)
 
   expect(data.toString('hex')).toBe(expectedHex)
 })

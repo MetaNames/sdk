@@ -27,7 +27,7 @@ export class DomainRepository {
     return domain
   }
 
-  recordsRepository(domain: IDomain): RecordRepository {
+  getRecordsRepository(domain: IDomain): RecordRepository {
     return new RecordRepository(this.contractRepository, domain)
   }
 

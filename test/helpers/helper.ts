@@ -19,16 +19,17 @@ export const mintDomain = async (domain: string) => {
     parent_domain: undefined,
   }
 
-  await config.metaNamesContract.domainMint(config.privateKey, randomActionMint)
+  await config.metaNamesContract.domainRepository.mint(randomActionMint)
 }
 
-export const mintRecord = async (domain: string, recordClass: RecordClassEnum, data: string) => {
+export const mintRecord = async (domainName: string, recordClass: RecordClassEnum, data: string) => {
   const actionMintRecord: IActionRecordMint = {
-    domain,
+    domain: domainName,
     class: recordClass,
     data,
   }
 
-  await config.metaNamesContract.recordMint(config.privateKey, actionMintRecord)
+  const domain = await config.metaNamesContract.domainRepository.find(domainName)
+  config.metaNamesContract.domainRepository.getRecordsRepository(domain).mint(actionMintRecord)
 }
 
