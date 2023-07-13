@@ -1,8 +1,6 @@
-export type Address = string
+import { ContractAbi, ScValueStruct } from "@partisiablockchain/abi-client-ts"
 
-export interface IOwner {
-  owner: string
-}
+// TODO: Reorganize this file
 
 export interface IDomain {
   tokenId: number
@@ -21,51 +19,6 @@ export enum RecordClassEnum {
   // Custom3 = 7,
   // Custom4 = 8,
   // Custom5 = 9,
-}
-
-export interface IRecord {
-  // Related domain
-  domain: string
-  // Class type
-  class: RecordClassEnum
-  // Data
-  data: string
-}
-
-export interface IOperatorApprovals {
-  [address: string]: { [address: string]: boolean }
-}
-
-export interface IPartisiaNameSystemState {
-  // optional owner address
-  owner?: IOwner
-  // token name
-  name: string
-  // token symbol
-  symbol: string
-  // optional base uri
-  base_uri?: string
-  // minter address
-  minter: Address
-  // Token supply
-  supply: number
-  // domains are token id
-  // Token id is currently a string (the domain name)
-  tokens: { key: string; value: IDomain }[]
-  // record info by record_class.token_id
-  records: { key: string; value: IRecord }[]
-  // token approvals
-  operator_approvals: IOperatorApprovals
-}
-
-export interface IContractVersionState {
-  name: string
-  version: string
-}
-
-export interface IMetaNamesState {
-  pns: IPartisiaNameSystemState
-  version: IContractVersionState
 }
 
 export interface IActionRecordMint {
@@ -107,4 +60,12 @@ export interface ITransactionResult {
   trxHash: string
   hasError: boolean
   errorMessage?: string
+}
+
+export type MetaNamesState = ScValueStruct
+
+export interface IContractRepository {
+  createTransaction(payload: Buffer): Promise<ITransactionResult>
+  getContractAbi(): Promise<ContractAbi>
+  getState(): Promise<MetaNamesState>
 }
