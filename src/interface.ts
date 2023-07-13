@@ -5,12 +5,9 @@ export interface IOwner {
 }
 
 export interface IDomain {
-  // token owner
-  owner: Address
-  // Parent
-  parent?: string
-  // token approvals
-  approvals: Address[]
+  tokenId: number
+  parentId?: string
+  records: Map<string, string | Buffer>
 }
 
 export enum RecordClassEnum {

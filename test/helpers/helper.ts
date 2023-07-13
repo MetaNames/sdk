@@ -11,20 +11,24 @@ export const generateRandomString = (length: number): string => {
   return result
 }
 
-export const mintDomainAndRecord = async (domain: string, recordClass: RecordClassEnum, data: string) => {
+export const mintDomain = async (domain: string) => {
   const randomActionMint: IActionDomainMint = {
     domain,
     to: config.address,
     token_uri: undefined,
     parent_domain: undefined,
   }
-  await config.metaNamesContract.domainMint(config.privateKey, randomActionMint)
 
+  await config.metaNamesContract.domainMint(config.privateKey, randomActionMint)
+}
+
+export const mintRecord = async (domain: string, recordClass: RecordClassEnum, data: string) => {
   const actionMintRecord: IActionRecordMint = {
     domain,
     class: recordClass,
     data,
   }
+
   await config.metaNamesContract.recordMint(config.privateKey, actionMintRecord)
 }
 

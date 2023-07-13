@@ -1,7 +1,7 @@
 import { AbiParser, FileAbi, ScValueStruct, StateReader } from '@partisiablockchain/abi-client-ts'
 import { PartisiaAccount } from 'partisia-rpc'
 import { IContractInfo, IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-rpc/lib/main/accountInfo'
-import { IActionDomainMint, IActionRecordDelete, IActionRecordMint, IActionRecordUpdate, RecordClassEnum } from './interface'
+import { IActionDomainMint, IActionRecordDelete, IActionRecordMint, IActionRecordUpdate, IDomain, RecordClassEnum } from './interface'
 import { getPnsDomains, lookUpDomain, lookUpRecord } from './partisia-name-system'
 import { IContractZk } from 'partisia-rpc/lib/main/interface-zk'
 import { actionDomainMintPayload, actionRecordDeletePayload, actionRecordMintPayload, actionRecordUpdatePayload, createTransaction } from './actions'
@@ -61,12 +61,18 @@ export class MetaNamesContract {
     return struct
   }
 
-  async recordLookup(recordClass: RecordClassEnum, domainName: string): Promise<string> {
+  async domainLookup(domainName: string): Promise<IDomain> {
     const struct = await this.getMetaNamesStruct()
     const domains = getPnsDomains(struct)
 
     const domain = lookUpDomain(domains, domainName)
     if (!domain) throw new Error('Domain not found')
+
+    return domain
+  }
+
+  async recordLookup(recordClass: RecordClassEnum, domainName: string): Promise<string | Buffer> {
+    const domain = await this.domainLookup(domainName)
 
     const record = lookUpRecord(domain, recordClass)
     if (!record) throw new Error('Record not found')
