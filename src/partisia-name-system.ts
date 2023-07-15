@@ -1,5 +1,5 @@
-import { ScValueEnum, ScValueMap, ScValueString, ScValueStruct } from '@partisiablockchain/abi-client-ts'
-import { RecordClassEnum } from './interface'
+import { BN, ScValueMap, ScValueNumber, ScValueString, ScValueStruct, ScValueVector } from '@partisiablockchain/abi-client-ts'
+import { IDomain, RecordClassEnum } from './interface'
 
 export function getPnsDomains(contract: ScValueStruct): ScValueMap {
   const pns = contract.fieldsMap.get('pns')
@@ -12,22 +12,46 @@ export function getPnsDomains(contract: ScValueStruct): ScValueMap {
   return domains.mapValue()
 }
 
-export function lookUpDomain(domains: ScValueMap, domain: string): ScValueStruct | undefined {
-  const scNameString = new ScValueString(domain)
+export function lookUpDomain(domains: ScValueMap, domainName: string): IDomain | undefined {
+  const scNameString = new ScValueString(domainName)
 
-  return domains.get(scNameString)?.structValue()
+  const domain = domains.get(scNameString)?.structValue()
+  if (!domain) return
+
+  const fieldsMap = domain?.fieldsMap
+  const scRecords = fieldsMap.get('records')?.mapValue().map
+
+  const tokenId = (fieldsMap.get('token_id') as ScValueNumber).number
+  return {
+    name: domainName,
+    tokenId: tokenId instanceof BN ? tokenId.toNumber() : tokenId,
+    parentId: fieldsMap.get('parent_id')?.optionValue().innerValue?.stringValue(),
+    records: scRecords ? extractRecords(new ScValueMap(scRecords)) : new Map(),
+  }
 }
 
-export function lookUpRecord(domain: ScValueStruct, recordClass: RecordClassEnum): string | undefined {
-  const records = domain.fieldsMap.get('records')?.mapValue()
+export function lookUpRecord(domain: IDomain, recordClass: RecordClassEnum): string | Buffer | undefined {
   const recordClassName = RecordClassEnum[recordClass]
-  const recordStruct = new ScValueStruct(recordClassName, new Map())
-  const klass = new ScValueEnum(recordClassName, recordStruct)
 
-  const data = records?.get(klass)?.structValue()?.fieldsMap.get('data')
-  if (!data) return
+  return domain.records.get(recordClassName)
+}
 
-  const vectorData = Buffer.from(data?.vecValue().values().map((v) => v.asNumber()))
+export function extractRecords(records: ScValueMap): Map<string, string> {
+  const extractedRecords = new Map<string, string>()
 
-  return vectorData.toString()
+  for (const [scKey, scValue] of records.mapValue().map) {
+    const key = scKey.enumValue().name
+    const data = scValue.structValue().fieldsMap.get('data')
+    if (!data) continue
+
+    const vectorData = convertScVectorToBuffer(data.vecValue())
+
+    extractedRecords.set(key, vectorData.toString())
+  }
+
+  return extractedRecords
+}
+
+function convertScVectorToBuffer(vector: ScValueVector): Buffer {
+  return Buffer.from(vector.values().map((v) => v.asNumber()))
 }

@@ -12,8 +12,8 @@ test('payload for action domain mint', async () => {
     token_uri: undefined,
     parent_domain: undefined,
   }
-  const fileAbi = await config.metaNamesContract.getFileAbi()
-  const data = actionDomainMintPayload(fileAbi.contract, params)
+  const contractAbi = await config.metaNamesContract.contractRepository.getContractAbi()
+  const data = actionDomainMintPayload(contractAbi, params)
 
   expect(data.toString('hex')).toBe(expectedHex)
 })
@@ -25,7 +25,7 @@ test('run action mint', async () => {
     token_uri: undefined,
     parent_domain: undefined,
   }
-  const result = await config.metaNamesContract.domainMint(config.privateKey, randomActionMint)
+  const result = await config.metaNamesContract.domainRepository.mint(randomActionMint)
 
   expect(result.isFinalOnChain).toBe(true)
   expect(result.hasError).toBe(false)
