@@ -1,18 +1,32 @@
-import { IContractRepository } from "../interface"
+import { IContractRepository, IDomain } from "../interface"
 import { RecordRepository } from "../repositories/record-repository"
 
-export class Domain {
-  tokenId: number
-  parentId?: string
-  records: Map<string, string | Buffer>
+export class Domain implements IDomain {
+  domain: IDomain
+  contractRepository: IContractRepository
 
-  constructor(tokenId: number, parentId?: string, records?: Map<string, string | Buffer>) {
-    this.tokenId = tokenId
-    this.parentId = parentId
-    this.records = records || new Map()
+  constructor(domain: IDomain, contractRepository: IContractRepository) {
+    this.domain = domain
+    this.contractRepository = contractRepository
   }
 
-  getRecordRepository(contractRepository: IContractRepository): RecordRepository {
-    return new RecordRepository(contractRepository, this)
+  get name() {
+    return this.domain.name
+  }
+
+  get tokenId() {
+    return this.domain.tokenId
+  }
+
+  get parentId() {
+    return this.domain.parentId
+  }
+
+  get records() {
+    return this.domain.records
+  }
+
+  get recordRepository(): RecordRepository {
+    return new RecordRepository(this.contractRepository, this.domain)
   }
 }

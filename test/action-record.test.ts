@@ -16,11 +16,9 @@ beforeAll(async () => {
 }, 10_000)
 
 afterEach(async () => {
-  const domain = await config.metaNamesContract.domainRepository.find(domainName)
-  const resultDelete = await config.metaNamesContract.domainRepository.getRecordsRepository(domain).delete({
-    domain: domainName,
-    class: RecordClassEnum.Wallet
-  })
+  const resultDelete = await (await config.metaNamesContract.domainRepository.find(domainName))
+  .recordRepository.delete( RecordClassEnum.Wallet)
+
   expect(resultDelete.isFinalOnChain).toBe(true)
   expect(resultDelete.hasError).toBe(false)
 }, 10_000)
@@ -32,8 +30,8 @@ test('action record mint', async () => {
     class: RecordClassEnum.Wallet,
     data: config.address
   }
-  const domain = await config.metaNamesContract.domainRepository.find(domainName)
-  const resultMintRecord = await config.metaNamesContract.domainRepository.getRecordsRepository(domain).mint(actionMintRecord)
+  const resultMintRecord = await (await config.metaNamesContract.domainRepository.find(domainName)).recordRepository.mint(actionMintRecord)
+
   expect(resultMintRecord.isFinalOnChain).toBe(true)
   expect(resultMintRecord.hasError).toBe(false)
 }, 10_000)
@@ -44,8 +42,8 @@ test('action record update', async () => {
     class: RecordClassEnum.Wallet,
     data: config.address
   }
-  const domain = await config.metaNamesContract.domainRepository.find(domainName)
-  const resultMintRecord = await config.metaNamesContract.domainRepository.getRecordsRepository(domain).mint(actionMintRecord)
+  const resultMintRecord = await (await config.metaNamesContract.domainRepository.find(domainName)).recordRepository.mint(actionMintRecord)
+
   expect(resultMintRecord.isFinalOnChain).toBe(true)
   expect(resultMintRecord.hasError).toBe(false)
 
@@ -54,7 +52,8 @@ test('action record update', async () => {
     class: RecordClassEnum.Wallet,
     data: generateRandomString(40)
   }
-  const resultUpdateRecord = await config.metaNamesContract.domainRepository.getRecordsRepository(domain).update(actionUpdateRecord)
+  const resultUpdateRecord = await (await config.metaNamesContract.domainRepository.find(domainName)).recordRepository.update(actionUpdateRecord)
+
   expect(resultUpdateRecord.isFinalOnChain).toBe(true)
   expect(resultUpdateRecord.hasError).toBe(false)
 }, 15_000)

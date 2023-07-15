@@ -1,7 +1,7 @@
 import { actionDomainMintPayload } from "../actions"
-import { IActionDomainMint, IContractRepository, IDomain } from "../interface"
+import { IActionDomainMint, IContractRepository } from "../interface"
+import { Domain } from "../models/domain"
 import { getPnsDomains, lookUpDomain } from "../partisia-name-system"
-import { RecordRepository } from "./record-repository"
 
 export class DomainRepository {
   contractRepository: IContractRepository
@@ -17,18 +17,13 @@ export class DomainRepository {
     return await this.contractRepository.createTransaction(payload)
   }
 
-  async find(domainName: string): Promise<IDomain> {
+  async find(domainName: string): Promise<Domain> {
     const struct = await this.contractRepository.getState()
     const domains = getPnsDomains(struct)
 
     const domain = lookUpDomain(domains, domainName)
     if (!domain) throw new Error('Domain not found')
 
-    return domain
+    return new Domain(domain, this.contractRepository)
   }
-
-  getRecordsRepository(domain: IDomain): RecordRepository {
-    return new RecordRepository(this.contractRepository, domain)
-  }
-
 }
