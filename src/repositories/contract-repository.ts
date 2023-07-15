@@ -1,4 +1,4 @@
-import { AbiParser, ContractAbi, FileAbi, StateReader } from '@partisiablockchain/abi-client-ts'
+import { AbiParser, ContractAbi, StateReader } from '@partisiablockchain/abi-client-ts'
 import { PartisiaAccount } from 'partisia-rpc'
 import { IContractInfo, IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-rpc/lib/main/accountInfo'
 import { IContractZk } from 'partisia-rpc/lib/main/interface-zk'
