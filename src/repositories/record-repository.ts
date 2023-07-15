@@ -1,5 +1,5 @@
 import { actionRecordDeletePayload, actionRecordMintPayload, actionRecordUpdatePayload } from "../actions"
-import { IActionRecordDelete, IActionRecordMint, IActionRecordUpdate, IContractRepository, IDomain, RecordClassEnum } from "../interface"
+import { IContractRepository, IDomain, IRecord, RecordClassEnum } from "../interface"
 import { lookUpRecord } from "../partisia-name-system"
 
 export class RecordRepository {
@@ -11,9 +11,9 @@ export class RecordRepository {
         this.domain = domain
     }
 
-    async mint(params: IActionRecordMint) {
+    async mint(params: IRecord) {
         const contractAbi = await this.contractRepository.getContractAbi()
-        const payload = actionRecordMintPayload(contractAbi, params)
+        const payload = actionRecordMintPayload(contractAbi, this.addDomainToParams(params))
 
         return await this.contractRepository.createTransaction(payload)
     }
@@ -25,17 +25,24 @@ export class RecordRepository {
       return data
     }
 
-  async update(params: IActionRecordUpdate) {
+  async update(params: IRecord) {
     const contractAbi = await this.contractRepository.getContractAbi()
-    const payload = actionRecordUpdatePayload(contractAbi, params)
+    const payload = actionRecordUpdatePayload(contractAbi, this.addDomainToParams(params))
 
     return await this.contractRepository.createTransaction(payload)
   }
 
-  async delete(params: IActionRecordDelete) {
+  async delete(recordClass: RecordClassEnum) {
     const contractAbi = await this.contractRepository.getContractAbi()
-    const payload = actionRecordDeletePayload(contractAbi, params)
+    const payload = actionRecordDeletePayload(contractAbi, this.addDomainToParams({ class: recordClass } ))
 
     return await this.contractRepository.createTransaction(payload)
+  }
+
+  private addDomainToParams<T>(params: T) {
+    return {
+      domain: this.domain.name,
+      ...params
+    }
   }
 }

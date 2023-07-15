@@ -3,6 +3,7 @@ import { ContractAbi, ScValueStruct } from "@partisiablockchain/abi-client-ts"
 // TODO: Reorganize this file
 
 export interface IDomain {
+  name: string
   tokenId: number
   parentId?: string
   records: Map<string, string | Buffer>
@@ -21,16 +22,17 @@ export enum RecordClassEnum {
   // Custom5 = 9,
 }
 
-export interface IActionRecordMint {
+export interface IActionRecordMint extends IRecord {
   domain: string
-  class: RecordClassEnum
-  data: string | Buffer
 }
 
-export interface IActionRecordUpdate {
+export interface IActionRecordUpdate extends IRecord {
   domain: string
-  class: RecordClassEnum
+}
+
+export interface IRecord {
   data: string | Buffer
+  class: RecordClassEnum
 }
 
 export interface IActionRecordDelete {

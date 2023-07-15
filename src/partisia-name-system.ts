@@ -23,6 +23,7 @@ export function lookUpDomain(domains: ScValueMap, domainName: string): IDomain |
 
   const tokenId = (fieldsMap.get('token_id') as ScValueNumber).number
   return {
+    name: domainName,
     tokenId: tokenId instanceof BN ? tokenId.toNumber() : tokenId,
     parentId: fieldsMap.get('parent_id')?.optionValue().innerValue?.stringValue(),
     records: scRecords ? extractRecords(new ScValueMap(scRecords)) : new Map(),
