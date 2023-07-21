@@ -24,11 +24,13 @@
     "@secata-public/bitmanipulation-ts": "^3.0.2",
     "dotenv": "^16.0.3",
     "partisia-rpc": "^1.0.9",
-    "partisia-sdk": "^0.1.1"
+    "partisia-sdk": "^0.1.1",
+    "tr46": "^4.1.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",
     "@types/node": "^18.11.18",
+    "@types/tr46": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^5.43.0",
     "eslint": "^8.0.1",
     "eslint-config-standard-with-typescript": "^34.0.1",
