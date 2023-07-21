@@ -1,4 +1,4 @@
-import { IActionDomainMint, IActionRecordMint, RecordClassEnum } from '../../src/interface'
+import { IActionDomainMint, IRecord, RecordClassEnum } from '../../src/interface'
 import { config } from './config'
 
 export const generateRandomString = (length: number): string => {
@@ -23,8 +23,7 @@ export const mintDomain = async (domain: string) => {
 }
 
 export const mintRecord = async (domainName: string, recordClass: RecordClassEnum, data: string) => {
-  const actionMintRecord: IActionRecordMint = {
-    domain: domainName,
+  const actionMintRecord: IRecord = {
     class: recordClass,
     data,
   }

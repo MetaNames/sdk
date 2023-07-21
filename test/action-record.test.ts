@@ -1,4 +1,4 @@
-import { IActionDomainMint, IActionRecordMint, IActionRecordUpdate, RecordClassEnum } from '../src/interface'
+import { IActionDomainMint, IRecord, RecordClassEnum } from '../src/interface'
 import { config, generateRandomString } from './helpers'
 
 const domainName = `${generateRandomString(15)}.meta`
@@ -25,8 +25,7 @@ afterEach(async () => {
 
 
 test('action record mint', async () => {
-  const actionMintRecord: IActionRecordMint = {
-    domain: domainName,
+  const actionMintRecord: IRecord = {
     class: RecordClassEnum.Wallet,
     data: config.address
   }
@@ -37,8 +36,7 @@ test('action record mint', async () => {
 }, 10_000)
 
 test('action record update', async () => {
-  const actionMintRecord: IActionRecordMint = {
-    domain: domainName,
+  const actionMintRecord: IRecord = {
     class: RecordClassEnum.Wallet,
     data: config.address
   }
@@ -47,8 +45,7 @@ test('action record update', async () => {
   expect(resultMintRecord.isFinalOnChain).toBe(true)
   expect(resultMintRecord.hasError).toBe(false)
 
-  const actionUpdateRecord: IActionRecordUpdate = {
-    domain: domainName,
+  const actionUpdateRecord: IRecord = {
     class: RecordClassEnum.Wallet,
     data: generateRandomString(40)
   }

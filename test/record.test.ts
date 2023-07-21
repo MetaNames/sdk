@@ -6,9 +6,14 @@ const recordClass = RecordClassEnum.Wallet
 const recordValue = '00373c68dfed999aec39063194e2d3e0870f9899fa'
 
 beforeAll(async () => {
-  const data = await (await config.metaNamesContract.domainRepository.find(domainName)).recordRepository.find(recordClass)
-  if (!data) {
+  try {
+    await config.metaNamesContract.domainRepository.find(domainName)
+  } catch (e) {
     await mintDomain(domainName)
+  }
+  try {
+    await (await config.metaNamesContract.domainRepository.find(domainName)).recordRepository.find(recordClass)
+  } catch (e) {
     await mintRecord(domainName, recordClass, recordValue)
   }
 }, 15_000)
