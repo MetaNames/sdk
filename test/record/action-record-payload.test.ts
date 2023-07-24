@@ -1,6 +1,6 @@
-import { actionRecordDeletePayload, actionRecordMintPayload, actionRecordUpdatePayload } from '../src/actions'
-import { IActionRecordDelete, IActionRecordMint, IActionRecordUpdate, RecordClassEnum } from '../src/interface'
-import { config } from './helpers'
+import { actionRecordDeletePayload, actionRecordMintPayload, actionRecordUpdatePayload } from '../../src/actions'
+import { IActionRecordDelete, IActionRecordMint, IActionRecordUpdate, RecordClassEnum } from '../../src/interface'
+import { config } from '../helpers'
 
 test('payload for action record mint', async () => {
   const expectedHex = '21000000096e616d652e6d657461040000002a303033373363363864666564393939616563343030363331393465326433653038373066393839336262'

@@ -1,4 +1,4 @@
-import { config, mintDomain } from './helpers'
+import { config, mintDomain } from '../helpers'
 
 const domain = 'name.meta'
 

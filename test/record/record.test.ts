@@ -1,5 +1,5 @@
-import { RecordClassEnum } from '../src/interface'
-import { config, mintDomain, mintRecord } from './helpers'
+import { RecordClassEnum } from '../../src/interface'
+import { config, mintDomain, mintRecord } from '../helpers'
 
 const domainName = 'name.meta'
 const recordClass = RecordClassEnum.Wallet
