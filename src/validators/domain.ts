@@ -16,7 +16,7 @@ export default class DomainValidator implements IValidatorInterface {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { domain, error } = toUnicode(reversed, { useSTD3ASCIIRules: true }) as any
 
-    if (error) throw new Error('Domain normalization failed')
+    if (error) throw new Error('Domain contains non valid characters')
 
     return domain
   }

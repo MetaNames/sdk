@@ -29,3 +29,9 @@ test('normalization of an domain name with emoji', () => {
     const validator = new DomainValidator()
     expect(validator.normalize(name)).toBe('meta.🌎')
 })
+
+test('normalization of an domain name with non valid chars', () => {
+    const name = 'not_valid'
+    const validator = new DomainValidator()
+    expect(() => { validator.normalize(name) }).toThrow('Domain contains non valid characters')
+})
