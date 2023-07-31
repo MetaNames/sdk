@@ -44,7 +44,7 @@ export class ContractRepository implements IContractRepository {
     }
     if (!this.abi) throw new Error('Abi not found')
 
-    const fileAbi =  new AbiParser(Buffer.from(this.abi, 'base64')).parseAbi()
+    const fileAbi = new AbiParser(Buffer.from(this.abi, 'base64')).parseAbi()
 
     return fileAbi.contract
   }
