@@ -13,6 +13,10 @@ export class DomainRepository {
     this.domainValidator = new DomainValidator()
   }
 
+  /**
+   * Mint a domain
+   * @param params Domain mint params
+   */
   async mint(params: IActionDomainMint) {
     if (!this.domainValidator.validate(params.domain)) throw new Error('Domain validation failed')
     let normalizedParentDomain: string | undefined
@@ -28,6 +32,10 @@ export class DomainRepository {
     return await this.contractRepository.createTransaction(payload)
   }
 
+  /**
+   * Finds a domain by name
+   * @param domainName Domain name
+   */
   async find(domainName: string) {
     const struct = await this.contractRepository.getState()
     const domains = getPnsDomains(struct)

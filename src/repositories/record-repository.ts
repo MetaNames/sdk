@@ -11,6 +11,10 @@ export class RecordRepository {
     this.domain = domain
   }
 
+  /**
+   * Mint a record for a domain
+   * @param params Record params
+   */
   async mint(params: IRecord) {
     const contractAbi = await this.contractRepository.getContractAbi()
     const payload = actionRecordMintPayload(contractAbi, this.addDomainToParams(params))
@@ -18,6 +22,10 @@ export class RecordRepository {
     return await this.contractRepository.createTransaction(payload)
   }
 
+  /**
+   * Finds a record by class
+   * @param recordClass Record class
+   */
   async find(recordClass: RecordClassEnum) {
     const data = lookUpRecord(this.domain, recordClass)
     if (!data) return null
@@ -25,6 +33,10 @@ export class RecordRepository {
     return data
   }
 
+  /**
+   * Update a record for a domain
+   * @param params Record params
+   */
   async update(params: IRecord) {
     const contractAbi = await this.contractRepository.getContractAbi()
     const payload = actionRecordUpdatePayload(contractAbi, this.addDomainToParams(params))
@@ -32,6 +44,10 @@ export class RecordRepository {
     return await this.contractRepository.createTransaction(payload)
   }
 
+  /**
+   * Delete a record for a domain
+   * @param recordClass Record class
+   */
   async delete(recordClass: RecordClassEnum) {
     const contractAbi = await this.contractRepository.getContractAbi()
     const payload = actionRecordDeletePayload(contractAbi, this.addDomainToParams({ class: recordClass }))

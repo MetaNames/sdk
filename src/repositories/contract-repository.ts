@@ -21,6 +21,10 @@ export class ContractRepository implements IContractRepository {
     this.privateKey = privateKey
   }
 
+  /**
+   * Get the smart contract
+   * @param force Force to get the contract
+   */
   async getContract(force = false) {
     if (force || !this.contract) {
       const contract = await this.rpc.getContract(
@@ -37,6 +41,9 @@ export class ContractRepository implements IContractRepository {
     return this.contract
   }
 
+  /**
+   * Get the smart contract abi
+   */
   async getContractAbi(): Promise<ContractAbi> {
     if (!this.contract) {
       const contract = await this.getContract()
@@ -49,6 +56,9 @@ export class ContractRepository implements IContractRepository {
     return fileAbi.contract
   }
 
+  /**
+   * Get the Meta Names contract state
+   */
   async getState(): Promise<MetaNamesState> {
     const contract = await this.getContract(true)
 
@@ -63,6 +73,10 @@ export class ContractRepository implements IContractRepository {
     return struct
   }
 
+  /**
+   * Create a transaction
+   * @param payload Transaction payload
+   */
   async createTransaction(payload: Buffer): Promise<ITransactionResult> {
     if (!this.privateKey) throw new Error('Private key not found')
 
