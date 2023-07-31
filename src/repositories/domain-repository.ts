@@ -19,13 +19,17 @@ export class DomainRepository {
    */
   async mint(params: IActionDomainMint) {
     if (!this.domainValidator.validate(params.domain)) throw new Error('Domain validation failed')
+    let domainName = params.domain
+
     let normalizedParentDomain: string | undefined
     if (params.parent_domain) {
       if (!this.domainValidator.validate(params.parent_domain)) throw new Error('Domain validation failed')
+
+      if (!domainName.endsWith(params.parent_domain)) domainName = `${params.domain}.${params.parent_domain}`
       normalizedParentDomain = this.domainValidator.normalize(params.parent_domain)
     }
 
-    const normalizedDomain = this.domainValidator.normalize(params.domain)
+    const normalizedDomain = this.domainValidator.normalize(domainName)
     const contractAbi = await this.contractRepository.getContractAbi()
     const payload = actionDomainMintPayload(contractAbi, { ...params, domain: normalizedDomain, parent_domain: normalizedParentDomain })
 
