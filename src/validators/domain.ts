@@ -1,7 +1,7 @@
 import { toUnicode } from 'tr46'
 import { IValidatorInterface } from '../interface'
 
-export default class DomainValidator implements IValidatorInterface {
+export default class DomainValidator implements IValidatorInterface<string> {
   validate(name: string): boolean {
     if (!name) throw new Error('Domain name is required')
     if (typeof name !== 'string') throw new Error('Domain name is required')

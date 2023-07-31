@@ -72,7 +72,7 @@ export interface IContractRepository {
   getState(): Promise<MetaNamesState>
 }
 
-export interface IValidatorInterface {
-  normalize(value: string): string
-  validate(value: string): boolean
+export interface IValidatorInterface<T> {
+  normalize(value: T): T
+  validate(value: T): boolean
 }

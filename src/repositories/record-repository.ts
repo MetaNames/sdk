@@ -1,14 +1,17 @@
 import { actionRecordDeletePayload, actionRecordMintPayload, actionRecordUpdatePayload } from "../actions"
 import { IContractRepository, IDomain, IRecord, RecordClassEnum } from "../interface"
 import { lookUpRecord } from "../partisia-name-system"
+import RecordValidator from "../validators/record"
 
 export class RecordRepository {
   contractRepository: IContractRepository
   domain: IDomain
+  recordValidator: RecordValidator
 
   constructor(contractRepository: IContractRepository, domain: IDomain) {
     this.contractRepository = contractRepository
     this.domain = domain
+    this.recordValidator = new RecordValidator()
   }
 
   /**
@@ -16,6 +19,8 @@ export class RecordRepository {
    * @param params Record params
    */
   async mint(params: IRecord) {
+    if (!this.recordValidator.validate(params)) throw new Error('Record validation failed')
+
     const contractAbi = await this.contractRepository.getContractAbi()
     const payload = actionRecordMintPayload(contractAbi, this.addDomainToParams(params))
 
@@ -38,6 +43,8 @@ export class RecordRepository {
    * @param params Record params
    */
   async update(params: IRecord) {
+    if (!this.recordValidator.validate(params)) throw new Error('Record validation failed')
+
     const contractAbi = await this.contractRepository.getContractAbi()
     const payload = actionRecordUpdatePayload(contractAbi, this.addDomainToParams(params))
 
