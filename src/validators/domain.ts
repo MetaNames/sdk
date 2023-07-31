@@ -11,8 +11,11 @@ export default class DomainValidator implements IValidatorInterface {
   }
 
   normalize(name: string): string {
-    // For some reason the toUnicode returns an object instead of a string
+    // Remove .meta if it's there as it's redundant
+    if (name.endsWith('.meta')) name = name.slice(0, -5)
+
     const reversed = name.split('.').reverse().join('.')
+    // For some reason the toUnicode returns an object instead of a string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { domain, error } = toUnicode(reversed, { useSTD3ASCIIRules: true }) as any
 
