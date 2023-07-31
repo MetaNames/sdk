@@ -28,14 +28,14 @@ export class DomainRepository {
     return await this.contractRepository.createTransaction(payload)
   }
 
-  async find(domainName: string): Promise<Domain> {
+  async find(domainName: string) {
     const struct = await this.contractRepository.getState()
     const domains = getPnsDomains(struct)
 
     const normalizedDomain = this.domainValidator.normalize(domainName)
 
     const domain = lookUpDomain(domains, normalizedDomain)
-    if (!domain) throw new Error('Domain not found')
+    if (!domain) return null
 
     return new Domain(domain, this.contractRepository)
   }

@@ -1,17 +1,14 @@
 import { config, mintDomain } from '../helpers'
 
-const domain = 'name.meta'
+const domainName = 'name.meta'
 
 beforeAll(async () => {
-  try {
-    await config.metaNamesContract.domainRepository.find(domain)
-  } catch (e) {
-    await mintDomain(domain)
-  }
+  const domain = await config.metaNamesContract.domainRepository.find(domainName)
+  if (!domain) await mintDomain(domainName)
 }, 15_000)
 
 test('lookup domain', async () => {
-  const data = await config.metaNamesContract.domainRepository.find(domain)
+  const data = await config.metaNamesContract.domainRepository.find(domainName)
 
   expect(data).toBeDefined()
   expect(data).toHaveProperty('tokenId')

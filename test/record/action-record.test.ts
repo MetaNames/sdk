@@ -17,10 +17,13 @@ beforeAll(async () => {
 
 afterEach(async () => {
   const resultDelete = await (await config.metaNamesContract.domainRepository.find(domainName))
-  .recordRepository.delete( RecordClassEnum.Wallet)
+    ?.recordRepository.delete(RecordClassEnum.Wallet)
 
-  expect(resultDelete.isFinalOnChain).toBe(true)
-  expect(resultDelete.hasError).toBe(false)
+  expect(resultDelete).toBeDefined()
+  if (resultDelete) {
+    expect(resultDelete.isFinalOnChain).toBe(true)
+    expect(resultDelete.hasError).toBe(false)
+  }
 }, 10_000)
 
 
@@ -29,10 +32,13 @@ test('action record mint', async () => {
     class: RecordClassEnum.Wallet,
     data: config.address
   }
-  const resultMintRecord = await (await config.metaNamesContract.domainRepository.find(domainName)).recordRepository.mint(actionMintRecord)
+  const resultMintRecord = await (await config.metaNamesContract.domainRepository.find(domainName))?.recordRepository.mint(actionMintRecord)
 
-  expect(resultMintRecord.isFinalOnChain).toBe(true)
-  expect(resultMintRecord.hasError).toBe(false)
+  expect(resultMintRecord).toBeDefined()
+  if (resultMintRecord) {
+    expect(resultMintRecord.isFinalOnChain).toBe(true)
+    expect(resultMintRecord.hasError).toBe(false)
+  }
 }, 10_000)
 
 test('action record update', async () => {
@@ -40,17 +46,23 @@ test('action record update', async () => {
     class: RecordClassEnum.Wallet,
     data: config.address
   }
-  const resultMintRecord = await (await config.metaNamesContract.domainRepository.find(domainName)).recordRepository.mint(actionMintRecord)
+  const resultMintRecord = await (await config.metaNamesContract.domainRepository.find(domainName))?.recordRepository.mint(actionMintRecord)
 
-  expect(resultMintRecord.isFinalOnChain).toBe(true)
-  expect(resultMintRecord.hasError).toBe(false)
+  expect(resultMintRecord).toBeDefined()
+  if (resultMintRecord) {
+    expect(resultMintRecord.isFinalOnChain).toBe(true)
+    expect(resultMintRecord.hasError).toBe(false)
+  }
 
   const actionUpdateRecord: IRecord = {
     class: RecordClassEnum.Wallet,
     data: generateRandomString(40)
   }
-  const resultUpdateRecord = await (await config.metaNamesContract.domainRepository.find(domainName)).recordRepository.update(actionUpdateRecord)
+  const resultUpdateRecord = await (await config.metaNamesContract.domainRepository.find(domainName))?.recordRepository.update(actionUpdateRecord)
 
-  expect(resultUpdateRecord.isFinalOnChain).toBe(true)
-  expect(resultUpdateRecord.hasError).toBe(false)
+  expect(resultUpdateRecord).toBeDefined()
+  if (resultUpdateRecord) {
+    expect(resultUpdateRecord.isFinalOnChain).toBe(true)
+    expect(resultUpdateRecord.hasError).toBe(false)
+  }
 }, 15_000)

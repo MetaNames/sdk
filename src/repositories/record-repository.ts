@@ -20,7 +20,7 @@ export class RecordRepository {
 
   async find(recordClass: RecordClassEnum) {
     const data = lookUpRecord(this.domain, recordClass)
-    if (!data) throw new Error('Record not found')
+    if (!data) return null
 
     return data
   }
