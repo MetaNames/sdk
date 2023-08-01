@@ -28,6 +28,6 @@ export const mintRecord = async (domainName: string, recordClass: RecordClassEnu
     data,
   }
 
-  await (await config.metaNamesContract.domainRepository.find(domainName)).recordRepository.mint(actionMintRecord)
+  await (await config.metaNamesContract.domainRepository.find(domainName))?.recordRepository.mint(actionMintRecord)
 }
 
