@@ -1,4 +1,4 @@
-import { config, mintDomain } from '../helpers'
+import { config, generateRandomString, mintDomain } from '../helpers'
 
 const domainName = 'name.meta'
 
@@ -17,12 +17,13 @@ test('lookup domain', async () => {
 })
 
 test('mint domain with parent', async () => {
-  const domain = await config.metaNamesContract.domainRepository.find(domainName)
+  const randomName = generateRandomString(10)
+  const domain = await config.metaNamesContract.domainRepository.find(randomName)
 
   expect(domain).toBeDefined()
 
   const result = await config.metaNamesContract.domainRepository.mint({
-    domain: 'sub',
+    domain: randomName,
     to: config.address,
     parent_domain: 'name.meta'
   })
@@ -31,7 +32,8 @@ test('mint domain with parent', async () => {
   expect(result.hasError).toBeFalsy()
   expect(result.isFinalOnChain).toBeTruthy()
 
-  const subDomain = await config.metaNamesContract.domainRepository.find('sub.name.meta')
+  const expectedDomain = randomName + '.name.meta'
+  const subDomain = await config.metaNamesContract.domainRepository.find(expectedDomain)
 
   expect(subDomain).toBeDefined()
 }, 10_000)
