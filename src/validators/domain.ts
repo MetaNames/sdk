@@ -5,6 +5,7 @@ export default class DomainValidator implements IValidatorInterface<string> {
   validate(name: string): boolean {
     if (!name) throw new Error('Domain name is required')
     if (typeof name !== 'string') throw new Error('Domain name is required')
+    if (name.length < 1) throw new Error('Domain name is too short')
     if (name.length > 32) throw new Error('Domain name is too long')
 
     return true

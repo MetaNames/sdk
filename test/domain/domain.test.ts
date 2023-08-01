@@ -37,3 +37,20 @@ test('mint domain with parent', async () => {
 
   expect(subDomain).toBeDefined()
 }, 10_000)
+
+test('calculate mint fees', () => {
+  const feesTuples: [string, number][] = [
+    ['n', 200],
+    ['na', 150],
+    ['nam', 100],
+    ['name', 50],
+    ['names', 5],
+    ['verylongname', 5],
+  ]
+
+  feesTuples.forEach(([name, fee]) => {
+    const { amount, token } = config.metaNamesContract.domainRepository.calculateMintFees(name)
+    expect(amount).toEqual(fee)
+    expect(token).toEqual('usdc')
+  })
+})

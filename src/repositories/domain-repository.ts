@@ -37,6 +37,30 @@ export class DomainRepository {
   }
 
   /**
+   * Calculate mint fees for a domain.
+   * The function will throw an error if the domain name is invalid.
+   * @param domainName A valid domain name
+   * @returns
+   */
+  calculateMintFees(domainName: string) {
+    const length = domainName.length
+    if (!this.domainValidator.validate(domainName)) throw new Error('Invalid domain name')
+
+    const mintFees: { [key: number]: number } = {
+      1: 200,
+      2: 150,
+      3: 100,
+      4: 50,
+    }
+
+    const amount = mintFees[length] || 5
+    const token = 'usdc'
+
+    // TODO: Add token address
+    return { amount, token }
+  }
+
+  /**
    * Finds a domain by name
    * @param domainName Domain name
    */
