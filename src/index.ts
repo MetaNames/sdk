@@ -1,3 +1,3 @@
 export * from './contract'
-export * from './config'
+export * from './providers'
 export * from './interface'
