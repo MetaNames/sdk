@@ -1,5 +1,5 @@
 import { actionApproveMintFeesPayload, actionDomainMintPayload } from "../actions"
-import { IActionDomainMint, IMetaNamesContractRepository } from "../interface"
+import { IActionDomainMint, IContractRepository, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models/domain"
 import { getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { Config } from "../providers"
@@ -10,13 +10,31 @@ import DomainValidator from "../validators/domain"
  */
 export class DomainRepository {
   private config: Config
+  private contractRepository: IContractRepository
   private metaNamesContract: IMetaNamesContractRepository
   private domainValidator: DomainValidator
 
-  constructor(contractRepository: IMetaNamesContractRepository, config: Config) {
+  constructor(contractRepository: IContractRepository, metaNamesContractRepository: IMetaNamesContractRepository, config: Config) {
     this.config = config
-    this.metaNamesContract = contractRepository
+    this.contractRepository = contractRepository
+    this.metaNamesContract = metaNamesContractRepository
     this.domainValidator = new DomainValidator()
+  }
+
+  /**
+   * Create a transaction to approve the amount of fees required to mint a domain
+   * on the BYOC contract. To get the BYOC contract, please refer to `calculateMintFees` function
+   * The function will throw an error if the domain name is invalid.
+   * @param domainName A valid domain name
+   */
+  async approveMintFees(domainName: string, spenderAddress: Buffer) {
+    if (!this.domainValidator.validate(domainName)) throw new Error('Domain validation failed')
+
+    const normalizedDomain = this.domainValidator.normalize(domainName)
+    const { amount } = await this.calculateMintFees(normalizedDomain)
+    const payload = actionApproveMintFeesPayload({ address: spenderAddress, amount })
+
+    return this.contractRepository.createTransaction({ contractAddress: this.config.byoc.address, payload })
   }
 
   /**

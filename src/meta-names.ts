@@ -19,7 +19,7 @@ export class MetaNames {
     this.contractRepository = new ContractRepository(rpc)
     this.contract = new MetaNamesContractRepository(contractAddress, rpc)
 
-    this.domainRepository = new DomainRepository(this.contract, this.config)
+    this.domainRepository = new DomainRepository(this.contractRepository, this.contract, this.config)
   }
 
   setPrivateKey(privateKey?: string) {

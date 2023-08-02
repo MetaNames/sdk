@@ -43,7 +43,7 @@ export interface IActionRecordDelete {
 }
 
 export interface IActionApproveMintFees {
-  address: string
+  address: Buffer
   amount: number
 }
 
@@ -75,8 +75,8 @@ export type MetaNamesState = ScValueStruct
 
 export type ContractParams = {
   contractAddress: string
-  force: boolean
-  withState: boolean
+  force?: boolean
+  withState?: boolean
 }
 
 export type Contract = {
@@ -95,9 +95,7 @@ export interface IContractRepository {
   getContract(params?: ContractParams): Promise<Contract>
 }
 
-export interface IMetaNamesContractRepository {
-  createTransaction(params: TransactionParams): Promise<ITransactionResult>
-  getContract(params?: ContractParams): Promise<Contract>
+export interface IMetaNamesContractRepository extends IContractRepository {
   getState(): Promise<MetaNamesState>
 }
 
