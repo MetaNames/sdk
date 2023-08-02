@@ -1,3 +1,3 @@
-export * from './contract'
+export * from './meta-names'
 export * from './interface'
 export * from './providers'

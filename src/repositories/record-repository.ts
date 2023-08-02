@@ -1,14 +1,17 @@
 import { actionRecordDeletePayload, actionRecordMintPayload, actionRecordUpdatePayload } from "../actions"
-import { IContractRepository, IDomain, IRecord, RecordClassEnum } from "../interface"
+import { IMetaNamesContractRepository, IDomain, IRecord, RecordClassEnum } from "../interface"
 import { lookUpRecord } from "../partisia-name-system"
 import RecordValidator from "../validators/record"
 
+/**
+ * Repository to interact with records of a domain on the Meta Names contract
+ */
 export class RecordRepository {
-  contractRepository: IContractRepository
+  contractRepository: IMetaNamesContractRepository
   domain: IDomain
   recordValidator: RecordValidator
 
-  constructor(contractRepository: IContractRepository, domain: IDomain) {
+  constructor(contractRepository: IMetaNamesContractRepository, domain: IDomain) {
     this.contractRepository = contractRepository
     this.domain = domain
     this.recordValidator = new RecordValidator()
@@ -21,10 +24,10 @@ export class RecordRepository {
   async mint(params: IRecord) {
     if (!this.recordValidator.validate(params)) throw new Error('Record validation failed')
 
-    const contractAbi = await this.contractRepository.getContractAbi()
-    const payload = actionRecordMintPayload(contractAbi, this.addDomainToParams(params))
+    const contract = await this.contractRepository.getContract()
+    const payload = actionRecordMintPayload(contract.abi, this.addDomainToParams(params))
 
-    return await this.contractRepository.createTransaction(payload)
+    return this.contractRepository.createTransaction({ payload })
   }
 
   /**
@@ -45,10 +48,10 @@ export class RecordRepository {
   async update(params: IRecord) {
     if (!this.recordValidator.validate(params)) throw new Error('Record validation failed')
 
-    const contractAbi = await this.contractRepository.getContractAbi()
-    const payload = actionRecordUpdatePayload(contractAbi, this.addDomainToParams(params))
+    const contract = await this.contractRepository.getContract()
+    const payload = actionRecordUpdatePayload(contract.abi, this.addDomainToParams(params))
 
-    return await this.contractRepository.createTransaction(payload)
+    return this.contractRepository.createTransaction({ payload })
   }
 
   /**
@@ -56,10 +59,10 @@ export class RecordRepository {
    * @param recordClass Record class
    */
   async delete(recordClass: RecordClassEnum) {
-    const contractAbi = await this.contractRepository.getContractAbi()
-    const payload = actionRecordDeletePayload(contractAbi, this.addDomainToParams({ class: recordClass }))
+    const contract = await this.contractRepository.getContract()
+    const payload = actionRecordDeletePayload(contract.abi, this.addDomainToParams({ class: recordClass }))
 
-    return await this.contractRepository.createTransaction(payload)
+    return this.contractRepository.createTransaction({ payload })
   }
 
   private addDomainToParams<T>(params: T) {

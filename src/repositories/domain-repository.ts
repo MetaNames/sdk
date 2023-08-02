@@ -1,18 +1,21 @@
-import { actionDomainMintPayload } from "../actions"
-import { IActionDomainMint, IContractRepository } from "../interface"
+import { actionApproveMintFeesPayload, actionDomainMintPayload } from "../actions"
+import { IActionDomainMint, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models/domain"
 import { getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { Config } from "../providers"
 import DomainValidator from "../validators/domain"
 
+/**
+ * Repository to interact with domains on the Meta Names contract
+ */
 export class DomainRepository {
   private config: Config
-  private contractRepository: IContractRepository
+  private metaNamesContract: IMetaNamesContractRepository
   private domainValidator: DomainValidator
 
-  constructor(contractRepository: IContractRepository, config: Config) {
+  constructor(contractRepository: IMetaNamesContractRepository, config: Config) {
     this.config = config
-    this.contractRepository = contractRepository
+    this.metaNamesContract = contractRepository
     this.domainValidator = new DomainValidator()
   }
 
@@ -26,17 +29,17 @@ export class DomainRepository {
 
     let normalizedParentDomain: string | undefined
     if (params.parent_domain) {
-      if (!this.domainValidator.validate(params.parent_domain)) throw new Error('Domain validation failed')
+      if (!this.domainValidator.validate(params.parent_domain)) throw new Error('Parent domain validation failed')
 
       if (!domainName.endsWith(params.parent_domain)) domainName = `${params.domain}.${params.parent_domain}`
       normalizedParentDomain = this.domainValidator.normalize(params.parent_domain)
     }
 
     const normalizedDomain = this.domainValidator.normalize(domainName)
-    const contractAbi = await this.contractRepository.getContractAbi()
-    const payload = actionDomainMintPayload(contractAbi, { ...params, domain: normalizedDomain, parent_domain: normalizedParentDomain })
+    const contract = await this.metaNamesContract.getContract()
+    const payload = actionDomainMintPayload(contract.abi, { ...params, domain: normalizedDomain, parent_domain: normalizedParentDomain })
 
-    return await this.contractRepository.createTransaction(payload)
+    return this.metaNamesContract.createTransaction({ payload })
   }
 
   /**
@@ -66,7 +69,7 @@ export class DomainRepository {
    * @param domainName Domain name
    */
   async find(domainName: string) {
-    const struct = await this.contractRepository.getState()
+    const struct = await this.metaNamesContract.getState()
     const domains = getPnsDomains(struct)
 
     const normalizedDomain = this.domainValidator.normalize(domainName)
@@ -74,6 +77,6 @@ export class DomainRepository {
     const domain = lookUpDomain(domains, normalizedDomain)
     if (!domain) return null
 
-    return new Domain(domain, this.contractRepository)
+    return new Domain(domain, this.metaNamesContract)
   }
 }

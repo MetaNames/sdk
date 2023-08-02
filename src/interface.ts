@@ -1,4 +1,6 @@
 import { ContractAbi, ScValueStruct } from "@partisiablockchain/abi-client-ts"
+import { IContractInfo } from "partisia-rpc/lib/main/accountInfo"
+import { IContractZk } from "partisia-rpc/lib/main/interface-zk"
 
 // TODO: Reorganize this file
 
@@ -40,6 +42,11 @@ export interface IActionRecordDelete {
   class: RecordClassEnum
 }
 
+export interface IActionApproveMintFees {
+  address: string
+  amount: number
+}
+
 export interface IActionDomainMint {
   domain: string
   to: Buffer
@@ -66,9 +73,31 @@ export interface ITransactionResult {
 
 export type MetaNamesState = ScValueStruct
 
+export type ContractParams = {
+  contractAddress: string
+  force: boolean
+  withState: boolean
+}
+
+export type Contract = {
+  shard_id: number
+  data: IContractInfo | IContractZk
+  abi: ContractAbi
+}
+
+export type TransactionParams = {
+  contractAddress?: string
+  payload: Buffer
+}
+
 export interface IContractRepository {
-  createTransaction(payload: Buffer): Promise<ITransactionResult>
-  getContractAbi(): Promise<ContractAbi>
+  createTransaction(params: TransactionParams): Promise<ITransactionResult>
+  getContract(params?: ContractParams): Promise<Contract>
+}
+
+export interface IMetaNamesContractRepository {
+  createTransaction(params: TransactionParams): Promise<ITransactionResult>
+  getContract(params?: ContractParams): Promise<Contract>
   getState(): Promise<MetaNamesState>
 }
 

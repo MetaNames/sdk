@@ -10,13 +10,13 @@ beforeAll(async () => {
     token_uri: undefined,
     parent_domain: undefined,
   }
-  const resultMint = await config.metaNamesContract.domainRepository.mint(randomActionMint)
+  const resultMint = await config.metaNames.domainRepository.mint(randomActionMint)
   expect(resultMint.isFinalOnChain).toBe(true)
   expect(resultMint.hasError).toBe(false)
 }, 10_000)
 
 afterEach(async () => {
-  const resultDelete = await (await config.metaNamesContract.domainRepository.find(domainName))
+  const resultDelete = await (await config.metaNames.domainRepository.find(domainName))
     ?.recordRepository.delete(RecordClassEnum.Wallet)
 
   expect(resultDelete).toBeDefined()
@@ -32,7 +32,7 @@ test('action record mint', async () => {
     class: RecordClassEnum.Wallet,
     data: config.address
   }
-  const resultMintRecord = await (await config.metaNamesContract.domainRepository.find(domainName))?.recordRepository.mint(actionMintRecord)
+  const resultMintRecord = await (await config.metaNames.domainRepository.find(domainName))?.recordRepository.mint(actionMintRecord)
 
   expect(resultMintRecord).toBeDefined()
   if (resultMintRecord) {
@@ -46,7 +46,7 @@ test('action record update', async () => {
     class: RecordClassEnum.Wallet,
     data: config.address
   }
-  const resultMintRecord = await (await config.metaNamesContract.domainRepository.find(domainName))?.recordRepository.mint(actionMintRecord)
+  const resultMintRecord = await (await config.metaNames.domainRepository.find(domainName))?.recordRepository.mint(actionMintRecord)
 
   expect(resultMintRecord).toBeDefined()
   if (resultMintRecord) {
@@ -58,7 +58,7 @@ test('action record update', async () => {
     class: RecordClassEnum.Wallet,
     data: generateRandomString(40)
   }
-  const resultUpdateRecord = await (await config.metaNamesContract.domainRepository.find(domainName))?.recordRepository.update(actionUpdateRecord)
+  const resultUpdateRecord = await (await config.metaNames.domainRepository.find(domainName))?.recordRepository.update(actionUpdateRecord)
 
   expect(resultUpdateRecord).toBeDefined()
   if (resultUpdateRecord) {
