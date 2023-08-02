@@ -2,13 +2,16 @@ import { actionDomainMintPayload } from "../actions"
 import { IActionDomainMint, IContractRepository } from "../interface"
 import { Domain } from "../models/domain"
 import { getPnsDomains, lookUpDomain } from "../partisia-name-system"
+import { Config } from "../providers"
 import DomainValidator from "../validators/domain"
 
 export class DomainRepository {
-  contractRepository: IContractRepository
-  domainValidator: DomainValidator
+  private config: Config
+  private contractRepository: IContractRepository
+  private domainValidator: DomainValidator
 
-  constructor(contractRepository: IContractRepository) {
+  constructor(contractRepository: IContractRepository, config: Config) {
+    this.config = config
     this.contractRepository = contractRepository
     this.domainValidator = new DomainValidator()
   }
@@ -40,10 +43,8 @@ export class DomainRepository {
    * Calculate mint fees for a domain.
    * The function will throw an error if the domain name is invalid.
    * @param domainName A valid domain name
-   * @returns
    */
   calculateMintFees(domainName: string) {
-    const length = domainName.length
     if (!this.domainValidator.validate(domainName)) throw new Error('Invalid domain name')
 
     const mintFees: { [key: number]: number } = {
@@ -53,11 +54,11 @@ export class DomainRepository {
       4: 50,
     }
 
-    const amount = mintFees[length] || 5
-    const token = 'usdc'
+    const amount = mintFees[domainName.length] || 5
+    const token = this.config.byoc.token
+    const address = this.config.byoc.address
 
-    // TODO: Add token address
-    return { amount, token }
+    return { amount, token, address }
   }
 
   /**

@@ -49,8 +49,11 @@ test('calculate mint fees', () => {
   ]
 
   feesTuples.forEach(([name, fee]) => {
-    const { amount, token } = config.metaNamesContract.domainRepository.calculateMintFees(name)
+    const { token: expectedToken, address: expectedAddress } = config.metaNamesContract.config.byoc
+    const { amount, token, address } = config.metaNamesContract.domainRepository.calculateMintFees(name)
+
     expect(amount).toEqual(fee)
-    expect(token).toEqual('usdc')
+    expect(token).toEqual(expectedToken)
+    expect(address).toEqual(expectedAddress)
   })
 })
