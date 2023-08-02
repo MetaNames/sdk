@@ -3,12 +3,12 @@ import { config, generateRandomString, mintDomain } from '../helpers'
 const domainName = 'name.meta'
 
 beforeAll(async () => {
-  const domain = await config.metaNamesContract.domainRepository.find(domainName)
+  const domain = await config.metaNames.domainRepository.find(domainName)
   if (!domain) await mintDomain(domainName)
 }, 15_000)
 
 test('lookup domain', async () => {
-  const data = await config.metaNamesContract.domainRepository.find(domainName)
+  const data = await config.metaNames.domainRepository.find(domainName)
 
   expect(data).toBeDefined()
   expect(data).toHaveProperty('tokenId')
@@ -18,11 +18,11 @@ test('lookup domain', async () => {
 
 test('mint domain with parent', async () => {
   const randomName = generateRandomString(10)
-  const domain = await config.metaNamesContract.domainRepository.find(randomName)
+  const domain = await config.metaNames.domainRepository.find(randomName)
 
   expect(domain).toBeDefined()
 
-  const result = await config.metaNamesContract.domainRepository.mint({
+  const result = await config.metaNames.domainRepository.mint({
     domain: randomName,
     to: config.address,
     parent_domain: 'name.meta'
@@ -33,7 +33,7 @@ test('mint domain with parent', async () => {
   expect(result.isFinalOnChain).toBeTruthy()
 
   const expectedDomain = randomName + '.name.meta'
-  const subDomain = await config.metaNamesContract.domainRepository.find(expectedDomain)
+  const subDomain = await config.metaNames.domainRepository.find(expectedDomain)
 
   expect(subDomain).toBeDefined()
 }, 10_000)
@@ -49,8 +49,11 @@ test('calculate mint fees', () => {
   ]
 
   feesTuples.forEach(([name, fee]) => {
-    const { amount, token } = config.metaNamesContract.domainRepository.calculateMintFees(name)
+    const { token: expectedToken, address: expectedAddress } = config.metaNames.config.byoc
+    const { amount, token, address } = config.metaNames.domainRepository.calculateMintFees(name)
+
     expect(amount).toEqual(fee)
-    expect(token).toEqual('usdc')
+    expect(token).toEqual(expectedToken)
+    expect(address).toEqual(expectedAddress)
   })
 })

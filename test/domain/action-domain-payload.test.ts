@@ -13,8 +13,8 @@ test('payload for action domain mint', async () => {
     token_uri: undefined,
     parent_domain: undefined,
   }
-  const contractAbi = await config.metaNamesContract.contractRepository.getContractAbi()
-  const data = actionDomainMintPayload(contractAbi, params)
+  const contract = await config.metaNames.contract.getContract()
+  const data = actionDomainMintPayload(contract.abi, params)
 
   expect(data.toString('hex')).toBe(expectedHex)
 })

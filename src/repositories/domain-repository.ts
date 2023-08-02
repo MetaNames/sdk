@@ -1,16 +1,40 @@
-import { actionDomainMintPayload } from "../actions"
-import { IActionDomainMint, IContractRepository } from "../interface"
+import { actionApproveMintFeesPayload, actionDomainMintPayload } from "../actions"
+import { IActionDomainMint, IContractRepository, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models/domain"
 import { getPnsDomains, lookUpDomain } from "../partisia-name-system"
+import { Config } from "../providers"
 import DomainValidator from "../validators/domain"
 
+/**
+ * Repository to interact with domains on the Meta Names contract
+ */
 export class DomainRepository {
-  contractRepository: IContractRepository
-  domainValidator: DomainValidator
+  private config: Config
+  private contractRepository: IContractRepository
+  private metaNamesContract: IMetaNamesContractRepository
+  private domainValidator: DomainValidator
 
-  constructor(contractRepository: IContractRepository) {
+  constructor(contractRepository: IContractRepository, metaNamesContractRepository: IMetaNamesContractRepository, config: Config) {
+    this.config = config
     this.contractRepository = contractRepository
+    this.metaNamesContract = metaNamesContractRepository
     this.domainValidator = new DomainValidator()
+  }
+
+  /**
+   * Create a transaction to approve the amount of fees required to mint a domain
+   * on the BYOC contract. To get the BYOC contract, please refer to `calculateMintFees` function
+   * The function will throw an error if the domain name is invalid.
+   * @param domainName A valid domain name
+   */
+  async approveMintFees(domainName: string, spenderAddress: Buffer) {
+    if (!this.domainValidator.validate(domainName)) throw new Error('Domain validation failed')
+
+    const normalizedDomain = this.domainValidator.normalize(domainName)
+    const { amount } = await this.calculateMintFees(normalizedDomain)
+    const payload = actionApproveMintFeesPayload({ address: spenderAddress, amount })
+
+    return this.contractRepository.createTransaction({ contractAddress: this.config.byoc.address, payload })
   }
 
   /**
@@ -23,27 +47,25 @@ export class DomainRepository {
 
     let normalizedParentDomain: string | undefined
     if (params.parent_domain) {
-      if (!this.domainValidator.validate(params.parent_domain)) throw new Error('Domain validation failed')
+      if (!this.domainValidator.validate(params.parent_domain)) throw new Error('Parent domain validation failed')
 
       if (!domainName.endsWith(params.parent_domain)) domainName = `${params.domain}.${params.parent_domain}`
       normalizedParentDomain = this.domainValidator.normalize(params.parent_domain)
     }
 
     const normalizedDomain = this.domainValidator.normalize(domainName)
-    const contractAbi = await this.contractRepository.getContractAbi()
-    const payload = actionDomainMintPayload(contractAbi, { ...params, domain: normalizedDomain, parent_domain: normalizedParentDomain })
+    const contract = await this.metaNamesContract.getContract()
+    const payload = actionDomainMintPayload(contract.abi, { ...params, domain: normalizedDomain, parent_domain: normalizedParentDomain })
 
-    return await this.contractRepository.createTransaction(payload)
+    return this.metaNamesContract.createTransaction({ payload })
   }
 
   /**
    * Calculate mint fees for a domain.
    * The function will throw an error if the domain name is invalid.
    * @param domainName A valid domain name
-   * @returns
    */
   calculateMintFees(domainName: string) {
-    const length = domainName.length
     if (!this.domainValidator.validate(domainName)) throw new Error('Invalid domain name')
 
     const mintFees: { [key: number]: number } = {
@@ -53,11 +75,11 @@ export class DomainRepository {
       4: 50,
     }
 
-    const amount = mintFees[length] || 5
-    const token = 'usdc'
+    const amount = mintFees[domainName.length] || 5
+    const token = this.config.byoc.token
+    const address = this.config.byoc.address
 
-    // TODO: Add token address
-    return { amount, token }
+    return { amount, token, address }
   }
 
   /**
@@ -65,7 +87,7 @@ export class DomainRepository {
    * @param domainName Domain name
    */
   async find(domainName: string) {
-    const struct = await this.contractRepository.getState()
+    const struct = await this.metaNamesContract.getState()
     const domains = getPnsDomains(struct)
 
     const normalizedDomain = this.domainValidator.normalize(domainName)
@@ -73,6 +95,6 @@ export class DomainRepository {
     const domain = lookUpDomain(domains, normalizedDomain)
     if (!domain) return null
 
-    return new Domain(domain, this.contractRepository)
+    return new Domain(domain, this.metaNamesContract)
   }
 }
