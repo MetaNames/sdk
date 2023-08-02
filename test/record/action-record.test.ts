@@ -1,7 +1,10 @@
 import { IActionDomainMint, IRecord, RecordClassEnum } from '../../src/interface'
+import { Domain } from '../../src/models/domain'
 import { config, generateRandomString } from '../helpers'
 
 const domainName = `${generateRandomString(15)}.meta`
+
+let domain: Domain
 
 beforeAll(async () => {
   const randomActionMint: IActionDomainMint = {
@@ -13,11 +16,12 @@ beforeAll(async () => {
   const resultMint = await config.metaNames.domainRepository.mint(randomActionMint)
   expect(resultMint.isFinalOnChain).toBe(true)
   expect(resultMint.hasError).toBe(false)
+
+  domain = await config.metaNames.domainRepository.find(domainName) as Domain
 }, 10_000)
 
 afterEach(async () => {
-  const resultDelete = await (await config.metaNames.domainRepository.find(domainName))
-    ?.recordRepository.delete(RecordClassEnum.Wallet)
+  const resultDelete = await domain.recordRepository.delete(RecordClassEnum.Wallet)
 
   expect(resultDelete).toBeDefined()
   if (resultDelete) {
@@ -32,7 +36,7 @@ test('action record mint', async () => {
     class: RecordClassEnum.Wallet,
     data: config.address
   }
-  const resultMintRecord = await (await config.metaNames.domainRepository.find(domainName))?.recordRepository.mint(actionMintRecord)
+  const resultMintRecord = await domain.recordRepository.mint(actionMintRecord)
 
   expect(resultMintRecord).toBeDefined()
   if (resultMintRecord) {
@@ -46,7 +50,7 @@ test('action record update', async () => {
     class: RecordClassEnum.Wallet,
     data: config.address
   }
-  const resultMintRecord = await (await config.metaNames.domainRepository.find(domainName))?.recordRepository.mint(actionMintRecord)
+  const resultMintRecord = await domain.recordRepository.mint(actionMintRecord)
 
   expect(resultMintRecord).toBeDefined()
   if (resultMintRecord) {
@@ -58,7 +62,7 @@ test('action record update', async () => {
     class: RecordClassEnum.Wallet,
     data: generateRandomString(40)
   }
-  const resultUpdateRecord = await (await config.metaNames.domainRepository.find(domainName))?.recordRepository.update(actionUpdateRecord)
+  const resultUpdateRecord = await domain.recordRepository.update(actionUpdateRecord)
 
   expect(resultUpdateRecord).toBeDefined()
   if (resultUpdateRecord) {
