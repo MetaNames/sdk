@@ -68,7 +68,7 @@ export class DomainRepository {
   calculateMintFees(domainName: string) {
     if (!this.domainValidator.validate(domainName)) throw new Error('Invalid domain name')
 
-    const mintFees: { [key: number]: number } = {
+    const mintFees: Record<number, number> = {
       1: 200,
       2: 150,
       3: 100,

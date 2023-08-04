@@ -1,6 +1,6 @@
 import { testNetConfig } from "./config/testnet"
 
-export type Config = {
+export interface Config {
   rpcConfig: {
     urlBaseGlobal: { url: string, shard_id: number },
     urlBaseShards: { url: string, shard_id: number }[],
@@ -12,7 +12,9 @@ export type Config = {
 }
 
 export enum Enviroment {
+  // eslint-disable-next-line no-unused-vars
   testnet = 'testnet',
+  // eslint-disable-next-line no-unused-vars
   mainnet = 'mainnet',
 }
 

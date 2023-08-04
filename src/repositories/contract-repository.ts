@@ -5,9 +5,7 @@ import { createTransaction } from '../actions'
 import { Contract, ContractParams, IContractRepository, ITransactionResult, TransactionParams } from '../interface'
 
 
-type ContractRegistry = {
-  [address: string]: Contract
-}
+type ContractRegistry = Map<string, Contract>;
 
 /**
  * Contract repository to interact with smart contracts on Partisia
@@ -19,7 +17,7 @@ export class ContractRepository implements IContractRepository {
 
 
   constructor(rpc: IPartisiaRpcConfig) {
-    this.contractRegistry = {}
+    this.contractRegistry = new Map()
     this.rpc = PartisiaAccount(rpc)
   }
 
@@ -65,7 +63,7 @@ export class ContractRepository implements IContractRepository {
   }
 
   private async getContractFromRegistry({ contractAddress, force, withState }: ContractParams): Promise<Contract | undefined> {
-    let contract = this.contractRegistry[contractAddress]
+    let contract = this.contractRegistry.get(contractAddress)
     // Return contract if it was found and:
     // the retrival wasn't forced
     // or if the state is requested, then require the state to be present
@@ -87,7 +85,7 @@ export class ContractRepository implements IContractRepository {
       ...rawContract
     }
 
-    this.contractRegistry[contractAddress] = contract
+    this.contractRegistry.set(contractAddress, contract)
 
     return contract
   }

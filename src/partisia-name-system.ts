@@ -18,7 +18,7 @@ export function lookUpDomain(domains: ScValueMap, domainName: string): IDomain |
   const domain = domains.get(scNameString)?.structValue()
   if (!domain) return
 
-  const fieldsMap = domain?.fieldsMap
+  const fieldsMap = domain.fieldsMap
   const scRecords = fieldsMap.get('records')?.mapValue().map
 
   const tokenId = (fieldsMap.get('token_id') as ScValueNumber).number

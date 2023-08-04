@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 import { ContractAbi, ScValueStruct } from "@partisiablockchain/abi-client-ts"
 import { IContractInfo } from "partisia-rpc/lib/main/accountInfo"
 import { IContractZk } from "partisia-rpc/lib/main/interface-zk"
@@ -73,19 +75,19 @@ export interface ITransactionResult {
 
 export type MetaNamesState = ScValueStruct
 
-export type ContractParams = {
+export interface ContractParams {
   contractAddress: string
   force?: boolean
   withState?: boolean
 }
 
-export type Contract = {
+export interface Contract {
   shard_id: number
   data: IContractInfo | IContractZk
   abi: ContractAbi
 }
 
-export type TransactionParams = {
+export interface TransactionParams {
   contractAddress?: string
   payload: Buffer
 }
