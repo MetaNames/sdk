@@ -12,6 +12,36 @@ export function getPnsDomains(contract: ScValueStruct): ScValueMap {
   return domains.mapValue()
 }
 
+export function getNftOwners(contract: ScValueStruct): ScValueMap {
+  const nfts = contract.fieldsMap.get('nft')
+  if (!nfts) throw new Error('Nft key not found')
+
+  const nftStruct = nfts.structValue()
+  const owners = nftStruct.fieldsMap.get('owners')
+  if (!owners) throw new Error('Owners key not found')
+
+  return owners.mapValue()
+}
+
+
+export function getDomainNamesByOwner(domains: ScValueMap, owners: ScValueMap, ownerAddress: Buffer): string[] {
+  const nftIds: number[] = []
+  owners.map.forEach((address, nftId) => {
+    if (address.addressValue().value.equals(ownerAddress)) nftIds.push(nftId.asBN().toNumber())
+  })
+  if (!nftIds.length) return []
+
+  const domainNames: string[] = []
+  domains.map.forEach((domain, name) => {
+    const tokenId = domain.structValue().fieldsMap.get('token_id')?.asBN().toNumber()
+    if (!tokenId || !nftIds.includes(tokenId)) return
+
+    domainNames.push(name.stringValue())
+  })
+
+  return domainNames
+}
+
 export function lookUpDomain(domains: ScValueMap, domainName: string): IDomain | undefined {
   const scNameString = new ScValueString(domainName)
 

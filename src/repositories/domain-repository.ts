@@ -1,7 +1,7 @@
 import { actionApproveMintFeesPayload, actionDomainMintPayload } from "../actions"
 import { IActionDomainMint, IContractRepository, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models/domain"
-import { getPnsDomains, lookUpDomain } from "../partisia-name-system"
+import { getDomainNamesByOwner, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { Config } from "../providers"
 import DomainValidator from "../validators/domain"
 
@@ -96,5 +96,21 @@ export class DomainRepository {
     if (!domain) return null
 
     return new Domain(domain, this.metaNamesContract)
+  }
+
+  /**
+   * Finds domains by owner address
+   * @param ownerAddress Owner address
+   */
+  async findByOwner(ownerAddress: Buffer) {
+    const struct = await this.metaNamesContract.getState()
+    const domains = getPnsDomains(struct)
+    const nftOwners = getNftOwners(struct)
+
+    const domainNames = getDomainNamesByOwner(domains, nftOwners, ownerAddress)
+
+    const domainsObjects = domainNames.map((domainName) => lookUpDomain(domains, domainName))
+
+    return domainsObjects
   }
 }
