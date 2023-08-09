@@ -1,6 +1,6 @@
 import { BN, ContractAbi, FnRpcBuilder } from '@partisiablockchain/abi-client-ts'
-import { IActionApproveMintFees, IActionDomainMint } from '../interface'
 import { builderToBytesBe } from '../actions'
+import { IActionApproveMintFees, IActionDomainMint } from '../interface'
 
 
 export const actionDomainMintPayload = (contractAbi: ContractAbi, params: IActionDomainMint): Buffer => {
@@ -18,13 +18,16 @@ export const actionDomainMintPayload = (contractAbi: ContractAbi, params: IActio
   return builderToBytesBe(rpc)
 }
 
-export const actionApproveMintFeesPayload = (params: IActionApproveMintFees): Buffer => {
-  const rpc = new FnRpcBuilder(Buffer.from('05', 'hex'))
-  const spender = params.address
-  const amount = new BN(params.amount)
+export const actionApproveMintFeesPayload = (contractAbi: ContractAbi, params: IActionApproveMintFees): Buffer => {
+  const rpc = new FnRpcBuilder('approve', contractAbi)
 
+  const spender = params.address
   rpc.addAddress(spender)
-  rpc.addU128(amount)
+
+  const amount = new BN(params.amount)
+  rpc.addStruct()
+    .addSizedByteArray(amount.toArrayLike(Buffer, 'be', 16))
+
 
   return builderToBytesBe(rpc)
 }

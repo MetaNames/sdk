@@ -32,7 +32,8 @@ export class DomainRepository {
 
     const normalizedDomain = this.domainValidator.normalize(domainName)
     const { amount } = await this.calculateMintFees(normalizedDomain)
-    const payload = actionApproveMintFeesPayload({ address: spenderAddress, amount })
+    const contract = await this.contractRepository.getContract({ contractAddress: this.config.byoc.address })
+    const payload = actionApproveMintFeesPayload(contract.abi, { address: spenderAddress, amount })
 
     return this.contractRepository.createTransaction({ contractAddress: this.config.byoc.address, payload })
   }
