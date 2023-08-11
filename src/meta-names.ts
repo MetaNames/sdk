@@ -1,4 +1,3 @@
-import { IPartisiaRpcConfig } from 'partisia-rpc/lib/main/accountInfo'
 import { ContractRepository } from './repositories/contract-repository'
 import { DomainRepository } from './repositories/domain-repository'
 import { Config, ConfigProvider, Enviroment } from './providers'
@@ -13,11 +12,11 @@ export class MetaNames {
   contractRepository: ContractRepository
   domainRepository: DomainRepository
 
-  constructor(contractAddress: string, rpc: IPartisiaRpcConfig, environment: Enviroment = Enviroment.testnet) {
-    this.config = new ConfigProvider(environment).resolve()
+  constructor(environment: Enviroment = Enviroment.testnet, overrideConfig?: Config) {
+    this.config = overrideConfig ?? new ConfigProvider(environment).resolve()
 
-    this.contractRepository = new ContractRepository(rpc)
-    this.contract = new MetaNamesContractRepository(contractAddress, rpc)
+    this.contractRepository = new ContractRepository(this.config.rpcConfig)
+    this.contract = new MetaNamesContractRepository(this.config.contractAddress, this.config.rpcConfig)
 
     this.domainRepository = new DomainRepository(this.contractRepository, this.contract, this.config)
   }

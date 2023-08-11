@@ -1,6 +1,7 @@
 import { testNetConfig } from "./config/testnet"
 
 export interface Config {
+  contractAddress: string,
   rpcConfig: {
     urlBaseGlobal: { url: string, shard_id: number },
     urlBaseShards: { url: string, shard_id: number }[],
