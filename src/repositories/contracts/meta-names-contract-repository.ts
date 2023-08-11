@@ -1,4 +1,4 @@
-import { IPartisiaRpcConfig } from "partisia-rpc/lib/main/accountInfo"
+import { IPartisiaRpcConfig } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
 import { ContractRepository } from "../contract-repository"
 import { Contract, ContractParams, IMetaNamesContractRepository, ITransactionResult, MetaNamesState, TransactionParams } from "../../interface"
 

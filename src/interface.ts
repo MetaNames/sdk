@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 
 import { ContractAbi, ScValueStruct } from "@partisiablockchain/abi-client-ts"
-import { IContractInfo } from "partisia-rpc/lib/main/accountInfo"
-import { IContractZk } from "partisia-rpc/lib/main/interface-zk"
+import { IContractInfo } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
+import { IContractZk } from "partisia-blockchain-applications-rpc/lib/main/interface-zk"
 
 // TODO: Reorganize this file
 
