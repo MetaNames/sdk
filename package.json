@@ -23,7 +23,7 @@
     "@partisiablockchain/abi-client-ts": "^3.13.0",
     "@secata-public/bitmanipulation-ts": "^3.0.2",
     "dotenv": "^16.0.3",
-    "partisia-rpc": "^1.0.9",
+    "partisia-blockchain-applications-rpc": "^1.0.10",
     "partisia-sdk": "^0.1.1",
     "tr46": "^4.1.1"
   },

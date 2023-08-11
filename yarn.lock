@@ -3552,6 +3552,13 @@ parse5@^7.0.0, parse5@^7.1.1:
   dependencies:
     entities "^4.4.0"
 
+partisia-blockchain-applications-rpc@^1.0.10:
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/partisia-blockchain-applications-rpc/-/partisia-blockchain-applications-rpc-1.0.10.tgz#af00e75e6f489b8d2a618932df9c77b13cf39335"
+  integrity sha512-oXFO6N3vw13Rvi/G+nAn/+g1RSLnTkw/sF010e+6Wfxt8XjTdmMtIKYIFj2Qttp/3lcC5IRLHfEioLTtXP/9qw==
+  dependencies:
+    axios "^0.21.1"
+
 partisia-crypto@^1.0.2:
   version "1.0.17"
   resolved "https://registry.yarnpkg.com/partisia-crypto/-/partisia-crypto-1.0.17.tgz#8014cd5ce9baee698be687f5fd85b1a23db2e1d1"
