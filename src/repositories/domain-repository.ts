@@ -114,32 +114,4 @@ export class DomainRepository {
 
     return domainsObjects
   }
-
-  /**
-   * Normalize domain name
-   * @param domainName Domain name
-   * @param options Normalization options
-   * @returns Normalized domain name
-   */
-  normalize(domainName: string, options?: INormalizeOptions) {
-    return this.domainValidator.normalize(domainName, options)
-  }
-
-  /**
-   * Validate domain name
-   * @param domainName Domain name
-   * @param options Validation options
-   * @returns True if the domain name is valid
-   */
-  validate(domainName: string, options?: IValidatorOptions) {
-    return this.domainValidator.validate(domainName, options)
-  }
-
-  /**
-   * Get validator errors
-   * @returns Validator errors
-   */
-  get validatorErrors() {
-    return this.domainValidator.errors
-  }
 }

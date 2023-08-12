@@ -65,35 +65,6 @@ export class RecordRepository {
     return this.contractRepository.createTransaction({ payload })
   }
 
-  /**
-   * Normalize record
-   * @param record Record
-   * @param options Normalization options
-   * @returns Normalized record
-   */
-  normalize(record: IRecord, options?: IValidatorOptions) {
-    this.recordValidator.normalize(record, options)
-  }
-
-  /**
-   *  Validate record
-   * @param record Record
-   * @param options Validation options
-   * @returns True if the domain is valid
-   */
-  validate(record: IRecord, options?: IValidatorOptions) {
-    this.recordValidator.validate(record, options)
-  }
-
-  /**
-   * Get validator errors
-   * @returns Validator errors
-   */
-  get validatorErrors() {
-    return this.recordValidator.errors
-  }
-
-
   private addDomainToParams<T>(params: T) {
     return {
       domain: this.domain.name,
