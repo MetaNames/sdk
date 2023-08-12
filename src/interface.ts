@@ -101,7 +101,13 @@ export interface IMetaNamesContractRepository extends IContractRepository {
   getState(): Promise<MetaNamesState>
 }
 
+export interface IValidatorOptions {
+  raiseError?: boolean
+}
+
 export interface IValidatorInterface<T> {
-  normalize(value: T): T
-  validate(value: T): boolean
+  errors: string[]
+
+  normalize(value: T, options: IValidatorOptions): T
+  validate(value: T, options: IValidatorOptions): boolean
 }

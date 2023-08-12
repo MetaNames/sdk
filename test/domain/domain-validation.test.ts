@@ -1,4 +1,4 @@
-import DomainValidator from '../../src/validators/domain'
+import DomainValidator from '../../src/validators/domain-validator'
 
 test('validation of proper domain name', () => {
     const name = 'name.meta'
@@ -39,5 +39,5 @@ test('normalization of an domain name with emoji', () => {
 test('normalization of an domain name with non valid chars', () => {
     const name = 'not_valid'
     const validator = new DomainValidator()
-    expect(() => { validator.normalize(name) }).toThrow('Domain contains non valid characters')
+    expect(() => { validator.normalize(name) }).toThrow('Domain name contains invalid characters')
 })

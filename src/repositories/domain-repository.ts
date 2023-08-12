@@ -1,9 +1,9 @@
 import { actionApproveMintFeesPayload, actionDomainMintPayload } from "../actions"
-import { IActionDomainMint, IContractRepository, IMetaNamesContractRepository } from "../interface"
+import { IActionDomainMint, IContractRepository, IMetaNamesContractRepository, IValidatorOptions } from "../interface"
 import { Domain } from "../models/domain"
 import { getDomainNamesByOwner, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { Config } from "../providers"
-import DomainValidator from "../validators/domain"
+import DomainValidator, { INormalizeOptions } from "../validators/domain-validator"
 
 /**
  * Repository to interact with domains on the Meta Names contract
@@ -116,20 +116,20 @@ export class DomainRepository {
   }
 
   /**
-   * Validate domain name
-   * @param domainName Domain name
-   * @returns True if the domain name is valid
-   */
-  validate(domainName: string) {
-    return this.domainValidator.validate(domainName)
-  }
-
-  /**
    * Normalize domain name
    * @param domainName Domain name
    * @returns Normalized domain name
    */
-  normalize(domainName: string) {
-    return this.domainValidator.normalize(domainName)
+  normalize(domainName: string, options?: INormalizeOptions) {
+    return this.domainValidator.normalize(domainName, options)
+  }
+
+  /**
+   * Validate domain name
+   * @param domainName Domain name
+   * @returns True if the domain name is valid
+   */
+  validate(domainName: string, options?: IValidatorOptions) {
+    return this.domainValidator.validate(domainName, options)
   }
 }
