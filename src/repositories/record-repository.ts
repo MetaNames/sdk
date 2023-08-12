@@ -1,5 +1,5 @@
 import { actionRecordDeletePayload, actionRecordMintPayload, actionRecordUpdatePayload } from "../actions"
-import { IMetaNamesContractRepository, IDomain, IRecord, RecordClassEnum, IValidatorInterface, IValidatorOptions } from "../interface"
+import { IMetaNamesContractRepository, IDomain, IRecord, RecordClassEnum } from "../interface"
 import { lookUpRecord } from "../partisia-name-system"
 import RecordValidator from "../validators/record-validator"
 
