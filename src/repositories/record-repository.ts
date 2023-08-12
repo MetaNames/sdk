@@ -1,5 +1,5 @@
 import { actionRecordDeletePayload, actionRecordMintPayload, actionRecordUpdatePayload } from "../actions"
-import { IMetaNamesContractRepository, IDomain, IRecord, RecordClassEnum } from "../interface"
+import { IMetaNamesContractRepository, IDomain, IRecord, RecordClassEnum, IValidatorInterface, IValidatorOptions } from "../interface"
 import { lookUpRecord } from "../partisia-name-system"
 import RecordValidator from "../validators/record-validator"
 
@@ -64,6 +64,35 @@ export class RecordRepository {
 
     return this.contractRepository.createTransaction({ payload })
   }
+
+  /**
+   * Normalize record
+   * @param record Record
+   * @param options Normalization options
+   * @returns Normalized record
+   */
+  normalize(record: IRecord, options?: IValidatorOptions) {
+    this.recordValidator.normalize(record, options)
+  }
+
+  /**
+   *  Validate record
+   * @param record Record
+   * @param options Validation options
+   * @returns True if the domain is valid
+   */
+  validate(record: IRecord, options?: IValidatorOptions) {
+    this.recordValidator.validate(record, options)
+  }
+
+  /**
+   * Get validator errors
+   * @returns Validator errors
+   */
+  get validatorErrors() {
+    return this.recordValidator.errors
+  }
+
 
   private addDomainToParams<T>(params: T) {
     return {

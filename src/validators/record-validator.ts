@@ -16,7 +16,8 @@ export default class RecordValidator implements IValidatorInterface<IRecord> {
     return this.errors.length === 0
   }
 
-  normalize(record: IRecord): IRecord {
+  // eslint-disable-next-line no-unused-vars
+  normalize(record: IRecord, options: IValidatorOptions = { raiseError: true }): IRecord {
     return record
   }
 }
