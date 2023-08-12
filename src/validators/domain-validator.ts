@@ -23,15 +23,14 @@ export default class DomainValidator implements IValidatorInterface<string> {
     if (typeof name !== 'string') this.errors.push('Domain name is required')
     if (name.length < this.rules.minLength) this.errors.push('Domain name is too short')
     if (name.length > this.rules.maxLength) this.errors.push('Domain name is too long')
+    if (this.normalize(name, { removeTLD: false }) === '') this.errors.push('Domain name contains invalid characters')
 
     if (options.raiseError && this.errors.length > 0) throw new Error(this.errors.join(', '))
 
     return this.errors.length === 0
   }
 
-  normalize(name: string, { removeTLD, raiseError }: INormalizeOptions = { removeTLD: true, raiseError: true }): string {
-    this.errors = []
-
+  normalize(name: string, { removeTLD }: INormalizeOptions = { removeTLD: true }): string {
     // Remove .meta if it's there as it's redundant
     if (removeTLD && name.endsWith('.meta')) name = name.slice(0, -5)
 
@@ -40,13 +39,6 @@ export default class DomainValidator implements IValidatorInterface<string> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { domain, error } = toUnicode(reversed, { useSTD3ASCIIRules: true }) as any
 
-    if (error) {
-      const message = 'Domain name contains invalid characters'
-      if (raiseError) throw new Error(message)
-      else {
-        this.errors.push(message)
-        return ''
-      }
-    } else return domain
+    return error ? '' : domain
   }
 }
