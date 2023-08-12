@@ -9,13 +9,20 @@ export interface INormalizeOptions extends IValidatorOptions {
 export default class DomainValidator implements IValidatorInterface<string> {
   errors: string[] = []
 
+  get rules() {
+    return {
+      minLength: 1,
+      maxLength: 32
+    }
+  }
+
   validate(name: string, options: IValidatorOptions = { raiseError: true }): boolean {
     this.errors = []
 
     if (!name) this.errors.push('Domain name is required')
     if (typeof name !== 'string') this.errors.push('Domain name is required')
-    if (name.length < 1) this.errors.push('Domain name is too short')
-    if (name.length > 32) this.errors.push('Domain name is too long')
+    if (name.length < this.rules.minLength) this.errors.push('Domain name is too short')
+    if (name.length > this.rules.maxLength) this.errors.push('Domain name is too long')
 
     if (options.raiseError && this.errors.length > 0) throw new Error(this.errors.join(', '))
 
