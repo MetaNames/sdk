@@ -12,7 +12,7 @@ export class DomainRepository {
   private config: Config
   private contractRepository: IContractRepository
   private metaNamesContract: IMetaNamesContractRepository
-  private domainValidator: DomainValidator
+  public domainValidator: DomainValidator
 
   constructor(contractRepository: IContractRepository, metaNamesContractRepository: IMetaNamesContractRepository, config: Config) {
     this.config = config

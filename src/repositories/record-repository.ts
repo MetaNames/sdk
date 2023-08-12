@@ -7,9 +7,9 @@ import RecordValidator from "../validators/record-validator"
  * Repository to interact with records of a domain on the Meta Names contract
  */
 export class RecordRepository {
-  contractRepository: IMetaNamesContractRepository
-  domain: IDomain
-  recordValidator: RecordValidator
+  private contractRepository: IMetaNamesContractRepository
+  private domain: IDomain
+  public recordValidator: RecordValidator
 
   constructor(contractRepository: IMetaNamesContractRepository, domain: IDomain) {
     this.contractRepository = contractRepository
