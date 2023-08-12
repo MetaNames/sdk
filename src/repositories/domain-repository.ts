@@ -114,4 +114,22 @@ export class DomainRepository {
 
     return domainsObjects
   }
+
+  /**
+   * Validate domain name
+   * @param domainName Domain name
+   * @returns True if the domain name is valid
+   */
+  validate(domainName: string) {
+    return this.domainValidator.validate(domainName)
+  }
+
+  /**
+   * Normalize domain name
+   * @param domainName Domain name
+   * @returns Normalized domain name
+   */
+  normalize(domainName: string) {
+    return this.domainValidator.normalize(domainName)
+  }
 }
