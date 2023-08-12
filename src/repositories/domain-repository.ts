@@ -90,10 +90,11 @@ export class DomainRepository {
   async find(domainName: string) {
     const struct = await this.metaNamesContract.getState()
     const domains = getPnsDomains(struct)
+    const nftOwners = getNftOwners(struct)
 
     const normalizedDomain = this.domainValidator.normalize(domainName)
 
-    const domain = lookUpDomain(domains, normalizedDomain)
+    const domain = lookUpDomain(domains, nftOwners, normalizedDomain)
     if (!domain) return null
 
     return new Domain(domain, this.metaNamesContract)
@@ -110,7 +111,7 @@ export class DomainRepository {
 
     const domainNames = getDomainNamesByOwner(domains, nftOwners, ownerAddress)
 
-    const domainsObjects = domainNames.map((domainName) => lookUpDomain(domains, domainName))
+    const domainsObjects = domainNames.map((domainName) => lookUpDomain(domains, nftOwners, domainName))
 
     return domainsObjects
   }

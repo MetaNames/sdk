@@ -1,4 +1,4 @@
-import { BN, ScValueMap, ScValueNumber, ScValueString, ScValueStruct, ScValueVector } from '@partisiablockchain/abi-client-ts'
+import { BN, ScValueMap, ScValueNumber, ScValueString, ScValueStruct, ScValueVector, TypeIndex } from '@partisiablockchain/abi-client-ts'
 import { IDomain, RecordClassEnum } from './interface'
 
 export function getPnsDomains(contract: ScValueStruct): ScValueMap {
@@ -23,6 +23,12 @@ export function getNftOwners(contract: ScValueStruct): ScValueMap {
   return owners.mapValue()
 }
 
+export function getOwnerAddressOf(owners: ScValueMap, tokenId: number) {
+  const tokenIdBN = new BN(tokenId)
+  const nftId = new ScValueNumber(TypeIndex.u128, tokenIdBN)
+  return owners.get(nftId)?.addressValue().value.toString('hex')
+}
+
 
 export function getDomainNamesByOwner(domains: ScValueMap, owners: ScValueMap, ownerAddress: Buffer): string[] {
   const nftIds: number[] = []
@@ -42,7 +48,7 @@ export function getDomainNamesByOwner(domains: ScValueMap, owners: ScValueMap, o
   return domainNames
 }
 
-export function lookUpDomain(domains: ScValueMap, domainName: string): IDomain | undefined {
+export function lookUpDomain(domains: ScValueMap, owners: ScValueMap, domainName: string): IDomain | undefined {
   const scNameString = new ScValueString(domainName)
 
   const domain = domains.get(scNameString)?.structValue()
@@ -51,10 +57,14 @@ export function lookUpDomain(domains: ScValueMap, domainName: string): IDomain |
   const fieldsMap = domain.fieldsMap
   const scRecords = fieldsMap.get('records')?.mapValue().map
 
-  const tokenId = (fieldsMap.get('token_id') as ScValueNumber).number
+  const tokenId = (fieldsMap.get('token_id') as ScValueNumber).asBN().toNumber()
+  const owner = getOwnerAddressOf(owners, tokenId)
+  if (!owner) throw new Error('Owner not found')
+
   return {
     name: domainName,
-    tokenId: tokenId instanceof BN ? tokenId.toNumber() : tokenId,
+    owner,
+    tokenId,
     parentId: fieldsMap.get('parent_id')?.optionValue().innerValue?.stringValue(),
     records: scRecords ? extractRecords(new ScValueMap(scRecords)) : new Map(),
   }

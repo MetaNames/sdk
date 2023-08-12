@@ -17,6 +17,10 @@ export class Domain implements IDomain {
     return this.domain.name
   }
 
+  get owner() {
+    return this.domain.owner
+  }
+
   get tokenId() {
     return this.domain.tokenId
   }

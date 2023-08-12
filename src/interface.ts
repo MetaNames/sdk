@@ -8,6 +8,7 @@ import { IContractZk } from "partisia-blockchain-applications-rpc/lib/main/inter
 
 export interface IDomain {
   name: string
+  owner: string
   tokenId: number
   parentId?: string
   records: Map<string, string | Buffer>

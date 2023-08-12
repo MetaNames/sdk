@@ -11,7 +11,9 @@ test('lookup domain', async () => {
   const data = await config.metaNames.domainRepository.find(domainName)
 
   expect(data).toBeDefined()
+  expect(data).toHaveProperty('name')
   expect(data).toHaveProperty('tokenId')
+  expect(data).toHaveProperty('owner')
   expect(data).toHaveProperty('parentId')
   expect(data).toHaveProperty('records')
 })
