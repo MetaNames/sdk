@@ -11,9 +11,9 @@ type ContractRegistry = Map<string, Contract>;
  * Contract repository to interact with smart contracts on Partisia
  */
 export class ContractRepository implements IContractRepository {
-  rpc: PartisiaAccountClass
-  contractRegistry: ContractRegistry
-  privateKey?: string
+  private rpc: PartisiaAccountClass
+  private contractRegistry: ContractRegistry
+  private privateKey?: string
 
 
   constructor(rpc: IPartisiaRpcConfig) {

@@ -5,8 +5,8 @@ import { RecordRepository } from "../repositories/record-repository"
  * Domain model that wraps the IDomain interface
  */
 export class Domain implements IDomain {
-  domain: IDomain
-  contractRepository: IMetaNamesContractRepository
+  private domain: IDomain
+  private contractRepository: IMetaNamesContractRepository
 
   constructor(domain: IDomain, contractRepository: IMetaNamesContractRepository) {
     this.domain = domain

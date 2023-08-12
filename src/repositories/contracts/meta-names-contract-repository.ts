@@ -8,7 +8,7 @@ import { Contract, ContractParams, IMetaNamesContractRepository, ITransactionRes
  * @extends ContractRepository
  */
 export class MetaNamesContractRepository extends ContractRepository implements IMetaNamesContractRepository {
-  metaNamesContractAddress: string
+  private metaNamesContractAddress: string
 
   constructor(contractAddress: string, rpc: IPartisiaRpcConfig) {
     super(rpc)
