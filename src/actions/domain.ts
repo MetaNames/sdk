@@ -10,10 +10,13 @@ export const actionDomainMintPayload = (contractAbi: ContractAbi, params: IActio
   rpc.addString(params.domain)
   rpc.addAddress(params.to)
   const tokenUriOption = rpc.addOption()
-  if (params.token_uri) tokenUriOption.addString(params.token_uri)
+  if (params.tokenUri) tokenUriOption.addString(params.tokenUri)
 
   const parentOption = rpc.addOption()
-  if (params.parent_domain) parentOption.addString(params.parent_domain)
+  if (params.parentDomain) parentOption.addString(params.parentDomain)
+
+  const subscriptionYearsOption = rpc.addOption()
+  if (params.subscriptionYears) subscriptionYearsOption.addU32(params.subscriptionYears)
 
   return builderToBytesBe(rpc)
 }

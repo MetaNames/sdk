@@ -53,8 +53,9 @@ export interface IActionApproveMintFees {
 export interface IActionDomainMint {
   domain: string
   to: Buffer
-  token_uri?: string
-  parent_domain?: string
+  tokenUri?: string
+  parentDomain?: string
+  subscriptionYears?: number
 }
 
 export interface IArgMint {

@@ -46,17 +46,20 @@ export class DomainRepository {
     if (!this.domainValidator.validate(params.domain)) throw new Error('Domain validation failed')
     let domainName = params.domain
 
+    let subscriptionYears: number | undefined
     let normalizedParentDomain: string | undefined
-    if (params.parent_domain) {
-      if (!this.domainValidator.validate(params.parent_domain)) throw new Error('Parent domain validation failed')
+    if (params.parentDomain) {
+      if (!this.domainValidator.validate(params.parentDomain)) throw new Error('Parent domain validation failed')
 
-      if (!domainName.endsWith(params.parent_domain)) domainName = `${params.domain}.${params.parent_domain}`
-      normalizedParentDomain = this.domainValidator.normalize(params.parent_domain)
+      if (!domainName.endsWith(params.parentDomain)) domainName = `${params.domain}.${params.parentDomain}`
+      normalizedParentDomain = this.domainValidator.normalize(params.parentDomain)
+    } else {
+      subscriptionYears = params.subscriptionYears ?? 1
     }
 
     const normalizedDomain = this.domainValidator.normalize(domainName)
     const contract = await this.metaNamesContract.getContract()
-    const payload = actionDomainMintPayload(contract.abi, { ...params, domain: normalizedDomain, parent_domain: normalizedParentDomain })
+    const payload = actionDomainMintPayload(contract.abi, { ...params, domain: normalizedDomain, parentDomain: normalizedParentDomain, subscriptionYears })
 
     return this.metaNamesContract.createTransaction({ payload })
   }

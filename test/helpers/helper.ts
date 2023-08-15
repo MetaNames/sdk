@@ -15,8 +15,6 @@ export const mintDomain = async (domain: string) => {
   const randomActionMint: IActionDomainMint = {
     domain,
     to: config.address,
-    token_uri: undefined,
-    parent_domain: undefined,
   }
 
   await config.metaNames.domainRepository.mint(randomActionMint)
