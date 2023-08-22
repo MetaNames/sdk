@@ -1,6 +1,6 @@
 {
   "name": "meta-names-sdk",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Meta Names SDK",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
