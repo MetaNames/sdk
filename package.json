@@ -14,9 +14,7 @@
   "scripts": {
     "build": "tsc",
     "format": "eslint --fix src",
-    "version": "yarn run format && git add -A src",
-    "test": "jest -i",
-    "postversion": "git push && git push --tags"
+    "test": "jest -i"
   },
   "dependencies": {
     "@partisiablockchain/abi-client-ts": "^3.13.0",
