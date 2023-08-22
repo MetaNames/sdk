@@ -13,8 +13,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "prepare": "rm -rf lib && yarn run build",
+    "format": "eslint --fix src",
     "version": "yarn run format && git add -A src",
     "test": "jest -i",
     "postversion": "git push && git push --tags"
