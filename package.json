@@ -19,7 +19,6 @@
   "dependencies": {
     "@partisiablockchain/abi-client-ts": "^3.13.0",
     "@secata-public/bitmanipulation-ts": "^3.0.2",
-    "dotenv": "^16.0.3",
     "partisia-blockchain-applications-rpc": "^1.0.10",
     "partisia-sdk": "^0.1.1",
     "tr46": "^4.1.1"
@@ -29,6 +28,7 @@
     "@types/node": "^18.11.18",
     "@types/tr46": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^5.43.0",
+    "dotenv": "^16.0.3",
     "eslint": "^8.0.1",
     "eslint-config-standard-with-typescript": "^34.0.1",
     "eslint-plugin-import": "^2.25.2",

@@ -3571,13 +3571,6 @@ partisia-crypto@^1.0.2:
     merkletreejs "^0.2.31"
     noble-bls12-381 "^0.15.0"
 
-partisia-rpc@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/partisia-rpc/-/partisia-rpc-1.0.9.tgz#209d73debd591bc865af0600204d7a6a0fcdbe12"
-  integrity sha512-uwtbwIXOF46N9NnujWkphpM4aj8WfrqnPPSKAKKE8Ecfc/bVnpO3m7W63G0kvQ/jHnSpJWD8VkOucoS5nvq47Q==
-  dependencies:
-    axios "^0.21.1"
-
 partisia-sdk@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/partisia-sdk/-/partisia-sdk-0.1.1.tgz#c8fa299795c8c1961a4adddb8a335d91fe36c735"
