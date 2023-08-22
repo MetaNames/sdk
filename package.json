@@ -1,5 +1,5 @@
 {
-  "name": "meta-names-sdk",
+  "name": "@metanames/sdk",
   "version": "1.0.0",
   "description": "Meta Names SDK",
   "main": "lib/index.js",
