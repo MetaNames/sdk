@@ -7,8 +7,6 @@ test('run action mint', async () => {
   const randomActionMint: IActionDomainMint = {
     domain: domainName,
     to: config.address,
-    token_uri: undefined,
-    parent_domain: undefined,
   }
   const result = await config.metaNames.domainRepository.mint(randomActionMint)
 

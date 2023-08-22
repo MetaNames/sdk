@@ -10,8 +10,6 @@ beforeAll(async () => {
   const randomActionMint: IActionDomainMint = {
     domain: domainName,
     to: config.address,
-    token_uri: undefined,
-    parent_domain: undefined,
   }
   const resultMint = await config.metaNames.domainRepository.mint(randomActionMint)
   expect(resultMint.isFinalOnChain).toBe(true)
