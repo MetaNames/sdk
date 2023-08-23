@@ -5,14 +5,12 @@ import { createTransaction } from '../actions'
 import { Contract, ContractParams, IContractRepository, ITransactionResult, TransactionParams } from '../interface'
 
 
-type ContractRegistry = Map<string, Contract>;
-
 /**
  * Contract repository to interact with smart contracts on Partisia
  */
 export class ContractRepository implements IContractRepository {
   private rpc: PartisiaAccountClass
-  private contractRegistry: ContractRegistry
+  private contractRegistry: Map<string, Contract>
   private privateKey?: string
 
 
