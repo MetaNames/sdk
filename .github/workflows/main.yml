@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   eslint:
@@ -51,28 +50,5 @@ jobs:
         env:
           TEST_PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
   docs:
-    name: Build docs
-    runs-on: ubuntu-latest
     needs: test
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-          cache: "yarn"
-
-      - name: Install project dependencies
-        run: yarn
-
-      - name: Build docs
-        run: yarn docs
-
-      - name: Deploy docs
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          publish_dir: ./docs
+    uses: ./.github/workflows/docs.yml
