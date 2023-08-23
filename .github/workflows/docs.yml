@@ -4,8 +4,12 @@ on:
   workflow_call:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   docs:
+    concurrency: ci-${{ github.ref }}
     name: Build and publish docs
     runs-on: ubuntu-latest
     steps:
@@ -27,4 +31,4 @@ jobs:
       - name: Deploy docs
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          publish_dir: ./docs
+          folder: ./docs
