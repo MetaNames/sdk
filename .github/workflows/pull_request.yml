@@ -3,6 +3,9 @@ name: Run Tests And display coverage
 on:
   pull_request:
 
+permissions:
+  contents: write
+
 jobs:
   eslint:
     name: Run eslint scanning
