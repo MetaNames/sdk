@@ -1,4 +1,4 @@
-import DomainValidator from '../../src/validators/domain-validator'
+import { DomainValidator } from '../../src/validators'
 
 test('validation of proper domain name', () => {
     const name = 'name.meta'
