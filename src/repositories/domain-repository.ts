@@ -3,7 +3,7 @@ import { IActionDomainMint, IContractRepository, IMetaNamesContractRepository } 
 import { Domain } from "../models/domain"
 import { getDomainNamesByOwner, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { Config } from "../providers"
-import DomainValidator from "../validators/domain-validator"
+import { DomainValidator } from "../validators"
 
 /**
  * Repository to interact with domains on the Meta Names contract
