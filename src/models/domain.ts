@@ -1,5 +1,5 @@
 import { IDomain, IMetaNamesContractRepository } from "../interface"
-import { RecordRepository } from "../repositories/record-repository"
+import { RecordRepository } from "../repositories"
 
 /**
  * Domain model that wraps the IDomain interface

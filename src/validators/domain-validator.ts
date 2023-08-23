@@ -6,7 +6,7 @@ export interface INormalizeOptions extends IValidatorOptions {
 }
 
 
-export default class DomainValidator implements IValidatorInterface<string> {
+export class DomainValidator implements IValidatorInterface<string> {
   errors: string[] = []
 
   get rules() {

@@ -1,12 +1,11 @@
-import { ContractRepository } from './repositories/contract-repository'
-import { DomainRepository } from './repositories/domain-repository'
+import { ContractRepository, DomainRepository } from './repositories'
 import { Config, ConfigProvider, Enviroment } from './providers'
 import { MetaNamesContractRepository } from './repositories/contracts/meta-names-contract-repository'
 
 /**
  * Meta Names SDK
  */
-export class MetaNames {
+export class MetaNamesSdk {
   config: Config
   contract: MetaNamesContractRepository
   contractRepository: ContractRepository

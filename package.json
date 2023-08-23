@@ -1,6 +1,6 @@
 {
   "name": "@metanames/sdk",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Meta Names SDK",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -13,6 +13,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "docs": "typedoc --out docs src",
     "format": "eslint --fix src",
     "test": "jest -i"
   },
@@ -38,6 +39,7 @@
     "jest-environment-jsdom": "^29.5.0",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
+    "typedoc": "^0.24.8",
     "typescript": "*"
   }
 }

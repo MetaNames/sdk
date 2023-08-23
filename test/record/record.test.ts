@@ -1,5 +1,5 @@
 import { RecordClassEnum } from '../../src/interface'
-import { Domain } from '../../src/models/domain'
+import { Domain } from '../../src/models'
 import { config, mintDomain, mintRecord } from '../helpers'
 
 const domainName = 'name.meta'

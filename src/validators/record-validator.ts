@@ -1,6 +1,6 @@
 import { IRecord, IValidatorInterface, IValidatorOptions, RecordClassEnum } from '../interface'
 
-export default class RecordValidator implements IValidatorInterface<IRecord> {
+export class RecordValidator implements IValidatorInterface<IRecord> {
   errors: string[] = []
 
   get rules() {

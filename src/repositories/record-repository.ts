@@ -1,7 +1,7 @@
 import { actionRecordDeletePayload, actionRecordMintPayload, actionRecordUpdatePayload } from "../actions"
 import { IMetaNamesContractRepository, IDomain, IRecord, RecordClassEnum } from "../interface"
 import { lookUpRecord } from "../partisia-name-system"
-import RecordValidator from "../validators/record-validator"
+import { RecordValidator } from "../validators"
 
 /**
  * Repository to interact with records of a domain on the Meta Names contract
