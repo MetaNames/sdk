@@ -1,6 +1,6 @@
 import { actionApproveMintFeesPayload, actionDomainMintPayload } from "../actions"
 import { IActionDomainMint, IContractRepository, IMetaNamesContractRepository } from "../interface"
-import { Domain } from "../models/domain"
+import { Domain } from "../models"
 import { getDomainNamesByOwner, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { Config } from "../providers"
 import { DomainValidator } from "../validators"

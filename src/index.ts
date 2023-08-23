@@ -1,5 +1,6 @@
-export * from './meta-names'
 export * from './interface'
+export * from './meta-names'
+export * from './models'
 export * from './providers'
 export * from './repositories'
 export * from './validators'

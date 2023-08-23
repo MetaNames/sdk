@@ -1,5 +1,5 @@
 import { IActionDomainMint, IRecord, RecordClassEnum } from '../../src/interface'
-import { Domain } from '../../src/models/domain'
+import { Domain } from '../../src/models'
 import { config, generateRandomString } from '../helpers'
 
 const domainName = `${generateRandomString(15)}.meta`
