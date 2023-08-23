@@ -15,7 +15,8 @@
     "build": "tsc",
     "docs": "typedoc --out docs src",
     "format": "eslint --fix src",
-    "test": "jest -i"
+    "test": "jest -i",
+    "prepublishOnly": "yarn build"
   },
   "dependencies": {
     "@partisiablockchain/abi-client-ts": "^3.13.0",
