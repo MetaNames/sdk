@@ -1,5 +1,5 @@
 export * from './interface'
-export * from './meta-names'
+export * from './meta-names-sdk'
 export * from './models'
 export * from './providers'
 export * from './repositories'

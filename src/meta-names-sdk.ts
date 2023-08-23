@@ -5,7 +5,7 @@ import { MetaNamesContractRepository } from './repositories/contracts/meta-names
 /**
  * Meta Names SDK
  */
-export class MetaNames {
+export class MetaNamesSdk {
   config: Config
   contract: MetaNamesContractRepository
   contractRepository: ContractRepository
