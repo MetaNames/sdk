@@ -27,7 +27,7 @@ export class DomainRepository {
    * The function will throw an error if the domain name is invalid.
    * @param domainName A valid domain name
    */
-  async approveMintFees(domainName: string, spenderAddress: Buffer, subscriptionYears = 1) {
+  async approveMintFees(domainName: string, spenderAddress: Buffer | string, subscriptionYears = 1) {
     if (!this.domainValidator.validate(domainName)) throw new Error('Domain validation failed')
     if (subscriptionYears < 1) throw new Error('Subscription years must be greater than 0')
 
