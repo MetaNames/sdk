@@ -19,7 +19,7 @@ export const createTransactionFromClient = async (
   client: PartisiaSdk,
   contractAddress: string,
   payload: Buffer,
-  cost: number | string = 40960
+  cost: number | string = 8490
 ): Promise<ITransactionResult> => {
   if (!client.connection) throw new Error('Client is not connected')
 
@@ -45,7 +45,7 @@ export const createTransactionFromPrivateKey = async (
   privateKey: string,
   payload: Buffer,
   isMainnet = false,
-  cost: number | string = 40960
+  cost: number | string = 8490
 ): Promise<ITransactionResult> => {
   const walletAddress = partisiaCrypto.wallet.privateKeyToAccountAddress(privateKey)
   const shardId = rpc.deriveShardId(walletAddress)
