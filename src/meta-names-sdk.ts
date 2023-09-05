@@ -40,8 +40,8 @@ export class MetaNamesSdk {
    * Reset the signing strategy
    */
   resetSigningStrategy() {
-    this.setPrivateKey(undefined)
-    this.setPartisiaSdk(undefined)
+    this.setPrivateKey()
+    this.setPartisiaSdk()
   }
 
   private setPrivateKey(privateKey?: string) {
