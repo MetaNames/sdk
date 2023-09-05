@@ -109,12 +109,13 @@ export class DomainRepository {
    * Finds domains by owner address
    * @param ownerAddress Owner address
    */
-  async findByOwner(ownerAddress: Buffer) {
+  async findByOwner(ownerAddress: Buffer | string) {
     const struct = await this.metaNamesContract.getState()
     const domains = getPnsDomains(struct)
     const nftOwners = getNftOwners(struct)
 
-    const domainNames = getDomainNamesByOwner(domains, nftOwners, ownerAddress)
+    const address = Buffer.isBuffer(ownerAddress) ? ownerAddress : Buffer.from(ownerAddress, 'hex')
+    const domainNames = getDomainNamesByOwner(domains, nftOwners, address)
 
     const domainsObjects = domainNames.map((domainName) => lookUpDomain(domains, nftOwners, domainName))
 
