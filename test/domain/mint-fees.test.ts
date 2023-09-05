@@ -2,7 +2,7 @@ import { config } from "../helpers"
 
 test('mint fees transaction', async () => {
   const domainName = 'verycheapfees.meta'
-  const result = await config.metaNames.domainRepository.approveMintFees(domainName, config.address)
+  const result = await config.metaNames.domainRepository.approveMintFees(domainName)
 
   expect(result).toBeDefined()
   expect(result.hasError).toBeFalsy()
