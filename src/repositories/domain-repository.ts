@@ -1,5 +1,5 @@
 import { actionApproveMintFeesPayload, actionDomainMintPayload } from "../actions"
-import { IActionDomainMint, IContractRepository, IMetaNamesContractRepository } from "../interface"
+import { Address, IActionDomainMint, IContractRepository, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models"
 import { getDomainNamesByOwner, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { Config } from "../providers"
@@ -109,7 +109,7 @@ export class DomainRepository {
    * Finds domains by owner address
    * @param ownerAddress Owner address
    */
-  async findByOwner(ownerAddress: Buffer | string) {
+  async findByOwner(ownerAddress: Address) {
     const struct = await this.metaNamesContract.getState()
     const domains = getPnsDomains(struct)
     const nftOwners = getNftOwners(struct)

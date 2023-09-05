@@ -27,6 +27,8 @@ export enum RecordClassEnum {
   // Custom5 = 9,
 }
 
+export type Address = Buffer | string
+
 export interface IActionRecordMint extends IRecord {
   domain: string
 }
@@ -46,13 +48,13 @@ export interface IActionRecordDelete {
 }
 
 export interface IActionApproveMintFees {
-  address: Buffer | string
+  address: Address
   amount: number
 }
 
 export interface IActionDomainMint {
   domain: string
-  to: Buffer | string
+  to: Address
   tokenUri?: string
   parentDomain?: string
   subscriptionYears?: number
