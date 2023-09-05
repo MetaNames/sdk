@@ -46,13 +46,13 @@ export interface IActionRecordDelete {
 }
 
 export interface IActionApproveMintFees {
-  address: Buffer
+  address: Buffer | string
   amount: number
 }
 
 export interface IActionDomainMint {
   domain: string
-  to: Buffer
+  to: Buffer | string
   tokenUri?: string
   parentDomain?: string
   subscriptionYears?: number
