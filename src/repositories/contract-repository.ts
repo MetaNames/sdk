@@ -3,6 +3,7 @@ import { PartisiaAccount } from 'partisia-blockchain-applications-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
 import { createTransaction } from '../actions'
 import { Contract, ContractParams, IContractRepository, ITransactionResult, TransactionParams } from '../interface'
+import PartisiaSdk from 'partisia-sdk'
 
 
 /**
@@ -12,6 +13,7 @@ export class ContractRepository implements IContractRepository {
   private rpc: PartisiaAccountClass
   private contractRegistry: Map<string, Contract>
   private privateKey?: string
+  private partisiaSdk?: PartisiaSdk
 
 
   constructor(rpc: IPartisiaRpcConfig) {
@@ -21,6 +23,10 @@ export class ContractRepository implements IContractRepository {
 
   setPrivateKey(privateKey?: string) {
     this.privateKey = privateKey
+  }
+
+  setPartisiaSdk(partisiaSdk: PartisiaSdk) {
+    this.partisiaSdk = partisiaSdk
   }
 
   /**
@@ -54,7 +60,7 @@ export class ContractRepository implements IContractRepository {
    * @param payload Transaction payload
    */
   async createTransaction({ contractAddress, payload }: TransactionParams): Promise<ITransactionResult> {
-    if (!this.privateKey) throw new Error('Private key not found')
+    if (!this.privateKey || !this.partisiaSdk) throw new Error('Private key or Partisia SDK not found')
     if (!contractAddress) throw new Error('Contract address not found')
 
     return await createTransaction(this.rpc, contractAddress, this.privateKey, payload)
