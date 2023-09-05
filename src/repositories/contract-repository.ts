@@ -16,7 +16,6 @@ export class ContractRepository implements IContractRepository {
   private privateKey?: string
   private partisiaSdk?: PartisiaSdk
 
-
   constructor(rpc: IPartisiaRpcConfig) {
     this.contractRegistry = new Map()
     this.rpc = PartisiaAccount(rpc)
@@ -26,7 +25,7 @@ export class ContractRepository implements IContractRepository {
     this.privateKey = privateKey
   }
 
-  setPartisiaSdk(partisiaSdk: PartisiaSdk) {
+  setPartisiaSdk(partisiaSdk?: PartisiaSdk) {
     this.partisiaSdk = partisiaSdk
   }
 

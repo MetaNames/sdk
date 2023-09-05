@@ -38,12 +38,20 @@ export class MetaNamesSdk {
     }
   }
 
+  /**
+   * Reset the signing strategy
+   */
+  resetSigningStrategy() {
+    this.setPrivateKey(undefined)
+    this.setPartisiaSdk(undefined)
+  }
+
   private setPrivateKey(privateKey?: string) {
     this.contractRepository.setPrivateKey(privateKey)
     this.contract.setPrivateKey(privateKey)
   }
 
-  private setPartisiaSdk(partisiaSdk: PartisiaSdk) {
+  private setPartisiaSdk(partisiaSdk?: PartisiaSdk) {
     this.contractRepository.setPartisiaSdk(partisiaSdk)
     this.contract.setPartisiaSdk(partisiaSdk)
   }
