@@ -6,11 +6,37 @@ import { PartisiaRpcClass } from 'partisia-blockchain-applications-rpc/lib/main/
 import { ITransactionResult } from '../interface'
 import { BigEndianByteOutput } from '@secata-public/bitmanipulation-ts'
 import { FnRpcBuilder } from '@partisiablockchain/abi-client-ts'
+import PartisiaSdk from 'partisia-sdk'
 
 export const builderToBytesBe = (rpc: FnRpcBuilder) => {
   const bufferWriter = new BigEndianByteOutput()
   rpc.write(bufferWriter)
   return bufferWriter.toBuffer()
+}
+
+export const createTransactionFromClient = async (
+  rpc: PartisiaAccountClass,
+  client: PartisiaSdk,
+  contractAddress: string,
+  payload: Buffer,
+  cost: number | string = 40960
+): Promise<ITransactionResult> => {
+  if (!client.connection) throw new Error('Client is not connected')
+
+  const walletAddress = client.connection.account.address
+  const serializedTransaction = await serializeTransaction(rpc, walletAddress, contractAddress, payload, cost)
+
+  const transaction = await client.signMessage({
+    payload: serializedTransaction.toString("hex"),
+    payloadType: "hex",
+    dontBroadcast: false,
+  })
+
+  const shardId = rpc.deriveShardId(walletAddress)
+  const url = rpc.getShardUrl(shardId)
+  const rpcShard = PartisiaRpc({ baseURL: url })
+
+  return transactionResult(rpc, rpcShard, transaction.trxHash)
 }
 
 export const createTransactionFromPrivateKey = async (
@@ -37,18 +63,17 @@ export const createTransactionFromPrivateKey = async (
   const trxHash = partisiaCrypto.transaction.getTrxHash(digest, signature)
   const rpcShard = PartisiaRpc({ baseURL: url })
 
-  return broadcastTransaction(rpc, rpcShard, trx, trxHash)
-}
-
-const broadcastTransaction = async (
-  rpc: PartisiaAccountClass,
-  rpcShard: PartisiaRpcClass,
-  trx: string,
-  trxHash: string
-) => {
   const isValid = await rpcShard.broadcastTransaction(trx)
   assert(isValid, 'Unknown Error')
 
+  return transactionResult(rpc, rpcShard, trxHash)
+}
+
+const transactionResult = async (
+  rpc: PartisiaAccountClass,
+  rpcShard: PartisiaRpcClass,
+  trxHash: string
+) => {
   const isFinalOnChain = await broadcastTransactionPoller(trxHash, rpcShard)
 
   // check for errors
