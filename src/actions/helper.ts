@@ -6,7 +6,7 @@ import { PartisiaRpcClass } from 'partisia-blockchain-applications-rpc/lib/main/
 import { ITransactionResult } from '../interface'
 import { BigEndianByteOutput } from '@secata-public/bitmanipulation-ts'
 import { FnRpcBuilder } from '@partisiablockchain/abi-client-ts'
-import PartisiaSdk from 'partisia-sdk'
+import type PartisiaSdk from 'partisia-sdk'
 
 export const builderToBytesBe = (rpc: FnRpcBuilder) => {
   const bufferWriter = new BigEndianByteOutput()
