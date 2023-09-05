@@ -1,5 +1,5 @@
 import { actionApproveMintFeesPayload, actionDomainMintPayload } from "../actions"
-import { IActionDomainMint, IContractRepository, IMetaNamesContractRepository } from "../interface"
+import { Address, IActionDomainMint, IContractRepository, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models"
 import { getDomainNamesByOwner, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { Config } from "../providers"
@@ -27,22 +27,24 @@ export class DomainRepository {
    * The function will throw an error if the domain name is invalid.
    * @param domainName A valid domain name
    */
-  async approveMintFees(domainName: string, spenderAddress: Buffer) {
+  async approveMintFees(domainName: string, subscriptionYears = 1) {
     if (!this.domainValidator.validate(domainName)) throw new Error('Domain validation failed')
+    if (subscriptionYears < 1) throw new Error('Subscription years must be greater than 0')
 
     const normalizedDomain = this.domainValidator.normalize(domainName)
     const { amount } = await this.calculateMintFees(normalizedDomain)
+    const totalAmount = amount * subscriptionYears
     const contract = await this.contractRepository.getContract({ contractAddress: this.config.byoc.address })
-    const payload = actionApproveMintFeesPayload(contract.abi, { address: spenderAddress, amount })
+    const payload = actionApproveMintFeesPayload(contract.abi, { address: this.config.contractAddress, amount: totalAmount })
 
     return this.contractRepository.createTransaction({ contractAddress: this.config.byoc.address, payload })
   }
 
   /**
-   * Mint a domain
+   * Register a domain
    * @param params Domain mint params
    */
-  async mint(params: IActionDomainMint) {
+  async register(params: IActionDomainMint) {
     if (!this.domainValidator.validate(params.domain)) throw new Error('Domain validation failed')
     let domainName = params.domain
 
@@ -107,12 +109,13 @@ export class DomainRepository {
    * Finds domains by owner address
    * @param ownerAddress Owner address
    */
-  async findByOwner(ownerAddress: Buffer) {
+  async findByOwner(ownerAddress: Address) {
     const struct = await this.metaNamesContract.getState()
     const domains = getPnsDomains(struct)
     const nftOwners = getNftOwners(struct)
 
-    const domainNames = getDomainNamesByOwner(domains, nftOwners, ownerAddress)
+    const address = Buffer.isBuffer(ownerAddress) ? ownerAddress : Buffer.from(ownerAddress, 'hex')
+    const domainNames = getDomainNamesByOwner(domains, nftOwners, address)
 
     const domainsObjects = domainNames.map((domainName) => lookUpDomain(domains, nftOwners, domainName))
 

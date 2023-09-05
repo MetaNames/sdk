@@ -8,7 +8,7 @@ test('run action mint', async () => {
     domain: domainName,
     to: config.address,
   }
-  const result = await config.metaNames.domainRepository.mint(randomActionMint)
+  const result = await config.metaNames.domainRepository.register(randomActionMint)
 
   expect(result.isFinalOnChain).toBe(true)
   expect(result.hasError).toBe(false)

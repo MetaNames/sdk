@@ -18,10 +18,10 @@ export class RecordRepository {
   }
 
   /**
-   * Mint a record for a domain
+   * Create a record for the given domain
    * @param params Record params
    */
-  async mint(params: IRecord) {
+  async create(params: IRecord) {
     if (!this.recordValidator.validate(params)) throw new Error('Record validation failed')
 
     const contract = await this.contractRepository.getContract()
@@ -31,7 +31,7 @@ export class RecordRepository {
   }
 
   /**
-   * Finds a record by class
+   * Find a record given the class
    * @param recordClass Record class
    */
   async find(recordClass: RecordClassEnum) {
@@ -42,7 +42,7 @@ export class RecordRepository {
   }
 
   /**
-   * Update a record for a domain
+   * Update a record for the given domain
    * @param params Record params
    */
   async update(params: IRecord) {
@@ -55,7 +55,7 @@ export class RecordRepository {
   }
 
   /**
-   * Delete a record for a domain
+   * Delete a record for the given domain
    * @param recordClass Record class
    */
   async delete(recordClass: RecordClassEnum) {

@@ -1,8 +1,9 @@
 import { AbiParser, StateReader } from '@partisiablockchain/abi-client-ts'
 import { PartisiaAccount } from 'partisia-blockchain-applications-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
-import { createTransaction } from '../actions'
+import { createTransactionFromClient, createTransactionFromPrivateKey } from '../actions'
 import { Contract, ContractParams, IContractRepository, ITransactionResult, TransactionParams } from '../interface'
+import PartisiaSdk from 'partisia-sdk'
 
 
 /**
@@ -12,7 +13,7 @@ export class ContractRepository implements IContractRepository {
   private rpc: PartisiaAccountClass
   private contractRegistry: Map<string, Contract>
   private privateKey?: string
-
+  private partisiaSdk?: PartisiaSdk
 
   constructor(rpc: IPartisiaRpcConfig) {
     this.contractRegistry = new Map()
@@ -21,6 +22,10 @@ export class ContractRepository implements IContractRepository {
 
   setPrivateKey(privateKey?: string) {
     this.privateKey = privateKey
+  }
+
+  setPartisiaSdk(partisiaSdk?: PartisiaSdk) {
+    this.partisiaSdk = partisiaSdk
   }
 
   /**
@@ -54,10 +59,14 @@ export class ContractRepository implements IContractRepository {
    * @param payload Transaction payload
    */
   async createTransaction({ contractAddress, payload }: TransactionParams): Promise<ITransactionResult> {
-    if (!this.privateKey) throw new Error('Private key not found')
     if (!contractAddress) throw new Error('Contract address not found')
 
-    return await createTransaction(this.rpc, contractAddress, this.privateKey, payload)
+    if (this.privateKey)
+      return createTransactionFromPrivateKey(this.rpc, contractAddress, this.privateKey, payload)
+    else if (this.partisiaSdk)
+      return createTransactionFromClient(this.rpc, this.partisiaSdk, contractAddress, payload)
+    else
+      throw new Error('Private key and Partisia SDK not found')
   }
 
   private async getContractFromRegistry({ contractAddress, force, withState }: ContractParams): Promise<Contract | undefined> {

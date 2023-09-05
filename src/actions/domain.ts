@@ -8,7 +8,10 @@ export const actionDomainMintPayload = (contractAbi: ContractAbi, params: IActio
 
   const rpc = new FnRpcBuilder('mint', contractAbi)
   rpc.addString(params.domain)
-  rpc.addAddress(params.to)
+
+  const address = typeof params.to === 'string' ? Buffer.from(params.to, 'hex') : params.to
+  rpc.addAddress(address)
+
   const tokenUriOption = rpc.addOption()
   if (params.tokenUri) tokenUriOption.addString(params.tokenUri)
 
@@ -24,13 +27,12 @@ export const actionDomainMintPayload = (contractAbi: ContractAbi, params: IActio
 export const actionApproveMintFeesPayload = (contractAbi: ContractAbi, params: IActionApproveMintFees): Buffer => {
   const rpc = new FnRpcBuilder('approve', contractAbi)
 
-  const spender = params.address
+  const spender = typeof params.address === 'string' ? Buffer.from(params.address, 'hex') : params.address
   rpc.addAddress(spender)
 
   const amount = new BN(params.amount)
   rpc.addStruct()
     .addSizedByteArray(amount.toArrayLike(Buffer, 'be', 16))
-
 
   return builderToBytesBe(rpc)
 }
