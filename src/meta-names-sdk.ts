@@ -32,9 +32,7 @@ export class MetaNamesSdk {
 
       this.setPrivateKey(value)
     } else {
-      if (!(value instanceof PartisiaSdk)) throw new Error('must be an instance of PartisiaSdk')
-
-      this.setPartisiaSdk(value)
+      this.setPartisiaSdk(value as PartisiaSdk)
     }
   }
 
