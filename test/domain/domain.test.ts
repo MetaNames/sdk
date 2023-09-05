@@ -24,7 +24,7 @@ test('mint domain with parent', async () => {
 
   expect(domain).toBeDefined()
 
-  const result = await config.metaNames.domainRepository.mint({
+  const result = await config.metaNames.domainRepository.register({
     domain: randomName,
     to: config.address,
     parentDomain: 'name.meta'

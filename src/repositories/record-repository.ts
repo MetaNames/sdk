@@ -18,10 +18,10 @@ export class RecordRepository {
   }
 
   /**
-   * Mint a record for a domain
+   * Create a record for a domain
    * @param params Record params
    */
-  async mint(params: IRecord) {
+  async create(params: IRecord) {
     if (!this.recordValidator.validate(params)) throw new Error('Record validation failed')
 
     const contract = await this.contractRepository.getContract()

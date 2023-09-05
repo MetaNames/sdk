@@ -41,10 +41,10 @@ export class DomainRepository {
   }
 
   /**
-   * Mint a domain
+   * Register a domain
    * @param params Domain mint params
    */
-  async mint(params: IActionDomainMint) {
+  async register(params: IActionDomainMint) {
     if (!this.domainValidator.validate(params.domain)) throw new Error('Domain validation failed')
     let domainName = params.domain
 

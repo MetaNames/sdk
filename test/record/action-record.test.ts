@@ -11,7 +11,7 @@ beforeAll(async () => {
     domain: domainName,
     to: config.address,
   }
-  const resultMint = await config.metaNames.domainRepository.mint(randomActionMint)
+  const resultMint = await config.metaNames.domainRepository.register(randomActionMint)
   expect(resultMint.isFinalOnChain).toBe(true)
   expect(resultMint.hasError).toBe(false)
 
@@ -34,7 +34,7 @@ test('action record mint', async () => {
     class: RecordClassEnum.Wallet,
     data: config.address
   }
-  const resultMintRecord = await domain.recordRepository.mint(actionMintRecord)
+  const resultMintRecord = await domain.recordRepository.create(actionMintRecord)
 
   expect(resultMintRecord).toBeDefined()
   if (resultMintRecord) {
@@ -48,7 +48,7 @@ test('action record update', async () => {
     class: RecordClassEnum.Wallet,
     data: config.address
   }
-  const resultMintRecord = await domain.recordRepository.mint(actionMintRecord)
+  const resultMintRecord = await domain.recordRepository.create(actionMintRecord)
 
   expect(resultMintRecord).toBeDefined()
   if (resultMintRecord) {
