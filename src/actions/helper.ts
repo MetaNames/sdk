@@ -13,23 +13,6 @@ export const builderToBytesBe = (rpc: FnRpcBuilder) => {
   return bufferWriter.toBuffer()
 }
 
-const serializeTransaction = async (
-  rpc: PartisiaAccountClass,
-  walletAddress: string,
-  contractAddress: string,
-  payload: Buffer,
-  cost: number | string
-) => {
-  const shardId = rpc.deriveShardId(walletAddress)
-  const nonce = await rpc.getNonce(walletAddress, shardId)
-
-  return partisiaCrypto.transaction.serializedTransaction(
-    { nonce, cost },
-    { contract: contractAddress },
-    payload
-  )
-}
-
 export const createTransaction = async (
   rpc: PartisiaAccountClass,
   contractAddress: string,
@@ -53,6 +36,16 @@ export const createTransaction = async (
 
   const trxHash = partisiaCrypto.transaction.getTrxHash(digest, signature)
   const rpcShard = PartisiaRpc({ baseURL: url })
+
+  return broadcastTransaction(rpc, rpcShard, trx, trxHash)
+}
+
+const broadcastTransaction = async (
+  rpc: PartisiaAccountClass,
+  rpcShard: PartisiaRpcClass,
+  trx: string,
+  trxHash: string
+) => {
   const isValid = await rpcShard.broadcastTransaction(trx)
   assert(isValid, 'Unknown Error')
 
@@ -100,4 +93,21 @@ const broadcastTransactionPoller = async (
     }
   }
   return intCounter < num_iter
+}
+
+const serializeTransaction = async (
+  rpc: PartisiaAccountClass,
+  walletAddress: string,
+  contractAddress: string,
+  payload: Buffer,
+  cost: number | string
+) => {
+  const shardId = rpc.deriveShardId(walletAddress)
+  const nonce = await rpc.getNonce(walletAddress, shardId)
+
+  return partisiaCrypto.transaction.serializedTransaction(
+    { nonce, cost },
+    { contract: contractAddress },
+    payload
+  )
 }
