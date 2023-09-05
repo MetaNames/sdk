@@ -1,7 +1,7 @@
 import { AbiParser, StateReader } from '@partisiablockchain/abi-client-ts'
 import { PartisiaAccount } from 'partisia-blockchain-applications-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
-import { createTransaction } from '../actions'
+import { createTransactionFromPrivateKey } from '../actions'
 import { Contract, ContractParams, IContractRepository, ITransactionResult, TransactionParams } from '../interface'
 import PartisiaSdk from 'partisia-sdk'
 
@@ -63,7 +63,7 @@ export class ContractRepository implements IContractRepository {
     if (!this.privateKey || !this.partisiaSdk) throw new Error('Private key or Partisia SDK not found')
     if (!contractAddress) throw new Error('Contract address not found')
 
-    return await createTransaction(this.rpc, contractAddress, this.privateKey, payload)
+    return await createTransactionFromPrivateKey(this.rpc, contractAddress, this.privateKey, payload)
   }
 
   private async getContractFromRegistry({ contractAddress, force, withState }: ContractParams): Promise<Contract | undefined> {

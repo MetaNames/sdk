@@ -13,7 +13,7 @@ export const builderToBytesBe = (rpc: FnRpcBuilder) => {
   return bufferWriter.toBuffer()
 }
 
-export const createTransaction = async (
+export const createTransactionFromPrivateKey = async (
   rpc: PartisiaAccountClass,
   contractAddress: string,
   privateKey: string,
