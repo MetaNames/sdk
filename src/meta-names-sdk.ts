@@ -27,13 +27,13 @@ export class MetaNamesSdk {
    * @param value The value of the strategy
    */
   setSigningStrategy(strategy: 'privateKey' | 'partisiaSdk', value: string | PartisiaSdk) {
+    this.resetSigningStrategy()
+
     if (strategy === 'privateKey') {
       if (typeof value !== 'string') throw new Error('Private key must be a string')
 
       this.setPrivateKey(value)
-    } else {
-      this.setPartisiaSdk(value as PartisiaSdk)
-    }
+    } else this.setPartisiaSdk(value as PartisiaSdk)
   }
 
   /**
