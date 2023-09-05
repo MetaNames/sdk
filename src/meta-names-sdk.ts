@@ -1,6 +1,7 @@
 import { ContractRepository, DomainRepository } from './repositories'
 import { Config, ConfigProvider, Enviroment } from './providers'
 import { MetaNamesContractRepository } from './repositories/contracts/meta-names-contract-repository'
+import PartisiaSdk from 'partisia-sdk'
 
 /**
  * Meta Names SDK
@@ -20,8 +21,30 @@ export class MetaNamesSdk {
     this.domainRepository = new DomainRepository(this.contractRepository, this.contract, this.config)
   }
 
-  setPrivateKey(privateKey?: string) {
+  /**
+   * Set the strategy to sign transactions
+   * @param strategy Signing strategy
+   * @param value The value of the strategy
+   */
+  setSigningStrategy(strategy: 'privateKey' | 'partisiaSdk', value: string | PartisiaSdk) {
+    if (strategy === 'privateKey') {
+      if (typeof value !== 'string') throw new Error('Private key must be a string')
+
+      this.setPrivateKey(value)
+    } else {
+      if (!(value instanceof PartisiaSdk)) throw new Error('must be an instance of PartisiaSdk')
+
+      this.setPartisiaSdk(value)
+    }
+  }
+
+  private setPrivateKey(privateKey?: string) {
     this.contractRepository.setPrivateKey(privateKey)
     this.contract.setPrivateKey(privateKey)
+  }
+
+  private setPartisiaSdk(partisiaSdk: PartisiaSdk) {
+    this.contractRepository.setPartisiaSdk(partisiaSdk)
+    this.contract.setPartisiaSdk(partisiaSdk)
   }
 }
