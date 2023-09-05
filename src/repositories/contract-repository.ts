@@ -4,7 +4,6 @@ import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-ap
 import { createTransactionFromClient, createTransactionFromPrivateKey } from '../actions'
 import { Contract, ContractParams, IContractRepository, ITransactionResult, TransactionParams } from '../interface'
 import PartisiaSdk from 'partisia-sdk'
-import { create } from 'domain'
 
 
 /**
