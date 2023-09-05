@@ -13,6 +13,23 @@ export const builderToBytesBe = (rpc: FnRpcBuilder) => {
   return bufferWriter.toBuffer()
 }
 
+const serializeTransaction = async (
+  rpc: PartisiaAccountClass,
+  walletAddress: string,
+  contractAddress: string,
+  payload: Buffer,
+  cost: number | string
+) => {
+  const shardId = rpc.deriveShardId(walletAddress)
+  const nonce = await rpc.getNonce(walletAddress, shardId)
+
+  return partisiaCrypto.transaction.serializedTransaction(
+    { nonce, cost },
+    { contract: contractAddress },
+    payload
+  )
+}
+
 export const createTransaction = async (
   rpc: PartisiaAccountClass,
   contractAddress: string,
@@ -21,17 +38,11 @@ export const createTransaction = async (
   isMainnet = false,
   cost: number | string = 40960
 ): Promise<ITransactionResult> => {
-  const address = partisiaCrypto.wallet.privateKeyToAccountAddress(privateKey)
-
-  const shardId = rpc.deriveShardId(address)
+  const walletAddress = partisiaCrypto.wallet.privateKeyToAccountAddress(privateKey)
+  const shardId = rpc.deriveShardId(walletAddress)
   const url = rpc.getShardUrl(shardId)
-  const nonce = await rpc.getNonce(address, shardId)
 
-  const serializedTransaction = partisiaCrypto.transaction.serializedTransaction(
-    { nonce, cost },
-    { contract: contractAddress },
-    payload
-  )
+  const serializedTransaction = await serializeTransaction(rpc, walletAddress, contractAddress, payload, cost)
 
   const digest = partisiaCrypto.transaction.deriveDigest(
     `Partisia Blockchain${isMainnet ? '' : ' Testnet'}`,
