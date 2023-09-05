@@ -1,7 +1,7 @@
 import { AbiParser, StateReader } from '@partisiablockchain/abi-client-ts'
 import { PartisiaAccount } from 'partisia-blockchain-applications-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
-import { createTransactionFromPrivateKey } from '../actions'
+import { createTransactionFromClient, createTransactionFromPrivateKey } from '../actions'
 import { Contract, ContractParams, IContractRepository, ITransactionResult, TransactionParams } from '../interface'
 import PartisiaSdk from 'partisia-sdk'
 import { create } from 'domain'
@@ -98,7 +98,3 @@ export class ContractRepository implements IContractRepository {
     return contract
   }
 }
-function createTransactionFromClient(rpc: PartisiaAccountClass, partisiaSdk: PartisiaSdk, contractAddress: string, payload: Buffer): ITransactionResult | PromiseLike<ITransactionResult> {
-  throw new Error('Function not implemented.')
-}
-
