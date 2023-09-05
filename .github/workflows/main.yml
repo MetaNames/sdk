@@ -49,6 +49,7 @@ jobs:
         run: yarn test --coverage
         env:
           TEST_PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
+
   docs:
     needs: test
     uses: ./.github/workflows/docs.yml
