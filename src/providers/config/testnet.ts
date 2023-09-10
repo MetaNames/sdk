@@ -1,7 +1,7 @@
 import { Config } from "../config"
 
 export const testNetConfig: Config = {
-  contractAddress: '02033e20a0afc29f799327bc1c907bd17278a35614',
+  contractAddress: '02d1b17204ce782ba4e6aed70356e0745384fa3253',
   rpcConfig: {
     urlBaseGlobal: { url: 'https://node1.testnet.partisiablockchain.com', shard_id: 99 },
     urlBaseShards: [
