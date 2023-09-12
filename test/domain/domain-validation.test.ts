@@ -39,6 +39,12 @@ test('normalization of proper domain name', () => {
     expect(validator.normalize(name)).toBe('name')
 })
 
+test('normalization of proper domain name uppercase', () => {
+    const name = 'NaME.meta'
+    const validator = new DomainValidator()
+    expect(validator.normalize(name)).toBe('name')
+})
+
 test('normalization of proper subdomain name', () => {
     const name = 'the.name.meta'
     const validator = new DomainValidator()

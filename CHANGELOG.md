@@ -1,5 +1,12 @@
 # Changelog
 
+# 2.0.2
+- Reverse domain name
+- Add TLD by default
+
+# 2.0.1
+- Update smart contract address
+
 # 2.0.0
 ## Breaking changes
 - Rename `domainRepository.mint` to `domainRepository.register`

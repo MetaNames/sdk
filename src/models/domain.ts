@@ -14,7 +14,11 @@ export class Domain implements IDomain {
   }
 
   get name() {
-    return this.domain.name
+    return this.nameWithoutTLD + '.meta'
+  }
+
+  get nameWithoutTLD() {
+    return this.domain.name.split('.').reverse().join('.')
   }
 
   get owner() {
@@ -34,6 +38,6 @@ export class Domain implements IDomain {
   }
 
   get recordRepository(): RecordRepository {
-    return new RecordRepository(this.contractRepository, this.domain)
+    return new RecordRepository(this.contractRepository, this)
   }
 }

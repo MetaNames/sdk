@@ -16,6 +16,7 @@ test('lookup domain', async () => {
   expect(data).toHaveProperty('owner')
   expect(data).toHaveProperty('parentId')
   expect(data).toHaveProperty('records')
+  expect(data!.name).toEqual(domainName)
 })
 
 test('mint domain with parent', async () => {
@@ -38,6 +39,8 @@ test('mint domain with parent', async () => {
   const subDomain = await config.metaNames.domainRepository.find(expectedDomain)
 
   expect(subDomain).toBeDefined()
+  expect(subDomain).toHaveProperty('name')
+  expect(subDomain!.name).toEqual(expectedDomain)
 }, 10_000)
 
 test('calculate mint fees', () => {
