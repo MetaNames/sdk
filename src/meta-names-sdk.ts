@@ -2,6 +2,7 @@ import { ContractRepository, DomainRepository } from './repositories'
 import { Config, ConfigProvider, Enviroment } from './providers'
 import { MetaNamesContractRepository } from './repositories/contracts/meta-names-contract-repository'
 import PartisiaSdk from 'partisia-sdk'
+import { SecretsManager } from './config/secrets-manager'
 
 /**
  * Meta Names SDK
@@ -27,30 +28,13 @@ export class MetaNamesSdk {
    * @param value The value of the strategy
    */
   setSigningStrategy(strategy: 'privateKey' | 'partisiaSdk', value: string | PartisiaSdk) {
-    this.resetSigningStrategy()
-
-    if (strategy === 'privateKey') {
-      if (typeof value !== 'string') throw new Error('Private key must be a string')
-
-      this.setPrivateKey(value)
-    } else this.setPartisiaSdk(value as PartisiaSdk)
+    SecretsManager.getInstance().setSigningStrategy(strategy, value)
   }
 
   /**
    * Reset the signing strategy
    */
   resetSigningStrategy() {
-    this.setPrivateKey()
-    this.setPartisiaSdk()
-  }
-
-  private setPrivateKey(privateKey?: string) {
-    this.contractRepository.setPrivateKey(privateKey)
-    this.contract.setPrivateKey(privateKey)
-  }
-
-  private setPartisiaSdk(partisiaSdk?: PartisiaSdk) {
-    this.contractRepository.setPartisiaSdk(partisiaSdk)
-    this.contract.setPartisiaSdk(partisiaSdk)
+    SecretsManager.getInstance().resetSigningStrategy()
   }
 }
