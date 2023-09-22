@@ -3,7 +3,7 @@ import { PartisiaAccount } from 'partisia-blockchain-applications-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
 import { createTransactionFromClient, createTransactionFromPrivateKey } from '../actions'
 import { Contract, ContractParams, IContractRepository, ITransactionResult, TransactionParams } from '../interface'
-import PartisiaSdk from 'partisia-sdk'
+import { SecretsManager } from '../config/secrets-manager'
 
 
 /**
@@ -12,20 +12,10 @@ import PartisiaSdk from 'partisia-sdk'
 export class ContractRepository implements IContractRepository {
   private rpc: PartisiaAccountClass
   private contractRegistry: Map<string, Contract>
-  private privateKey?: string
-  private partisiaSdk?: PartisiaSdk
 
   constructor(rpc: IPartisiaRpcConfig) {
     this.contractRegistry = new Map()
     this.rpc = PartisiaAccount(rpc)
-  }
-
-  setPrivateKey(privateKey?: string) {
-    this.privateKey = privateKey
-  }
-
-  setPartisiaSdk(partisiaSdk?: PartisiaSdk) {
-    this.partisiaSdk = partisiaSdk
   }
 
   /**
@@ -61,10 +51,11 @@ export class ContractRepository implements IContractRepository {
   async createTransaction({ contractAddress, payload }: TransactionParams): Promise<ITransactionResult> {
     if (!contractAddress) throw new Error('Contract address not found')
 
-    if (this.privateKey)
-      return createTransactionFromPrivateKey(this.rpc, contractAddress, this.privateKey, payload)
-    else if (this.partisiaSdk)
-      return createTransactionFromClient(this.rpc, this.partisiaSdk, contractAddress, payload)
+    const manager = SecretsManager.getInstance()
+    if (manager.privateKey)
+      return createTransactionFromPrivateKey(this.rpc, contractAddress, manager.privateKey, payload)
+    else if (manager.partisiaSdk)
+      return createTransactionFromClient(this.rpc, manager.partisiaSdk, contractAddress, payload)
     else
       throw new Error('Private key and Partisia SDK not found')
   }
