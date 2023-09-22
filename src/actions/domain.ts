@@ -31,8 +31,7 @@ export const actionApproveMintFeesPayload = (contractAbi: ContractAbi, params: I
   rpc.addAddress(spender)
 
   const amount = new BN(params.amount)
-  rpc.addStruct()
-    .addSizedByteArray(amount.toArrayLike(Buffer, 'be', 16))
+  rpc.addU128(amount)
 
   return builderToBytesBe(rpc)
 }
