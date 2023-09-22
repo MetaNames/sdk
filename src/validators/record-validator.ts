@@ -13,7 +13,7 @@ export class RecordValidator implements IValidatorInterface<IRecord> {
     this.errors = []
 
     if (!record.data) this.errors.push('Record data is required')
-    if (!record.class) this.errors.push('Record class is required')
+    if (typeof record.class !== 'number') this.errors.push('Record class is required')
     if (record.data.length > this.rules.maxLength) this.errors.push('Record data is too long')
     if (!(record.class in RecordClassEnum)) this.errors.push('Record class is invalid')
 
