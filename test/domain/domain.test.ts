@@ -67,10 +67,16 @@ test('findByOwner returns the correct domains', async () => {
   const domains = await config.metaNames.domainRepository.findByOwner(config.address)
 
   expect(domains).toBeDefined()
-  expect(domains[0]).toHaveProperty('name')
-  expect(domains[0]).toHaveProperty('tokenId')
-  expect(domains[0]).toHaveProperty('owner')
-  expect(domains[0]).toHaveProperty('parentId')
-  expect(domains[0]).toHaveProperty('records')
-  expect(domains[0]!.owner).toEqual(config.address)
+
+  const domain = domains.find(d => d.name === domainName)
+
+  expect(domain).toBeDefined()
+  expect(domain).toHaveProperty('name')
+  expect(domain).toHaveProperty('tld')
+  expect(domain).toHaveProperty('tokenId')
+  expect(domain).toHaveProperty('owner')
+  expect(domain).toHaveProperty('parentId')
+  expect(domain).toHaveProperty('records')
+  expect(domain!.owner).toEqual(config.address)
+  expect(domain!.tld).toEqual('meta')
 }, 10_000)
