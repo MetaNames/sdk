@@ -1,5 +1,5 @@
 import { actionApproveMintFeesPayload, actionDomainMintPayload } from "../actions"
-import { Address, IActionDomainMint, IContractRepository, IMetaNamesContractRepository } from "../interface"
+import { Address, IActionDomainMint, IContractRepository, IDomain, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models"
 import { getDomainNamesByOwner, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { Config } from "../providers"
@@ -109,7 +109,7 @@ export class DomainRepository {
    * Finds domains by owner address
    * @param ownerAddress Owner address
    */
-  async findByOwner(ownerAddress: Address) {
+  async findByOwner(ownerAddress: Address): Promise<Domain[]> {
     const struct = await this.metaNamesContract.getState()
     const domains = getPnsDomains(struct)
     const nftOwners = getNftOwners(struct)
@@ -117,8 +117,8 @@ export class DomainRepository {
     const address = Buffer.isBuffer(ownerAddress) ? ownerAddress : Buffer.from(ownerAddress, 'hex')
     const domainNames = getDomainNamesByOwner(domains, nftOwners, address)
 
-    const domainsObjects = domainNames.map((domainName) => lookUpDomain(domains, nftOwners, domainName))
+    const domainsObjects = domainNames.map((domainName) => lookUpDomain(domains, nftOwners, domainName)).filter((domain) => domain !== undefined) as IDomain[]
 
-    return domainsObjects
+    return domainsObjects.map((domain) => new Domain(domain, this.metaNamesContract))
   }
 }

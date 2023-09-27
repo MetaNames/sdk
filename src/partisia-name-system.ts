@@ -63,6 +63,7 @@ export function lookUpDomain(domains: ScValueMap, owners: ScValueMap, domainName
 
   return {
     name: domainName,
+    tld: 'meta',
     owner,
     tokenId,
     parentId: fieldsMap.get('parent_id')?.optionValue().innerValue?.stringValue(),
