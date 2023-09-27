@@ -5,32 +5,36 @@ import { RecordRepository } from "../repositories"
  * Domain model that wraps the IDomain interface
  */
 export class Domain implements IDomain {
-  name: string
-  tld: string
-  owner: string
-  tokenId: number
-  parentId?: string
-  records: Map<string, string | Buffer>
-
+  private domain: IDomain
   private contractRepository: IMetaNamesContractRepository
 
   constructor(domain: IDomain, contractRepository: IMetaNamesContractRepository) {
+    this.domain = domain
     this.contractRepository = contractRepository
+  }
 
-    this.tld = domain.tld
-    this.name = [this.normalizedName(domain.name), this.tld].join('.')
-    this.owner = domain.owner
-    this.tokenId = domain.tokenId
-    this.parentId = domain.parentId
-    this.records = domain.records
+  get name() {
+    return this.nameWithoutTLD + '.meta'
   }
 
   get nameWithoutTLD() {
-    return this.name.split('.').slice(0, -1).join('.')
+    return this.domain.name.split('.').reverse().join('.')
   }
 
-  private normalizedName(name: string) {
-    return name.split('.').reverse().join('.')
+  get owner() {
+    return this.domain.owner
+  }
+
+  get tokenId() {
+    return this.domain.tokenId
+  }
+
+  get parentId() {
+    return this.domain.parentId
+  }
+
+  get records() {
+    return this.domain.records
   }
 
   get recordRepository(): RecordRepository {

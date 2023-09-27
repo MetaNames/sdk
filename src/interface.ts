@@ -8,7 +8,6 @@ import { IContractZk } from "partisia-blockchain-applications-rpc/lib/main/inter
 
 export interface IDomain {
   name: string
-  tld: string
   owner: string
   tokenId: number
   parentId?: string

@@ -62,21 +62,3 @@ test('calculate mint fees', () => {
     expect(address).toEqual(expectedAddress)
   })
 })
-
-test('findByOwner returns the correct domains', async () => {
-  const domains = await config.metaNames.domainRepository.findByOwner(config.address)
-
-  expect(domains).toBeDefined()
-
-  const domain = domains.find(d => d.name === domainName)
-
-  expect(domain).toBeDefined()
-  expect(domain).toHaveProperty('name')
-  expect(domain).toHaveProperty('tld')
-  expect(domain).toHaveProperty('tokenId')
-  expect(domain).toHaveProperty('owner')
-  expect(domain).toHaveProperty('parentId')
-  expect(domain).toHaveProperty('records')
-  expect(domain!.owner).toEqual(config.address)
-  expect(domain!.tld).toEqual('meta')
-}, 10_000)

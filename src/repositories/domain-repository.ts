@@ -109,7 +109,7 @@ export class DomainRepository {
    * Finds domains by owner address
    * @param ownerAddress Owner address
    */
-  async findByOwner(ownerAddress: Address): Promise<Domain[]> {
+  async findByOwner(ownerAddress: Address) {
     const struct = await this.metaNamesContract.getState()
     const domains = getPnsDomains(struct)
     const nftOwners = getNftOwners(struct)
@@ -119,6 +119,6 @@ export class DomainRepository {
 
     const domainsObjects = domainNames.map((domainName) => lookUpDomain(domains, nftOwners, domainName)).filter((domain) => domain !== undefined) as IDomain[]
 
-    return domainsObjects.map((domain) => new Domain(domain, this.metaNamesContract))
+    return domainsObjects
   }
 }
