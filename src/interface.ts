@@ -21,11 +21,12 @@ export enum RecordClassEnum {
   Twitter = 2,
   Uri = 3,
   Wallet = 4,
-  // Custom = 5,
-  // Custom2 = 6,
-  // Custom3 = 7,
-  // Custom4 = 8,
-  // Custom5 = 9,
+  Avatar = 5,
+  // Custom = 6,
+  // Custom2 = 7,
+  // Custom3 = 8,
+  // Custom4 = 9,
+  // Custom5 = 10,
 }
 
 export type Address = Buffer | string
