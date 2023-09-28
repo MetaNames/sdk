@@ -1,20 +1,20 @@
 import PartisiaSdk from "partisia-sdk"
 
-export class SecretsManager {
-  private static instance: SecretsManager
+export class SecretsProvider {
+  private static instance: SecretsProvider
 
   privateKey?: string
   partisiaSdk?: PartisiaSdk
 
   private constructor() { }
 
-  public static getInstance(): SecretsManager {
+  public static getInstance(): SecretsProvider {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (!SecretsManager.instance) {
-      SecretsManager.instance = new SecretsManager()
+    if (!SecretsProvider.instance) {
+      SecretsProvider.instance = new SecretsProvider()
     }
 
-    return SecretsManager.instance
+    return SecretsProvider.instance
   }
 
   /**
