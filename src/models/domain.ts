@@ -21,7 +21,7 @@ export class Domain implements IDomain {
     this.name = [this.normalizedName(domain.name), this.tld].join('.')
     this.owner = domain.owner
     this.tokenId = domain.tokenId
-    this.parentId = domain.parentId
+    this.parentId = domain.parentId ? [this.normalizedName(domain.parentId), this.tld].join('.') : undefined
     this.records = domain.records
   }
 
