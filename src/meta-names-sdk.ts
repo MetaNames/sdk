@@ -2,7 +2,7 @@ import { ContractRepository, DomainRepository } from './repositories'
 import { Config, ConfigProvider, Enviroment } from './providers'
 import { MetaNamesContractRepository } from './repositories/contracts/meta-names-contract-repository'
 import PartisiaSdk from 'partisia-sdk'
-import { SecretsManager } from './config/secrets-manager'
+import { SecretsProvider } from './providers/secrets'
 
 /**
  * Meta Names SDK
@@ -28,13 +28,13 @@ export class MetaNamesSdk {
    * @param value The value of the strategy
    */
   setSigningStrategy(strategy: 'privateKey' | 'partisiaSdk', value: string | PartisiaSdk) {
-    SecretsManager.getInstance().setSigningStrategy(strategy, value)
+    SecretsProvider.getInstance().setSigningStrategy(strategy, value)
   }
 
   /**
    * Reset the signing strategy
    */
   resetSigningStrategy() {
-    SecretsManager.getInstance().resetSigningStrategy()
+    SecretsProvider.getInstance().resetSigningStrategy()
   }
 }

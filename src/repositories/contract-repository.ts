@@ -3,7 +3,7 @@ import { PartisiaAccount } from 'partisia-blockchain-applications-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
 import { createTransactionFromClient, createTransactionFromPrivateKey } from '../actions'
 import { Contract, ContractParams, IContractRepository, ITransactionResult, TransactionParams } from '../interface'
-import { SecretsManager } from '../config/secrets-manager'
+import { SecretsProvider } from '../providers/secrets'
 
 
 /**
@@ -51,7 +51,7 @@ export class ContractRepository implements IContractRepository {
   async createTransaction({ contractAddress, payload }: TransactionParams): Promise<ITransactionResult> {
     if (!contractAddress) throw new Error('Contract address not found')
 
-    const manager = SecretsManager.getInstance()
+    const manager = SecretsProvider.getInstance()
     if (manager.privateKey)
       return createTransactionFromPrivateKey(this.rpc, contractAddress, manager.privateKey, payload)
     else if (manager.partisiaSdk)
