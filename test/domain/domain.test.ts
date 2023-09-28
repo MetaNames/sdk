@@ -41,6 +41,7 @@ test('mint domain with parent', async () => {
   expect(subDomain).toBeDefined()
   expect(subDomain).toHaveProperty('name')
   expect(subDomain!.name).toEqual(expectedDomain)
+  expect(subDomain!.parentId).toEqual('name.meta')
 }, 10_000)
 
 test('calculate mint fees', () => {
