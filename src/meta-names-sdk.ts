@@ -16,8 +16,8 @@ export class MetaNamesSdk {
   constructor(environment: Enviroment = Enviroment.testnet, overrideConfig?: Config) {
     this.config = overrideConfig ?? new ConfigProvider(environment).resolve()
 
-    this.contractRepository = new ContractRepository(this.config.rpcConfig)
-    this.contract = new MetaNamesContractRepository(this.config.contractAddress, this.config.rpcConfig)
+    this.contractRepository = new ContractRepository(this.config.rpcConfig, environment)
+    this.contract = new MetaNamesContractRepository(this.config.contractAddress, this.config.rpcConfig, environment)
 
     this.domainRepository = new DomainRepository(this.contractRepository, this.contract, this.config)
   }

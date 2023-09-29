@@ -67,7 +67,7 @@ export class SecretsProvider {
     return this.secret as PartisiaSdk
   }
 
-  get metaMaskSnap(): MetaMaskSdk {
+  get metaMask(): MetaMaskSdk {
     if (this.strategy !== 'MetaMask') throw new Error('Invalid signing strategy')
 
     return this.secret as MetaMaskSdk
