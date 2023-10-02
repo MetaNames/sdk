@@ -31,7 +31,7 @@ export const createTransactionFromMetaMaskClient = async (
   const url = rpc.getShardUrl(shardId)
 
   const serializedTransaction = await serializeTransaction(rpc, walletAddress, contractAddress, payload, cost)
-  const chainId = `Partisia Blockchain${isMainnet ? '' : ' Testnet'}}`
+  const chainId = `Partisia Blockchain${isMainnet ? '' : ' Testnet'}`
   const digest = partisiaCrypto.transaction.deriveDigest(
     chainId,
     serializedTransaction
@@ -51,11 +51,12 @@ export const createTransactionFromMetaMaskClient = async (
     },
   })
   const signature = Buffer.from(signatureHex, "hex")
-  const trxHash = partisiaCrypto.transaction.getTrxHash(digest, signature)
+  assert(signature.length === 65)
 
   const transactionPayload = Buffer.concat([signature, serializedTransaction]).toString('base64')
 
   const rpcShard = PartisiaRpc({ baseURL: url })
+  const trxHash = partisiaCrypto.transaction.getTrxHash(digest, signature)
   const isValid = await rpcShard.broadcastTransaction(transactionPayload)
   assert(isValid, 'Unknown Error')
 
