@@ -18,8 +18,8 @@ export class MetaNamesSdk {
     this.config = overrideConfig ?? new ConfigProvider(environment).resolve()
     this.secrets = new SecretsProvider()
 
-    this.contractRepository = new ContractRepository(this.config.rpcConfig, environment, this.secretsResolver)
-    this.contract = new MetaNamesContractRepository(this.config.contractAddress, this.config.rpcConfig, environment, this.secretsResolver)
+    this.contractRepository = new ContractRepository(this.config.rpcConfig, environment, this.secrets)
+    this.contract = new MetaNamesContractRepository(this.config.contractAddress, this.config.rpcConfig, environment, this.secrets)
 
     this.domainRepository = new DomainRepository(this.contractRepository, this.contract, this.config)
   }
@@ -38,9 +38,5 @@ export class MetaNamesSdk {
    */
   resetSigningStrategy() {
     this.secrets.resetSigningStrategy()
-  }
-
-  private secretsResolver() {
-    return this.secrets
   }
 }

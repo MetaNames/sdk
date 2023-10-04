@@ -12,8 +12,8 @@ import { SecretsProvider } from "../../providers/secrets"
 export class MetaNamesContractRepository extends ContractRepository implements IMetaNamesContractRepository {
   private metaNamesContractAddress: string
 
-  constructor(contractAddress: string, rpc: IPartisiaRpcConfig, environment: Enviroment, secretsResolver: () => SecretsProvider) {
-    super(rpc, environment, secretsResolver)
+  constructor(contractAddress: string, rpc: IPartisiaRpcConfig, environment: Enviroment, secrets: SecretsProvider) {
+    super(rpc, environment, secrets)
     this.metaNamesContractAddress = contractAddress
   }
 
