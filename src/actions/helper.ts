@@ -20,7 +20,7 @@ export const createTransactionFromMetaMaskClient = async (
   contractAddress: string,
   payload: Buffer,
   isMainnet = false,
-  cost: number | string = 8490
+  cost: number | string = 10490
 ): Promise<ITransactionResult> => {
   const snapId = "npm:@partisiablockchain/snap"
   const walletAddress: string = await client.request({
