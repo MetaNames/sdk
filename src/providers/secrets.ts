@@ -1,13 +1,15 @@
 import PartisiaSdk from "partisia-sdk"
+import { MetaMaskSdk, SigningClassType, SigningStrategyType } from "../interface"
 
 export class SecretsProvider {
   private static instance: SecretsProvider
 
-  privateKey?: string
-  partisiaSdk?: PartisiaSdk
+  strategy?: SigningStrategyType
+  secret?: SigningClassType
 
   private constructor() { }
 
+  // TODO: Remove singleton as it might leak secrets
   public static getInstance(): SecretsProvider {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!SecretsProvider.instance) {
@@ -22,29 +24,56 @@ export class SecretsProvider {
  * @param strategy Signing strategy
  * @param value The value of the strategy
  */
-  setSigningStrategy(strategy: 'privateKey' | 'partisiaSdk', value: string | PartisiaSdk) {
+  setSigningStrategy(strategy: SigningStrategyType, value: SigningClassType) {
     this.resetSigningStrategy()
 
-    if (strategy === 'privateKey') {
-      if (typeof value !== 'string') throw new Error('Private key must be a string')
+    switch (strategy) {
+      case 'privateKey':
+        if (typeof value !== 'string') throw new Error('Private key must be a string')
 
-      this.setPrivateKey(value)
-    } else this.setPartisiaSdk(value as PartisiaSdk)
+        this.setSecret(value)
+        break
+      case 'partisiaSdk':
+        this.setSecret(value)
+        break
+
+      case 'MetaMask':
+        this.setSecret(value)
+        break
+
+      default:
+        throw new Error('Invalid signing strategy')
+    }
+
+    this.strategy = strategy
   }
 
   /**
    * Reset the signing strategy
    */
   resetSigningStrategy() {
-    this.setPrivateKey()
-    this.setPartisiaSdk()
+    this.setSecret()
   }
 
-  private setPrivateKey(privateKey?: string) {
-    this.privateKey = privateKey
+  get privateKey(): string {
+    if (this.strategy !== 'privateKey') throw new Error('Invalid signing strategy')
+
+    return this.secret as string
   }
 
-  private setPartisiaSdk(partisiaSdk?: PartisiaSdk) {
-    this.partisiaSdk = partisiaSdk
+  get partisiaSdk(): PartisiaSdk {
+    if (this.strategy !== 'partisiaSdk') throw new Error('Invalid signing strategy')
+
+    return this.secret as PartisiaSdk
+  }
+
+  get metaMask(): MetaMaskSdk {
+    if (this.strategy !== 'MetaMask') throw new Error('Invalid signing strategy')
+
+    return this.secret as MetaMaskSdk
+  }
+
+  private setSecret(secret?: SigningClassType) {
+    this.secret = secret
   }
 }

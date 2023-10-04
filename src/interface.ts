@@ -3,8 +3,25 @@
 import { ContractAbi, ScValueStruct } from "@partisiablockchain/abi-client-ts"
 import { IContractInfo } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
 import { IContractZk } from "partisia-blockchain-applications-rpc/lib/main/interface-zk"
+import PartisiaSdk from "partisia-sdk"
 
 // TODO: Reorganize this file
+
+export type GasCost = 'low' | 'high'
+
+export type SigningStrategyType = 'privateKey' | 'partisiaSdk' | 'MetaMask'
+export type SigningClassType = string | PartisiaSdk | MetaMaskSdk
+
+export interface MetamaskRequestArguments {
+  /** The RPC method to request. */
+  method: string;
+  /** The params of the RPC method, if any. */
+  params?: unknown[] | Record<string, unknown>;
+}
+
+export interface MetaMaskSdk {
+  request<T>(args: MetamaskRequestArguments): Promise<T>;
+}
 
 export interface IDomain {
   name: string
@@ -96,6 +113,7 @@ export interface Contract {
 export interface TransactionParams {
   contractAddress?: string
   payload: Buffer
+  gasCost?: GasCost
 }
 
 export interface IContractRepository {

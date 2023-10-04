@@ -3,7 +3,7 @@ import { partisiaCrypto } from 'partisia-crypto'
 import { PartisiaRpc } from 'partisia-blockchain-applications-rpc'
 import { PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
 import { PartisiaRpcClass } from 'partisia-blockchain-applications-rpc/lib/main/rpc'
-import { ITransactionResult } from '../interface'
+import { ITransactionResult, MetaMaskSdk } from '../interface'
 import { BigEndianByteOutput } from '@secata-public/bitmanipulation-ts'
 import { FnRpcBuilder } from '@partisiablockchain/abi-client-ts'
 import type PartisiaSdk from 'partisia-sdk'
@@ -14,7 +14,56 @@ export const builderToBytesBe = (rpc: FnRpcBuilder) => {
   return bufferWriter.toBuffer()
 }
 
-export const createTransactionFromClient = async (
+export const createTransactionFromMetaMaskClient = async (
+  rpc: PartisiaAccountClass,
+  client: MetaMaskSdk,
+  contractAddress: string,
+  payload: Buffer,
+  isMainnet = false,
+  cost: number | string = 10490
+): Promise<ITransactionResult> => {
+  const snapId = "npm:@partisiablockchain/snap"
+  const walletAddress: string = await client.request({
+    method: "wallet_invokeSnap",
+    params: { snapId, request: { method: "get_address" } },
+  })
+  const shardId = rpc.deriveShardId(walletAddress)
+  const url = rpc.getShardUrl(shardId)
+
+  const serializedTransaction = await serializeTransaction(rpc, walletAddress, contractAddress, payload, cost)
+  const chainId = `Partisia Blockchain${isMainnet ? '' : ' Testnet'}`
+  const digest = partisiaCrypto.transaction.deriveDigest(
+    chainId,
+    serializedTransaction
+  )
+
+  const signatureHex: string = await client.request({
+    method: "wallet_invokeSnap",
+    params: {
+      snapId,
+      request: {
+        method: "sign_transaction",
+        params: {
+          payload: serializedTransaction.toString("hex"),
+          chainId
+        },
+      },
+    },
+  })
+  const signature = Buffer.from(signatureHex, "hex")
+  assert(signature.length === 65)
+
+  const transactionPayload = Buffer.concat([signature, serializedTransaction]).toString('base64')
+
+  const rpcShard = PartisiaRpc({ baseURL: url })
+  const trxHash = partisiaCrypto.transaction.getTrxHash(digest, signature)
+  const isValid = await rpcShard.broadcastTransaction(transactionPayload)
+  assert(isValid, 'Unknown Error')
+
+  return transactionResult(rpc, rpcShard, trxHash)
+}
+
+export const createTransactionFromPartisiaClient = async (
   rpc: PartisiaAccountClass,
   client: PartisiaSdk,
   contractAddress: string,
