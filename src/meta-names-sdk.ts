@@ -12,12 +12,14 @@ export class MetaNamesSdk {
   contract: MetaNamesContractRepository
   contractRepository: ContractRepository
   domainRepository: DomainRepository
+  secrets: SecretsProvider
 
   constructor(environment: Enviroment = Enviroment.testnet, overrideConfig?: Config) {
     this.config = overrideConfig ?? new ConfigProvider(environment).resolve()
+    this.secrets = new SecretsProvider()
 
-    this.contractRepository = new ContractRepository(this.config.rpcConfig, environment)
-    this.contract = new MetaNamesContractRepository(this.config.contractAddress, this.config.rpcConfig, environment)
+    this.contractRepository = new ContractRepository(this.config.rpcConfig, environment, this.secretsResolver)
+    this.contract = new MetaNamesContractRepository(this.config.contractAddress, this.config.rpcConfig, environment, this.secretsResolver)
 
     this.domainRepository = new DomainRepository(this.contractRepository, this.contract, this.config)
   }
@@ -28,13 +30,17 @@ export class MetaNamesSdk {
    * @param value The value of the strategy
    */
   setSigningStrategy(strategy: SigningStrategyType, value: SigningClassType) {
-    SecretsProvider.getInstance().setSigningStrategy(strategy, value)
+    this.secrets.setSigningStrategy(strategy, value)
   }
 
   /**
    * Reset the signing strategy
    */
   resetSigningStrategy() {
-    SecretsProvider.getInstance().resetSigningStrategy()
+    this.secrets.resetSigningStrategy()
+  }
+
+  private secretsResolver() {
+    return this.secrets
   }
 }

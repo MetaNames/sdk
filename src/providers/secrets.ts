@@ -2,22 +2,8 @@ import PartisiaSdk from "partisia-sdk"
 import { MetaMaskSdk, SigningClassType, SigningStrategyType } from "../interface"
 
 export class SecretsProvider {
-  private static instance: SecretsProvider
-
   strategy?: SigningStrategyType
   secret?: SigningClassType
-
-  private constructor() { }
-
-  // TODO: Remove singleton as it might leak secrets
-  public static getInstance(): SecretsProvider {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (!SecretsProvider.instance) {
-      SecretsProvider.instance = new SecretsProvider()
-    }
-
-    return SecretsProvider.instance
-  }
 
   /**
  * Set the strategy to sign transactions
