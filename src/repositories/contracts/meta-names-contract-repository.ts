@@ -2,6 +2,7 @@ import { IPartisiaRpcConfig } from "partisia-blockchain-applications-rpc/lib/mai
 import { ContractRepository } from "../contract-repository"
 import { Contract, ContractParams, IMetaNamesContractRepository, ITransactionResult, MetaNamesState, TransactionParams } from "../../interface"
 import { Enviroment } from "../../providers"
+import { SecretsProvider } from "../../providers/secrets"
 
 /**
  * Meta Names contract repository
@@ -11,8 +12,8 @@ import { Enviroment } from "../../providers"
 export class MetaNamesContractRepository extends ContractRepository implements IMetaNamesContractRepository {
   private metaNamesContractAddress: string
 
-  constructor(contractAddress: string, rpc: IPartisiaRpcConfig, environment: Enviroment) {
-    super(rpc, environment)
+  constructor(contractAddress: string, rpc: IPartisiaRpcConfig, environment: Enviroment, secrets: SecretsProvider) {
+    super(rpc, environment, secrets)
     this.metaNamesContractAddress = contractAddress
   }
 

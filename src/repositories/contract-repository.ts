@@ -14,11 +14,13 @@ export class ContractRepository implements IContractRepository {
   private rpc: PartisiaAccountClass
   private contractRegistry: Map<string, Contract>
   private environment: Enviroment
+  private secrets: SecretsProvider
 
-  constructor(rpc: IPartisiaRpcConfig, environment: Enviroment) {
+  constructor(rpc: IPartisiaRpcConfig, environment: Enviroment, secrets: SecretsProvider) {
     this.contractRegistry = new Map()
     this.environment = environment
     this.rpc = PartisiaAccount(rpc)
+    this.secrets = secrets
   }
 
   /**
@@ -62,16 +64,15 @@ export class ContractRepository implements IContractRepository {
 
     const gas = gasCost ? gasTable[gasCost] : gasTable.low
 
-    const manager = SecretsProvider.getInstance()
-    switch (manager.strategy) {
+    switch (this.secrets.strategy) {
       case 'privateKey':
-        return createTransactionFromPrivateKey(this.rpc, contractAddress, manager.privateKey, payload, isMainnet, gas)
+        return createTransactionFromPrivateKey(this.rpc, contractAddress, this.secrets.privateKey, payload, isMainnet, gas)
 
       case 'partisiaSdk':
-        return createTransactionFromPartisiaClient(this.rpc, manager.partisiaSdk, contractAddress, payload, gas)
+        return createTransactionFromPartisiaClient(this.rpc, this.secrets.partisiaSdk, contractAddress, payload, gas)
 
       case 'MetaMask':
-        return createTransactionFromMetaMaskClient(this.rpc, manager.metaMask, contractAddress, payload, isMainnet, gas)
+        return createTransactionFromMetaMaskClient(this.rpc, this.secrets.metaMask, contractAddress, payload, isMainnet, gas)
 
       default:
         throw new Error('Signing strategy not found')
