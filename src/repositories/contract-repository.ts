@@ -2,7 +2,7 @@ import { AbiParser, StateReader } from '@partisiablockchain/abi-client-ts'
 import { PartisiaAccount } from 'partisia-blockchain-applications-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
 import { createTransactionFromPartisiaClient, createTransactionFromPrivateKey, createTransactionFromMetaMaskClient } from '../actions'
-import { Contract, ContractParams, IContractRepository, ITransactionResult, TransactionParams } from '../interface'
+import { Contract, ContractParams, GasCost, IContractRepository, ITransactionResult, TransactionParams } from '../interface'
 import { SecretsProvider } from '../providers/secrets'
 import { Enviroment } from '../providers'
 
@@ -51,21 +51,27 @@ export class ContractRepository implements IContractRepository {
    * Create a transaction
    * @param payload Transaction payload
    */
-  async createTransaction({ contractAddress, payload }: TransactionParams): Promise<ITransactionResult> {
+  async createTransaction({ contractAddress, payload, gasCost }: TransactionParams): Promise<ITransactionResult> {
     if (!contractAddress) throw new Error('Contract address not found')
 
     const isMainnet = this.environment === Enviroment.mainnet
+    const gasTable: Record<GasCost, number> = {
+      'low': 4490,
+      'high': 32490,
+    }
+
+    const gas = gasCost ? gasTable[gasCost] : gasTable.low
 
     const manager = SecretsProvider.getInstance()
     switch (manager.strategy) {
       case 'privateKey':
-        return createTransactionFromPrivateKey(this.rpc, contractAddress, manager.privateKey, payload, isMainnet)
+        return createTransactionFromPrivateKey(this.rpc, contractAddress, manager.privateKey, payload, isMainnet, gas)
 
       case 'partisiaSdk':
-        return createTransactionFromPartisiaClient(this.rpc, manager.partisiaSdk, contractAddress, payload)
+        return createTransactionFromPartisiaClient(this.rpc, manager.partisiaSdk, contractAddress, payload, gas)
 
       case 'MetaMask':
-        return createTransactionFromMetaMaskClient(this.rpc, manager.metaMask, contractAddress, payload, isMainnet)
+        return createTransactionFromMetaMaskClient(this.rpc, manager.metaMask, contractAddress, payload, isMainnet, gas)
 
       default:
         throw new Error('Signing strategy not found')

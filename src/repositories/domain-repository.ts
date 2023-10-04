@@ -63,7 +63,7 @@ export class DomainRepository {
     const contract = await this.metaNamesContract.getContract()
     const payload = actionDomainMintPayload(contract.abi, { ...params, domain: normalizedDomain, parentDomain: normalizedParentDomain, subscriptionYears })
 
-    return this.metaNamesContract.createTransaction({ payload })
+    return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }
 
   /**

@@ -31,7 +31,7 @@ export class MetaNamesContractRepository extends ContractRepository implements I
     })
   }
 
-  async createTransaction({ payload }: TransactionParams): Promise<ITransactionResult> {
-    return super.createTransaction({ contractAddress: this.metaNamesContractAddress, payload })
+  async createTransaction({ payload, gasCost }: TransactionParams): Promise<ITransactionResult> {
+    return super.createTransaction({ contractAddress: this.metaNamesContractAddress, payload, gasCost })
   }
 }

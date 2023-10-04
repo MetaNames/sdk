@@ -7,6 +7,8 @@ import PartisiaSdk from "partisia-sdk"
 
 // TODO: Reorganize this file
 
+export type GasCost = 'low' | 'high'
+
 export type SigningStrategyType = 'privateKey' | 'partisiaSdk' | 'MetaMask'
 export type SigningClassType = string | PartisiaSdk | MetaMaskSdk
 
@@ -111,6 +113,7 @@ export interface Contract {
 export interface TransactionParams {
   contractAddress?: string
   payload: Buffer
+  gasCost?: GasCost
 }
 
 export interface IContractRepository {
