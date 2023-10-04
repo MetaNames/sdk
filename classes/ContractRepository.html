@@ -30,7 +30,7 @@
 <ul class="tsd-hierarchy">
 <li><a href="../interfaces/IContractRepository.html" class="tsd-signature-type tsd-kind-interface">IContractRepository</a></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/65e2f0e/src/repositories/contract-repository.ts#L12">repositories/contract-repository.ts:12</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/f454121/src/repositories/contract-repository.ts#L13">repositories/contract-repository.ts:13</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -43,7 +43,9 @@
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading">Properties</h3>
 <div class="tsd-index-list"><a href="ContractRepository.html#contractRegistry" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-1024"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)"></path></g></svg><span>contract<wbr/>Registry</span></a>
+<a href="ContractRepository.html#environment" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>environment</span></a>
 <a href="ContractRepository.html#rpc" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>rpc</span></a>
+<a href="ContractRepository.html#secrets" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>secrets</span></a>
 </div></section>
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading">Methods</h3>
@@ -57,28 +59,42 @@
 <section class="tsd-panel tsd-member"><a id="constructor" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>constructor</span><a href="#constructor" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><g stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" id="icon-anchor"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></g></svg></a></h3>
 <ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="constructor.new_ContractRepository"><span class="tsd-kind-constructor-signature">new <wbr/>Contract<wbr/>Repository</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">rpc</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ContractRepository.html" class="tsd-signature-type tsd-kind-class">ContractRepository</a><a href="#constructor.new_ContractRepository" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="constructor.new_ContractRepository"><span class="tsd-kind-constructor-signature">new <wbr/>Contract<wbr/>Repository</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">rpc</span>, <span class="tsd-kind-parameter">environment</span>, <span class="tsd-kind-parameter">secrets</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ContractRepository.html" class="tsd-signature-type tsd-kind-class">ContractRepository</a><a href="#constructor.new_ContractRepository" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">rpc</span>: <span class="tsd-signature-type ">IPartisiaRpcConfig</span></h5></li></ul></div>
+<h5><span class="tsd-kind-parameter">rpc</span>: <span class="tsd-signature-type ">IPartisiaRpcConfig</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">environment</span>: <a href="../enums/Enviroment.html" class="tsd-signature-type tsd-kind-enum">Enviroment</a></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">secrets</span>: <span class="tsd-signature-type ">SecretsProvider</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="ContractRepository.html" class="tsd-signature-type tsd-kind-class">ContractRepository</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/65e2f0e/src/repositories/contract-repository.ts#L16">repositories/contract-repository.ts:16</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/f454121/src/repositories/contract-repository.ts#L19">repositories/contract-repository.ts:19</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="contractRegistry" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>contract<wbr/>Registry</span><a href="#contractRegistry" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">contract<wbr/>Registry</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/Contract.html" class="tsd-signature-type tsd-kind-interface">Contract</a><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/65e2f0e/src/repositories/contract-repository.ts#L14">repositories/contract-repository.ts:14</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/f454121/src/repositories/contract-repository.ts#L15">repositories/contract-repository.ts:15</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-private"><a id="environment" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>environment</span><a href="#environment" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">environment</span><span class="tsd-signature-symbol">:</span> <a href="../enums/Enviroment.html" class="tsd-signature-type tsd-kind-enum">Enviroment</a></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/f454121/src/repositories/contract-repository.ts#L16">repositories/contract-repository.ts:16</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="rpc" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>rpc</span><a href="#rpc" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">rpc</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">PartisiaAccountClass</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/65e2f0e/src/repositories/contract-repository.ts#L13">repositories/contract-repository.ts:13</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/f454121/src/repositories/contract-repository.ts#L14">repositories/contract-repository.ts:14</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-private"><a id="secrets" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>secrets</span><a href="#secrets" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">secrets</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">SecretsProvider</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/f454121/src/repositories/contract-repository.ts#L17">repositories/contract-repository.ts:17</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member"><a id="createTransaction" class="tsd-anchor"></a>
@@ -100,7 +116,7 @@
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IContractRepository.html">IContractRepository</a>.<a href="../interfaces/IContractRepository.html#createTransaction">createTransaction</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/65e2f0e/src/repositories/contract-repository.ts#L51">repositories/contract-repository.ts:51</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/f454121/src/repositories/contract-repository.ts#L56">repositories/contract-repository.ts:56</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getContract" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Contract</span><a href="#getContract" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -117,7 +133,7 @@
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/IContractRepository.html">IContractRepository</a>.<a href="../interfaces/IContractRepository.html#getContract">getContract</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/65e2f0e/src/repositories/contract-repository.ts#L25">repositories/contract-repository.ts:25</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/f454121/src/repositories/contract-repository.ts#L30">repositories/contract-repository.ts:30</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="getContractFromRegistry" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>get<wbr/>Contract<wbr/>From<wbr/>Registry</span><a href="#getContractFromRegistry" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-private">
@@ -130,7 +146,7 @@
 <h5><span class="tsd-kind-parameter">__namedParameters</span>: <a href="../interfaces/ContractParams.html" class="tsd-signature-type tsd-kind-interface">ContractParams</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/Contract.html" class="tsd-signature-type tsd-kind-interface">Contract</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/65e2f0e/src/repositories/contract-repository.ts#L63">repositories/contract-repository.ts:63</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/f454121/src/repositories/contract-repository.ts#L82">repositories/contract-repository.ts:82</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getState" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>State</span><a href="#getState" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -143,7 +159,7 @@
 <h5><span class="tsd-kind-parameter">params</span>: <a href="../interfaces/ContractParams.html" class="tsd-signature-type tsd-kind-interface">ContractParams</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">ScValueStruct</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/65e2f0e/src/repositories/contract-repository.ts#L32">repositories/contract-repository.ts:32</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/f454121/src/repositories/contract-repository.ts#L37">repositories/contract-repository.ts:37</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -165,7 +181,9 @@
 <ul>
 <li><a href="#constructor" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-512"></use></svg><span>constructor</span></a></li>
 <li><a href="#contractRegistry" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>contract<wbr/>Registry</span></a></li>
+<li><a href="#environment" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>environment</span></a></li>
 <li><a href="#rpc" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>rpc</span></a></li>
+<li><a href="#secrets" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>secrets</span></a></li>
 <li><a href="#createTransaction" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>create<wbr/>Transaction</span></a></li>
 <li><a href="#getContract" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>get<wbr/>Contract</span></a></li>
 <li><a href="#getContractFromRegistry" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>get<wbr/>Contract<wbr/>From<wbr/>Registry</span></a></li>
@@ -201,9 +219,14 @@
 <li><a href="../interfaces/ITransactionResult.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>ITransaction<wbr/>Result</span></a></li>
 <li><a href="../interfaces/IValidatorInterface.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IValidator<wbr/>Interface</span></a></li>
 <li><a href="../interfaces/IValidatorOptions.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IValidator<wbr/>Options</span></a></li>
+<li><a href="../interfaces/MetaMaskSdk.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Meta<wbr/>Mask<wbr/>Sdk</span></a></li>
+<li><a href="../interfaces/MetamaskRequestArguments.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Metamask<wbr/>Request<wbr/>Arguments</span></a></li>
 <li><a href="../interfaces/TransactionParams.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Transaction<wbr/>Params</span></a></li>
 <li><a href="../types/Address.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-4194304"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-type-alias)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z" fill="var(--color-text)"></path></g></svg><span>Address</span></a></li>
-<li><a href="../types/MetaNamesState.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Meta<wbr/>Names<wbr/>State</span></a></li></ul></nav></div></div></div>
+<li><a href="../types/GasCost.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Gas<wbr/>Cost</span></a></li>
+<li><a href="../types/MetaNamesState.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Meta<wbr/>Names<wbr/>State</span></a></li>
+<li><a href="../types/SigningClassType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Signing<wbr/>Class<wbr/>Type</span></a></li>
+<li><a href="../types/SigningStrategyType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Signing<wbr/>Strategy<wbr/>Type</span></a></li></ul></nav></div></div></div>
 <div class="tsd-generator">
 <p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
 <div class="overlay"></div></body></html>

@@ -31,7 +31,7 @@ It is a wrapper of ContractRepository that adds some defaults</p>
 <ul class="tsd-hierarchy">
 <li><a href="../interfaces/IMetaNamesContractRepository.html" class="tsd-signature-type tsd-kind-interface">IMetaNamesContractRepository</a></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/65e2f0e/src/repositories/contracts/meta-names-contract-repository.ts#L10">repositories/contracts/meta-names-contract-repository.ts:10</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/f454121/src/repositories/contracts/meta-names-contract-repository.ts#L12">repositories/contracts/meta-names-contract-repository.ts:12</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -56,7 +56,7 @@ It is a wrapper of ContractRepository that adds some defaults</p>
 <section class="tsd-panel tsd-member"><a id="constructor" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>constructor</span><a href="#constructor" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><g stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" id="icon-anchor"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></g></svg></a></h3>
 <ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="constructor.new_MetaNamesContractRepository"><span class="tsd-kind-constructor-signature">new <wbr/>Meta<wbr/>Names<wbr/>Contract<wbr/>Repository</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">contractAddress</span>, <span class="tsd-kind-parameter">rpc</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="MetaNamesContractRepository.html" class="tsd-signature-type tsd-kind-class">MetaNamesContractRepository</a><a href="#constructor.new_MetaNamesContractRepository" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="constructor.new_MetaNamesContractRepository"><span class="tsd-kind-constructor-signature">new <wbr/>Meta<wbr/>Names<wbr/>Contract<wbr/>Repository</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">contractAddress</span>, <span class="tsd-kind-parameter">rpc</span>, <span class="tsd-kind-parameter">environment</span>, <span class="tsd-kind-parameter">secrets</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="MetaNamesContractRepository.html" class="tsd-signature-type tsd-kind-class">MetaNamesContractRepository</a><a href="#constructor.new_MetaNamesContractRepository" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -64,18 +64,22 @@ It is a wrapper of ContractRepository that adds some defaults</p>
 <li>
 <h5><span class="tsd-kind-parameter">contractAddress</span>: <span class="tsd-signature-type">string</span></h5></li>
 <li>
-<h5><span class="tsd-kind-parameter">rpc</span>: <span class="tsd-signature-type ">IPartisiaRpcConfig</span></h5></li></ul></div>
+<h5><span class="tsd-kind-parameter">rpc</span>: <span class="tsd-signature-type ">IPartisiaRpcConfig</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">environment</span>: <a href="../enums/Enviroment.html" class="tsd-signature-type tsd-kind-enum">Enviroment</a></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">secrets</span>: <span class="tsd-signature-type ">SecretsProvider</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="MetaNamesContractRepository.html" class="tsd-signature-type tsd-kind-class">MetaNamesContractRepository</a></h4><aside class="tsd-sources">
 <p>Overrides <a href="ContractRepository.html">ContractRepository</a>.<a href="ContractRepository.html#constructor">constructor</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/65e2f0e/src/repositories/contracts/meta-names-contract-repository.ts#L13">repositories/contracts/meta-names-contract-repository.ts:13</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/f454121/src/repositories/contracts/meta-names-contract-repository.ts#L15">repositories/contracts/meta-names-contract-repository.ts:15</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="metaNamesContractAddress" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>meta<wbr/>Names<wbr/>Contract<wbr/>Address</span><a href="#metaNamesContractAddress" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">meta<wbr/>Names<wbr/>Contract<wbr/>Address</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/65e2f0e/src/repositories/contracts/meta-names-contract-repository.ts#L11">repositories/contracts/meta-names-contract-repository.ts:11</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/f454121/src/repositories/contracts/meta-names-contract-repository.ts#L13">repositories/contracts/meta-names-contract-repository.ts:13</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member"><a id="createTransaction" class="tsd-anchor"></a>
@@ -98,7 +102,7 @@ It is a wrapper of ContractRepository that adds some defaults</p>
 <p>Implementation of <a href="../interfaces/IMetaNamesContractRepository.html">IMetaNamesContractRepository</a>.<a href="../interfaces/IMetaNamesContractRepository.html#createTransaction">createTransaction</a></p>
 <p>Overrides <a href="ContractRepository.html">ContractRepository</a>.<a href="ContractRepository.html#createTransaction">createTransaction</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/65e2f0e/src/repositories/contracts/meta-names-contract-repository.ts#L33">repositories/contracts/meta-names-contract-repository.ts:33</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/f454121/src/repositories/contracts/meta-names-contract-repository.ts#L35">repositories/contracts/meta-names-contract-repository.ts:35</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getContract" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Contract</span><a href="#getContract" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -116,7 +120,7 @@ It is a wrapper of ContractRepository that adds some defaults</p>
 <p>Implementation of <a href="../interfaces/IMetaNamesContractRepository.html">IMetaNamesContractRepository</a>.<a href="../interfaces/IMetaNamesContractRepository.html#getContract">getContract</a></p>
 <p>Overrides <a href="ContractRepository.html">ContractRepository</a>.<a href="ContractRepository.html#getContract">getContract</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/65e2f0e/src/repositories/contracts/meta-names-contract-repository.ts#L18">repositories/contracts/meta-names-contract-repository.ts:18</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/f454121/src/repositories/contracts/meta-names-contract-repository.ts#L20">repositories/contracts/meta-names-contract-repository.ts:20</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getState" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>State</span><a href="#getState" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -129,7 +133,7 @@ It is a wrapper of ContractRepository that adds some defaults</p>
 <p>Implementation of <a href="../interfaces/IMetaNamesContractRepository.html">IMetaNamesContractRepository</a>.<a href="../interfaces/IMetaNamesContractRepository.html#getState">getState</a></p>
 <p>Overrides <a href="ContractRepository.html">ContractRepository</a>.<a href="ContractRepository.html#getState">getState</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/65e2f0e/src/repositories/contracts/meta-names-contract-repository.ts#L25">repositories/contracts/meta-names-contract-repository.ts:25</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/MetaNames/sdk/blob/f454121/src/repositories/contracts/meta-names-contract-repository.ts#L27">repositories/contracts/meta-names-contract-repository.ts:27</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -185,9 +189,14 @@ It is a wrapper of ContractRepository that adds some defaults</p>
 <li><a href="../interfaces/ITransactionResult.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>ITransaction<wbr/>Result</span></a></li>
 <li><a href="../interfaces/IValidatorInterface.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IValidator<wbr/>Interface</span></a></li>
 <li><a href="../interfaces/IValidatorOptions.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>IValidator<wbr/>Options</span></a></li>
+<li><a href="../interfaces/MetaMaskSdk.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Meta<wbr/>Mask<wbr/>Sdk</span></a></li>
+<li><a href="../interfaces/MetamaskRequestArguments.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Metamask<wbr/>Request<wbr/>Arguments</span></a></li>
 <li><a href="../interfaces/TransactionParams.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Transaction<wbr/>Params</span></a></li>
 <li><a href="../types/Address.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-4194304"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-type-alias)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z" fill="var(--color-text)"></path></g></svg><span>Address</span></a></li>
-<li><a href="../types/MetaNamesState.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Meta<wbr/>Names<wbr/>State</span></a></li></ul></nav></div></div></div>
+<li><a href="../types/GasCost.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Gas<wbr/>Cost</span></a></li>
+<li><a href="../types/MetaNamesState.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Meta<wbr/>Names<wbr/>State</span></a></li>
+<li><a href="../types/SigningClassType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Signing<wbr/>Class<wbr/>Type</span></a></li>
+<li><a href="../types/SigningStrategyType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Signing<wbr/>Strategy<wbr/>Type</span></a></li></ul></nav></div></div></div>
 <div class="tsd-generator">
 <p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
 <div class="overlay"></div></body></html>
