@@ -32,6 +32,12 @@ export interface IDomain {
   records: Map<string, string | Buffer>
 }
 
+export interface IDomainAnalyzed {
+  name: string,
+  parentId?: string,
+  tld: string,
+}
+
 export enum RecordClassEnum {
   Bio = 0,
   Discord = 1,

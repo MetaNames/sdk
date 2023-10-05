@@ -7,6 +7,20 @@ beforeAll(async () => {
   if (!domain) await mintDomain(domainName)
 }, 15_000)
 
+test('analyze domain', () => {
+  const domainName = 'sub.name.meta'
+
+  const domain = config.metaNames.domainRepository.analyze(domainName)
+
+  expect(domain).toBeDefined()
+  expect(domain).toHaveProperty('name')
+  expect(domain).toHaveProperty('parentId')
+  expect(domain).toHaveProperty('tld')
+  expect(domain!.name).toEqual(domainName)
+  expect(domain!.tld).toEqual('meta')
+  expect(domain!.parentId).toEqual('name.meta')
+})
+
 test('lookup domain', async () => {
   const data = await config.metaNames.domainRepository.find(domainName)
 

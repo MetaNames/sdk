@@ -1,5 +1,5 @@
 import { actionApproveMintFeesPayload, actionDomainMintPayload } from "../actions"
-import { Address, IActionDomainMint, IContractRepository, IDomain, IMetaNamesContractRepository } from "../interface"
+import { Address, IActionDomainMint, IContractRepository, IDomain, IDomainAnalyzed, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models"
 import { getDomainNamesByOwner, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { Config } from "../providers"
@@ -19,6 +19,19 @@ export class DomainRepository {
     this.contractRepository = contractRepository
     this.metaNamesContract = metaNamesContractRepository
     this.domainValidator = new DomainValidator(this.config.tld)
+  }
+
+  /**
+   * Analyze the domain given the name,
+   * without checking on the contract state
+   * @param domainName
+   */
+  analyze(domainName: string): IDomainAnalyzed {
+    return {
+      name: this.domainValidator.normalize(domainName),
+      parentId: this.getParentName(domainName),
+      tld: this.config.tld,
+    }
   }
 
   /**
@@ -50,10 +63,7 @@ export class DomainRepository {
     let domain = params.domain
     let parentDomain = params.parentDomain
 
-    if (!parentDomain) {
-      const names = domain.split('.')
-      if (names.length > 2) parentDomain = names.slice(1).join('.')
-    }
+    if (!parentDomain) parentDomain = this.getParentName(domain)
 
     let subscriptionYears: number | undefined
     let normalizedParentDomain: string | undefined
@@ -127,5 +137,10 @@ export class DomainRepository {
     const domainsObjects = domainNames.map((domainName) => lookUpDomain(domains, nftOwners, domainName)).filter((domain) => domain !== undefined) as IDomain[]
 
     return domainsObjects.map((domain) => new Domain(domain, this.metaNamesContract))
+  }
+
+  private getParentName(domain: string) {
+    const names = domain.split('.')
+    if (names.length > 2) return names.slice(1).join('.')
   }
 }
