@@ -18,7 +18,7 @@ export class DomainRepository {
     this.config = config
     this.contractRepository = contractRepository
     this.metaNamesContract = metaNamesContractRepository
-    this.domainValidator = new DomainValidator()
+    this.domainValidator = new DomainValidator(this.config.tld)
   }
 
   /**
@@ -46,22 +46,29 @@ export class DomainRepository {
    */
   async register(params: IActionDomainMint) {
     if (!this.domainValidator.validate(params.domain)) throw new Error('Domain validation failed')
-    let domainName = params.domain
+
+    let domain = params.domain
+    let parentDomain = params.parentDomain
+
+    if (!parentDomain) {
+      const names = domain.split('.')
+      if (names.length > 2) parentDomain = names.slice(1).join('.')
+    }
 
     let subscriptionYears: number | undefined
     let normalizedParentDomain: string | undefined
-    if (params.parentDomain) {
-      if (!this.domainValidator.validate(params.parentDomain)) throw new Error('Parent domain validation failed')
+    if (parentDomain) {
+      if (!this.domainValidator.validate(parentDomain)) throw new Error('Parent domain validation failed')
 
-      if (!domainName.endsWith(params.parentDomain)) domainName = `${params.domain}.${params.parentDomain}`
-      normalizedParentDomain = this.domainValidator.normalize(params.parentDomain)
+      normalizedParentDomain = this.domainValidator.normalize(parentDomain)
+      if (!domain.endsWith(parentDomain)) domain = `${domain}.${parentDomain}`
     } else {
       subscriptionYears = params.subscriptionYears ?? 1
     }
 
-    const normalizedDomain = this.domainValidator.normalize(domainName)
+    domain = this.domainValidator.normalize(domain)
     const contract = await this.metaNamesContract.getContract()
-    const payload = actionDomainMintPayload(contract.abi, { ...params, domain: normalizedDomain, parentDomain: normalizedParentDomain, subscriptionYears })
+    const payload = actionDomainMintPayload(contract.abi, { ...params, domain, parentDomain: normalizedParentDomain, subscriptionYears })
 
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }
@@ -120,5 +127,11 @@ export class DomainRepository {
     const domainsObjects = domainNames.map((domainName) => lookUpDomain(domains, nftOwners, domainName)).filter((domain) => domain !== undefined) as IDomain[]
 
     return domainsObjects.map((domain) => new Domain(domain, this.metaNamesContract))
+  }
+
+  private removeTLD(domainName: string) {
+    if (domainName.endsWith('.meta')) return domainName.slice(0, -5)
+
+    return domainName
   }
 }

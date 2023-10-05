@@ -3,11 +3,17 @@ import { IValidatorInterface, IValidatorOptions } from '../interface'
 
 export interface INormalizeOptions extends IValidatorOptions {
   removeTLD?: boolean
+  tld?: string
 }
 
 
 export class DomainValidator implements IValidatorInterface<string> {
   errors: string[] = []
+  tld: string
+
+  constructor(tld: string) {
+    this.tld = tld
+  }
 
   get rules() {
     return {
@@ -33,7 +39,7 @@ export class DomainValidator implements IValidatorInterface<string> {
 
   normalize(name: string, { removeTLD }: INormalizeOptions = { removeTLD: true }): string {
     // Remove .meta if it's there as it's redundant
-    if (removeTLD && name.endsWith('.meta')) name = name.slice(0, -5)
+    if (removeTLD && name.endsWith(`.${this.tld}`)) name = name.replace(`.${this.tld}`, '')
     if (name.includes('..')) name = name.replace(/\.\./g, '.')
 
     const reversed = name.split('.').reverse().join('.')

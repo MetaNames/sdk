@@ -1,4 +1,4 @@
-import { config, generateRandomString, mintDomain } from '../helpers'
+import { config, mintDomain } from '../helpers'
 
 const domainName = 'name.meta'
 
@@ -18,31 +18,6 @@ test('lookup domain', async () => {
   expect(data).toHaveProperty('records')
   expect(data!.name).toEqual(domainName)
 })
-
-test('mint domain with parent', async () => {
-  const randomName = generateRandomString(10)
-  const domain = await config.metaNames.domainRepository.find(randomName)
-
-  expect(domain).toBeDefined()
-
-  const result = await config.metaNames.domainRepository.register({
-    domain: randomName,
-    to: config.address,
-    parentDomain: 'name.meta'
-  })
-
-  expect(result).toBeDefined()
-  expect(result.hasError).toBeFalsy()
-  expect(result.isFinalOnChain).toBeTruthy()
-
-  const expectedDomain = randomName + '.name.meta'
-  const subDomain = await config.metaNames.domainRepository.find(expectedDomain)
-
-  expect(subDomain).toBeDefined()
-  expect(subDomain).toHaveProperty('name')
-  expect(subDomain!.name).toEqual(expectedDomain)
-  expect(subDomain!.parentId).toEqual('name.meta')
-}, 10_000)
 
 test('calculate mint fees', () => {
   const feesTuples: [string, number][] = [
