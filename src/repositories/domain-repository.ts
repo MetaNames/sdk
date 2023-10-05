@@ -128,10 +128,4 @@ export class DomainRepository {
 
     return domainsObjects.map((domain) => new Domain(domain, this.metaNamesContract))
   }
-
-  private removeTLD(domainName: string) {
-    if (domainName.endsWith('.meta')) return domainName.slice(0, -5)
-
-    return domainName
-  }
 }
