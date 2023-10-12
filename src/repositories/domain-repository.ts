@@ -30,9 +30,11 @@ export class DomainRepository {
   analyze(domainName: string): IDomainAnalyzed {
     if (!this.domainValidator.validate(domainName)) throw new Error('Domain validation failed')
 
+    const fullName = domainName.endsWith(`.${this.config.tld}`) ? domainName : `${domainName}.${this.config.tld}`
+
     return {
-      name: domainName,
-      parentId: getParentName(domainName),
+      name: fullName,
+      parentId: getParentName(fullName),
       tld: this.config.tld,
     }
   }
