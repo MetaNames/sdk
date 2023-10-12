@@ -75,13 +75,13 @@ export class DomainRepository {
     if (parentDomain) {
       if (!this.domainValidator.validate(parentDomain)) throw new Error('Parent domain validation failed')
 
-      normalizedParentDomain = this.domainValidator.normalize(parentDomain)
+      normalizedParentDomain = this.domainValidator.normalize(parentDomain, { reverse: true })
       if (!domain.endsWith(parentDomain)) domain = `${domain}.${parentDomain}`
     } else {
       subscriptionYears = params.subscriptionYears ?? 1
     }
 
-    domain = this.domainValidator.normalize(domain)
+    domain = this.domainValidator.normalize(domain, { reverse: true })
     const contract = await this.metaNamesContract.getContract()
     const payload = actionDomainMintPayload(contract.abi, { ...params, domain, parentDomain: normalizedParentDomain, subscriptionYears })
 
@@ -103,7 +103,9 @@ export class DomainRepository {
       4: 50,
     }
 
-    const amount = mintFees[domainName.length] || 5
+    const normalizedDomain = this.domainValidator.normalize(domainName)
+
+    const amount = mintFees[normalizedDomain.length] || 5
     const token = this.config.byoc.token
     const address = this.config.byoc.address
 
@@ -119,7 +121,7 @@ export class DomainRepository {
     const domains = getPnsDomains(struct)
     const nftOwners = getNftOwners(struct)
 
-    const normalizedDomain = this.domainValidator.normalize(domainName)
+    const normalizedDomain = this.domainValidator.normalize(domainName, { reverse: true })
 
     const domain = lookUpDomain(domains, nftOwners, normalizedDomain)
     if (!domain) return null

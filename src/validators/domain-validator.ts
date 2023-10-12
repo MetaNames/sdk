@@ -3,7 +3,7 @@ import { IValidatorInterface, IValidatorOptions } from '../interface'
 
 export interface INormalizeOptions extends IValidatorOptions {
   removeTLD?: boolean
-  tld?: string
+  reverse?: boolean
 }
 
 
@@ -37,15 +37,16 @@ export class DomainValidator implements IValidatorInterface<string> {
     return this.errors.length === 0
   }
 
-  normalize(name: string, { removeTLD }: INormalizeOptions = { removeTLD: true }): string {
-    // Remove .meta if it's there as it's redundant
+  normalize(name: string, options: INormalizeOptions = {}): string {
+    const { removeTLD, reverse } = { removeTLD: true, ...options }
+
     if (removeTLD && name.endsWith(`.${this.tld}`)) name = name.replace(`.${this.tld}`, '')
+    if (reverse) name = name.split('.').reverse().join('.')
     if (name.includes('..')) name = name.replace(/\.\./g, '.')
 
-    const reversed = name.split('.').reverse().join('.')
     // For some reason the toUnicode returns an object instead of a string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { domain, error } = toUnicode(reversed, { useSTD3ASCIIRules: true }) as any
+    const { domain, error } = toUnicode(name, { useSTD3ASCIIRules: true }) as any
 
     return error ? '' : domain
   }

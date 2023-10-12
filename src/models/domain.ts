@@ -20,11 +20,12 @@ export class Domain implements IDomain {
     this.contractRepository = contractRepository
     this.domainValidator = new DomainValidator(domain.tld)
 
+    const normalizationOptions = { reverse: true }
     this.tld = domain.tld
-    this.name = [this.domainValidator.normalize(domain.name), this.tld].join('.')
+    this.name = [this.domainValidator.normalize(domain.name, normalizationOptions), this.tld].join('.')
     this.owner = domain.owner
     this.tokenId = domain.tokenId
-    this.parentId = domain.parentId ? [this.domainValidator.normalize(domain.parentId), this.tld].join('.') : undefined
+    this.parentId = domain.parentId ? [this.domainValidator.normalize(domain.parentId, normalizationOptions), this.tld].join('.') : undefined
     this.records = domain.records
   }
 

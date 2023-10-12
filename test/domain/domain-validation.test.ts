@@ -45,7 +45,12 @@ test('normalization of proper domain name uppercase', () => {
 
 test('normalization of proper subdomain name', () => {
     const name = 'the.name.meta'
-    expect(validator.normalize(name)).toBe('name.the')
+    expect(validator.normalize(name)).toBe('the.name')
+})
+
+test('normalization with reverse option', () => {
+    const name = 'the.name.meta'
+    expect(validator.normalize(name, { reverse: true })).toBe('name.the')
 })
 
 test('normalization of an domain name with emoji', () => {
