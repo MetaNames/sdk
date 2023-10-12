@@ -22,6 +22,8 @@ test('validation of an domain name with non valid chars', () => {
     const name = 'not_valid'
     const validator = new DomainValidator()
     expect(() => { validator.validate(name) }).toThrow('Domain name contains invalid characters')
+    const name2 = 'not..valid'
+    expect(() => { validator.validate(name) }).toThrow('Domain name contains invalid characters')
 })
 
 test('validation without raiseError option populates errors array', () => {
