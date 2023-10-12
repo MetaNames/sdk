@@ -1,6 +1,7 @@
 import { actionApproveMintFeesPayload, actionDomainMintPayload } from "../actions"
-import { Address, IActionDomainMint, IContractRepository, IDomain, IMetaNamesContractRepository } from "../interface"
+import { Address, IActionDomainMint, IContractRepository, IDomain, IDomainAnalyzed, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models"
+import { getParentName } from "../models/helpers/domain"
 import { getDomainNamesByOwner, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { Config } from "../providers"
 import { DomainValidator } from "../validators"
@@ -18,7 +19,24 @@ export class DomainRepository {
     this.config = config
     this.contractRepository = contractRepository
     this.metaNamesContract = metaNamesContractRepository
-    this.domainValidator = new DomainValidator()
+    this.domainValidator = new DomainValidator(this.config.tld)
+  }
+
+  /**
+   * Analyze the domain given the name,
+   * without checking on the contract state
+   * @param domainName
+   */
+  analyze(domainName: string): IDomainAnalyzed {
+    if (!this.domainValidator.validate(domainName)) throw new Error('Domain validation failed')
+
+    const fullName = domainName.endsWith(`.${this.config.tld}`) ? domainName : `${domainName}.${this.config.tld}`
+
+    return {
+      name: fullName,
+      parentId: getParentName(fullName),
+      tld: this.config.tld,
+    }
   }
 
   /**
@@ -46,22 +64,26 @@ export class DomainRepository {
    */
   async register(params: IActionDomainMint) {
     if (!this.domainValidator.validate(params.domain)) throw new Error('Domain validation failed')
-    let domainName = params.domain
+
+    let domain = params.domain
+    let parentDomain = params.parentDomain
+
+    if (!parentDomain) parentDomain = getParentName(domain)
 
     let subscriptionYears: number | undefined
     let normalizedParentDomain: string | undefined
-    if (params.parentDomain) {
-      if (!this.domainValidator.validate(params.parentDomain)) throw new Error('Parent domain validation failed')
+    if (parentDomain) {
+      if (!this.domainValidator.validate(parentDomain)) throw new Error('Parent domain validation failed')
 
-      if (!domainName.endsWith(params.parentDomain)) domainName = `${params.domain}.${params.parentDomain}`
-      normalizedParentDomain = this.domainValidator.normalize(params.parentDomain)
+      normalizedParentDomain = this.domainValidator.normalize(parentDomain, { reverse: true })
+      if (!domain.endsWith(parentDomain)) domain = `${domain}.${parentDomain}`
     } else {
       subscriptionYears = params.subscriptionYears ?? 1
     }
 
-    const normalizedDomain = this.domainValidator.normalize(domainName)
+    domain = this.domainValidator.normalize(domain, { reverse: true })
     const contract = await this.metaNamesContract.getContract()
-    const payload = actionDomainMintPayload(contract.abi, { ...params, domain: normalizedDomain, parentDomain: normalizedParentDomain, subscriptionYears })
+    const payload = actionDomainMintPayload(contract.abi, { ...params, domain, parentDomain: normalizedParentDomain, subscriptionYears })
 
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }
@@ -81,7 +103,9 @@ export class DomainRepository {
       4: 50,
     }
 
-    const amount = mintFees[domainName.length] || 5
+    const normalizedDomain = this.domainValidator.normalize(domainName)
+
+    const amount = mintFees[normalizedDomain.length] || 5
     const token = this.config.byoc.token
     const address = this.config.byoc.address
 
@@ -97,7 +121,7 @@ export class DomainRepository {
     const domains = getPnsDomains(struct)
     const nftOwners = getNftOwners(struct)
 
-    const normalizedDomain = this.domainValidator.normalize(domainName)
+    const normalizedDomain = this.domainValidator.normalize(domainName, { reverse: true })
 
     const domain = lookUpDomain(domains, nftOwners, normalizedDomain)
     if (!domain) return null
