@@ -7,6 +7,7 @@ export function getPnsDomains(contract: ScValueStruct): ScValueMap {
 
   const pnsStruct = pns.structValue()
   const domains = pnsStruct.fieldsMap.get('domains')
+
   if (!domains) throw new Error('Records key not found')
 
   return domains.mapValue()
@@ -40,7 +41,8 @@ export function getDomainNamesByOwner(domains: ScValueMap, owners: ScValueMap, o
   const domainNames: string[] = []
   domains.map.forEach((domain, name) => {
     const tokenId = domain.structValue().fieldsMap.get('token_id')?.asBN().toNumber()
-    if (!tokenId || !nftIds.includes(tokenId)) return
+
+    if (tokenId === undefined || !nftIds.includes(tokenId)) return
 
     domainNames.push(name.stringValue())
   })
