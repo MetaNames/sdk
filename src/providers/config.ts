@@ -1,3 +1,4 @@
+import { mainNetConfig } from "./config/mainnet"
 import { testNetConfig } from "./config/testnet"
 
 export interface Config {
@@ -37,7 +38,7 @@ export class ConfigProvider {
       case Enviroment.testnet:
         return testNetConfig
       case Enviroment.mainnet:
-        throw new Error('Not implemented')
+        return mainNetConfig
     }
   }
 }
