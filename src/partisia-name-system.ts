@@ -1,4 +1,4 @@
-import { BN, ScValueMap, ScValueNumber, ScValueString, ScValueStruct, ScValueVector, TypeIndex } from '@partisiablockchain/abi-client-ts'
+import { BN, ScValueMap, ScValueNumber, ScValueString, ScValueStruct, ScValueVector, TypeIndex } from '@partisiablockchain/abi-client'
 import { IDomain, RecordClassEnum } from './interface'
 
 export function getPnsDomains(contract: ScValueStruct): ScValueMap {

@@ -1,4 +1,4 @@
-import { ContractAbi, FnRpcBuilder } from '@partisiablockchain/abi-client-ts'
+import { ContractAbi, FnRpcBuilder } from '@partisiablockchain/abi-client'
 import { IActionRecordDelete, IActionRecordMint, IActionRecordUpdate } from '../interface'
 import { builderToBytesBe } from './helper'
 

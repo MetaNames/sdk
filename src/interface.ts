@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-import { ContractAbi, ScValueStruct } from "@partisiablockchain/abi-client-ts"
+import { ContractAbi, ScValueStruct } from "@partisiablockchain/abi-client"
 import { IContractInfo } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
 import { IContractZk } from "partisia-blockchain-applications-rpc/lib/main/interface-zk"
 import PartisiaSdk from "partisia-sdk"

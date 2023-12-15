@@ -1,4 +1,4 @@
-import { AbiParser, StateReader } from '@partisiablockchain/abi-client-ts'
+import { AbiParser, StateReader } from '@partisiablockchain/abi-client'
 import { PartisiaAccount } from 'partisia-blockchain-applications-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
 import { createTransactionFromPartisiaClient, createTransactionFromPrivateKey, createTransactionFromMetaMaskClient } from '../actions'
