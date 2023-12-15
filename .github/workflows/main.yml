@@ -10,6 +10,10 @@ permissions:
 
 jobs:
   code-quality:
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
     uses: ./.github/workflows/code-quality.yml
 
   test:
