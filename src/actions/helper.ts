@@ -4,14 +4,16 @@ import { PartisiaRpc } from 'partisia-blockchain-applications-rpc'
 import { PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
 import { PartisiaRpcClass } from 'partisia-blockchain-applications-rpc/lib/main/rpc'
 import { ITransactionResult, MetaMaskSdk } from '../interface'
-import { BigEndianByteOutput } from '@secata-public/bitmanipulation-ts'
-import { FnRpcBuilder } from '@partisiablockchain/abi-client-ts'
+import { AbiOutputBytes, FnRpcBuilder, } from '@partisiablockchain/abi-client'
 import type PartisiaSdk from 'partisia-sdk'
+import { BigEndianByteOutput } from '@secata-public/bitmanipulation-ts'
 
 export const builderToBytesBe = (rpc: FnRpcBuilder) => {
-  const bufferWriter = new BigEndianByteOutput()
-  rpc.write(bufferWriter)
-  return bufferWriter.toBuffer()
+  const bitOutput = new BigEndianByteOutput()
+  const abiOutputBits = new AbiOutputBytes(bitOutput)
+  rpc.write(abiOutputBits)
+
+  return bitOutput.toBuffer()
 }
 
 export const createTransactionFromMetaMaskClient = async (

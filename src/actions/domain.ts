@@ -1,4 +1,4 @@
-import { BN, ContractAbi, FnRpcBuilder } from '@partisiablockchain/abi-client-ts'
+import { BN, ContractAbi, FnRpcBuilder } from '@partisiablockchain/abi-client'
 import { builderToBytesBe } from '../actions'
 import { IActionApproveMintFees, IActionDomainMint } from '../interface'
 
