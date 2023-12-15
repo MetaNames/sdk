@@ -9,30 +9,15 @@ permissions:
   contents: write
 
 jobs:
-  eslint:
-    name: Run eslint scanning
-    runs-on: ubuntu-latest
+  code-quality:
     permissions:
       contents: read
       security-events: write
       actions: read
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Install ESLint
-        run: |
-          npm install eslint@8.39.0
-          npm install @microsoft/eslint-formatter-sarif@3.0.0
-
-      - name: Run ESLint
-        run: npx eslint
-          --config .eslintrc.js
-          --format @microsoft/eslint-formatter-sarif
-          --output-file eslint-results.sarif
+    uses: ./.github/workflows/code-quality.yml
 
   test:
-    permissions: write-all
+    needs: code-quality
     runs-on: ubuntu-latest
 
     steps:
