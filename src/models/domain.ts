@@ -8,6 +8,8 @@ import { DomainValidator } from "../validators"
 export class Domain implements IDomain {
   name: string
   tld: string
+  createdAt: Date
+  expiresAt?: Date
   owner: string
   tokenId: number
   parentId?: string
@@ -23,6 +25,8 @@ export class Domain implements IDomain {
     const normalizationOptions = { reverse: true }
     this.tld = domain.tld
     this.name = [this.domainValidator.normalize(domain.name, normalizationOptions), this.tld].join('.')
+    this.createdAt = domain.createdAt
+    this.expiresAt = domain.expiresAt
     this.owner = domain.owner
     this.tokenId = domain.tokenId
     this.parentId = domain.parentId ? [this.domainValidator.normalize(domain.parentId, normalizationOptions), this.tld].join('.') : undefined

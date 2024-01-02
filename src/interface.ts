@@ -26,6 +26,8 @@ export interface MetaMaskSdk {
 export interface IDomain {
   name: string
   tld: string
+  createdAt: Date
+  expiresAt?: Date
   owner: string
   tokenId: number
   parentId?: string
