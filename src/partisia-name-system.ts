@@ -57,15 +57,23 @@ export function lookUpDomain(domains: ScValueMap, owners: ScValueMap, domainName
   if (!domain) return
 
   const fieldsMap = domain.fieldsMap
+  const created = fieldsMap.get('minted_at')!.asBN().toNumber()
+  const createdAt = new Date(created)
+
+  const expires = fieldsMap.get('expires_at')?.optionValue().innerValue?.asBN().toNumber()
+  const expiresAt = expires ? new Date(expires) : undefined
+
   const scRecords = fieldsMap.get('records')?.mapValue().map
 
-  const tokenId = (fieldsMap.get('token_id') as ScValueNumber).asBN().toNumber()
+  const tokenId = fieldsMap.get('token_id')!.asBN().toNumber()
   const owner = getOwnerAddressOf(owners, tokenId)
   if (!owner) throw new Error('Owner not found')
 
   return {
     name: domainName,
     tld: 'meta',
+    createdAt,
+    expiresAt,
     owner,
     tokenId,
     parentId: fieldsMap.get('parent_id')?.optionValue().innerValue?.stringValue(),

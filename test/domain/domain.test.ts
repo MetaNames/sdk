@@ -26,11 +26,14 @@ test('lookup domain', async () => {
 
   expect(data).toBeDefined()
   expect(data).toHaveProperty('name')
+  expect(data).toHaveProperty('createdAt')
+  expect(data).toHaveProperty('expiresAt')
   expect(data).toHaveProperty('tokenId')
   expect(data).toHaveProperty('owner')
   expect(data).toHaveProperty('parentId')
   expect(data).toHaveProperty('records')
   expect(data!.name).toEqual(domainName)
+  expect(data!.createdAt).toBeInstanceOf(Date)
 })
 
 test('calculate mint fees', () => {
@@ -62,6 +65,8 @@ test('findByOwner returns the correct domains', async () => {
 
   expect(domain).toBeDefined()
   expect(domain).toHaveProperty('name')
+  expect(domain).toHaveProperty('createdAt')
+  expect(domain).toHaveProperty('expiresAt')
   expect(domain).toHaveProperty('tld')
   expect(domain).toHaveProperty('tokenId')
   expect(domain).toHaveProperty('owner')
@@ -69,4 +74,5 @@ test('findByOwner returns the correct domains', async () => {
   expect(domain).toHaveProperty('records')
   expect(domain!.owner).toEqual(config.address)
   expect(domain!.tld).toEqual('meta')
+  expect(domain!.createdAt).toBeInstanceOf(Date)
 }, 10_000)
