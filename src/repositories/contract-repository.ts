@@ -2,7 +2,7 @@ import { AbiParser, StateReader } from '@partisiablockchain/abi-client'
 import { PartisiaAccount } from 'partisia-blockchain-applications-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
 import { createTransactionFromPartisiaClient, createTransactionFromPrivateKey, createTransactionFromMetaMaskClient } from '../actions'
-import { Contract, ContractParams, GasCost, IContractRepository, ITransactionResult, TransactionParams } from '../interface'
+import { Contract, ContractParams, GasCost, IContractRepository, ITransactionIntent, TransactionParams } from '../interface'
 import { SecretsProvider } from '../providers/secrets'
 import { Enviroment } from '../providers'
 
@@ -53,7 +53,7 @@ export class ContractRepository implements IContractRepository {
    * Create a transaction
    * @param payload Transaction payload
    */
-  async createTransaction({ contractAddress, payload, gasCost }: TransactionParams): Promise<ITransactionResult> {
+  async createTransaction({ contractAddress, payload, gasCost }: TransactionParams): Promise<ITransactionIntent> {
     if (!contractAddress) throw new Error('Contract address not found')
 
     const isMainnet = this.environment === Enviroment.mainnet

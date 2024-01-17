@@ -1,6 +1,6 @@
 import { IPartisiaRpcConfig } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
 import { ContractRepository } from "../contract-repository"
-import { Contract, ContractParams, IMetaNamesContractRepository, ITransactionResult, MetaNamesState, TransactionParams } from "../../interface"
+import { Contract, ContractParams, IMetaNamesContractRepository, ITransactionIntent, MetaNamesState, TransactionParams } from "../../interface"
 import { Enviroment } from "../../providers"
 import { SecretsProvider } from "../../providers/secrets"
 
@@ -32,7 +32,7 @@ export class MetaNamesContractRepository extends ContractRepository implements I
     })
   }
 
-  async createTransaction({ payload, gasCost }: TransactionParams): Promise<ITransactionResult> {
+  async createTransaction({ payload, gasCost }: TransactionParams): Promise<ITransactionIntent> {
     return super.createTransaction({ contractAddress: this.metaNamesContractAddress, payload, gasCost })
   }
 }

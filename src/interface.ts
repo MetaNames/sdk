@@ -98,10 +98,18 @@ export interface IStructMint {
 }
 
 export interface ITransactionResult {
-  isFinalOnChain: boolean
-  trxHash: string
+  transactionHash: string
   hasError: boolean
   errorMessage?: string
+  eventTrace: {
+    txHash: string;
+    shardId: number;
+  }[]
+}
+
+export interface ITransactionIntent {
+  transactionHash: string
+  fetchResult: Promise<ITransactionResult>
 }
 
 export type MetaNamesState = ScValueStruct
@@ -125,7 +133,7 @@ export interface TransactionParams {
 }
 
 export interface IContractRepository {
-  createTransaction(params: TransactionParams): Promise<ITransactionResult>
+  createTransaction(params: TransactionParams): Promise<ITransactionIntent>
   getContract(params?: ContractParams): Promise<Contract>
 }
 
