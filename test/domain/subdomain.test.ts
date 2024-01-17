@@ -10,13 +10,15 @@ beforeAll(async () => {
 test('mint domain with parent', async () => {
   const randomName = generateRandomString(10)
 
-  const { fetchResult } = await config.metaNames.domainRepository.register({
+  const { transactionHash, fetchResult } = await config.metaNames.domainRepository.register({
     domain: randomName,
     to: config.address,
     parentDomain: domainName
   })
   const result = await fetchResult
 
+  expect(transactionHash).toBeDefined()
+  expect(transactionHash).toBe(result.transactionHash)
   expect(result).toBeDefined()
   expect(result.hasError).toBeFalsy()
 
@@ -34,12 +36,14 @@ test('mint subdomain without parent', async () => {
 
   const subdomain = `${randomName}.${domainName}`
 
-  const { fetchResult } = await config.metaNames.domainRepository.register({
+  const {transactionHash, fetchResult } = await config.metaNames.domainRepository.register({
     domain: subdomain,
     to: config.address,
   })
   const result = await fetchResult
 
+  expect(transactionHash).toBeDefined()
+  expect(transactionHash).toBe(result.transactionHash)
   expect(result).toBeDefined()
   expect(result.hasError).toBeFalsy()
   expect(result.eventTrace.length).toBeGreaterThan(0)

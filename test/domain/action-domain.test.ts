@@ -8,9 +8,12 @@ test('run action mint', async () => {
     domain: domainName,
     to: config.address,
   }
-  const { fetchResult } = await config.metaNames.domainRepository.register(randomActionMint)
+  const { transactionHash, fetchResult } = await config.metaNames.domainRepository.register(randomActionMint)
   const result = await fetchResult
 
+  expect(transactionHash).toBeDefined()
+  expect(transactionHash.length).toBe(64)
+  expect(transactionHash).toBe(result.transactionHash)
   expect(result.hasError).toBe(false)
   expect(result.eventTrace.length).toBeGreaterThan(0)
 }, 10_000)
