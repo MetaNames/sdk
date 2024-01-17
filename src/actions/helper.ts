@@ -3,7 +3,7 @@ import { partisiaCrypto } from 'partisia-crypto'
 import { PartisiaRpc } from 'partisia-blockchain-applications-rpc'
 import { PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
 import { PartisiaRpcClass } from 'partisia-blockchain-applications-rpc/lib/main/rpc'
-import { ITransactionResult, MetaMaskSdk } from '../interface'
+import { ITransactionIntent, MetaMaskSdk } from '../interface'
 import { AbiOutputBytes, FnRpcBuilder, } from '@partisiablockchain/abi-client'
 import type PartisiaSdk from 'partisia-sdk'
 import { BigEndianByteOutput } from '@secata-public/bitmanipulation-ts'
@@ -23,7 +23,7 @@ export const createTransactionFromMetaMaskClient = async (
   payload: Buffer,
   isMainnet = false,
   cost: number | string = 10490
-): Promise<ITransactionResult> => {
+): Promise<ITransactionIntent> => {
   const snapId = "npm:@partisiablockchain/snap"
   const walletAddress: string = await client.request({
     method: "wallet_invokeSnap",
@@ -58,11 +58,11 @@ export const createTransactionFromMetaMaskClient = async (
   const transactionPayload = Buffer.concat([signature, serializedTransaction]).toString('base64')
 
   const rpcShard = PartisiaRpc({ baseURL: url })
-  const trxHash = partisiaCrypto.transaction.getTrxHash(digest, signature)
+  const transactionHash = partisiaCrypto.transaction.getTrxHash(digest, signature)
   const isValid = await rpcShard.broadcastTransaction(transactionPayload)
   assert(isValid, 'Unknown Error')
 
-  return transactionResult(rpc, rpcShard, trxHash)
+  return buildTransactionResult(rpc, rpcShard, transactionHash)
 }
 
 export const createTransactionFromPartisiaClient = async (
@@ -71,7 +71,7 @@ export const createTransactionFromPartisiaClient = async (
   contractAddress: string,
   payload: Buffer,
   cost: number | string = 8490
-): Promise<ITransactionResult> => {
+): Promise<ITransactionIntent> => {
   if (!client.connection) throw new Error('Client is not connected')
 
   const walletAddress = client.connection.account.address
@@ -87,7 +87,7 @@ export const createTransactionFromPartisiaClient = async (
   const url = rpc.getShardUrl(shardId)
   const rpcShard = PartisiaRpc({ baseURL: url })
 
-  return transactionResult(rpc, rpcShard, transaction.trxHash)
+  return buildTransactionResult(rpc, rpcShard, transaction.trxHash)
 }
 
 export const createTransactionFromPrivateKey = async (
@@ -97,7 +97,7 @@ export const createTransactionFromPrivateKey = async (
   payload: Buffer,
   isMainnet = false,
   cost: number | string = 8490
-): Promise<ITransactionResult> => {
+): Promise<ITransactionIntent> => {
   const walletAddress = partisiaCrypto.wallet.privateKeyToAccountAddress(privateKey)
   const shardId = rpc.deriveShardId(walletAddress)
   const url = rpc.getShardUrl(shardId)
@@ -111,36 +111,45 @@ export const createTransactionFromPrivateKey = async (
   const signature = partisiaCrypto.wallet.signTransaction(digest, privateKey)
   const trx = partisiaCrypto.transaction.getTransactionPayloadData(serializedTransaction, signature)
 
-  const trxHash = partisiaCrypto.transaction.getTrxHash(digest, signature)
+  const transactionHash = partisiaCrypto.transaction.getTrxHash(digest, signature)
   const rpcShard = PartisiaRpc({ baseURL: url })
 
   const isValid = await rpcShard.broadcastTransaction(trx)
   assert(isValid, 'Unknown Error')
 
-  return transactionResult(rpc, rpcShard, trxHash)
+  return buildTransactionResult(rpc, rpcShard, transactionHash)
 }
+
+const buildTransactionResult = (rpc: PartisiaAccountClass,
+  rpcShard: PartisiaRpcClass,
+  transactionHash: string) => {
+  return {
+    transactionHash,
+    fetchResult: transactionResult(rpc, rpcShard, transactionHash)
+  }
+}
+
 
 const transactionResult = async (
   rpc: PartisiaAccountClass,
   rpcShard: PartisiaRpcClass,
-  trxHash: string
+  transactionHash: string
 ) => {
-  const isFinalOnChain = await broadcastTransactionPoller(trxHash, rpcShard)
+  const isFinalOnChain = await broadcastTransactionPoller(transactionHash, rpcShard)
 
-  // check for errors
   let transactionResult
   if (isFinalOnChain) {
-    transactionResult = await rpc.getTransactionEventTrace(trxHash)
+    transactionResult = await rpc.getTransactionEventTrace(transactionHash)
   } else {
     transactionResult = {
       hasError: true,
       errorMessage: 'unable to broadcast to chain',
+      eventTrace: [],
     }
   }
 
   return {
-    isFinalOnChain,
-    trxHash,
+    transactionHash,
     ...transactionResult,
   }
 }
