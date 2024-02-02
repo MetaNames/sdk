@@ -81,9 +81,12 @@ export class DomainRepository {
       subscriptionYears = params.subscriptionYears ?? 1
     }
 
+    const byoc = this.config.byoc.find((byoc) => byoc.symbol === params.byocSymbol)
+    if (!byoc) throw new Error(`BYOC ${params.byocSymbol} not found`)
+
     domain = this.domainValidator.normalize(domain, { reverse: true })
     const contract = await this.metaNamesContract.getContract()
-    const payload = actionDomainMintPayload(contract.abi, { ...params, domain, parentDomain: normalizedParentDomain, subscriptionYears })
+    const payload = actionDomainMintPayload(contract.abi, { ...params, domain, parentDomain: normalizedParentDomain, byocTokenId: byoc.id, subscriptionYears })
 
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }

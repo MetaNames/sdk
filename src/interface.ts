@@ -4,6 +4,7 @@ import { ContractAbi, ScValueStruct } from "@partisiablockchain/abi-client"
 import { IContractInfo } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
 import { IContractZk } from "partisia-blockchain-applications-rpc/lib/main/interface-zk"
 import PartisiaSdk from "partisia-sdk"
+import { BYOCSymbol } from "./providers"
 
 // TODO: Reorganize this file
 
@@ -79,12 +80,19 @@ export interface IActionApproveMintFees {
   amount: number
 }
 
-export interface IActionDomainMint {
+interface IActionCommontDomainMint {
   domain: string
   to: Address
   tokenUri?: string
   parentDomain?: string
   subscriptionYears?: number
+}
+export interface IActionDomainMintPayload extends IActionCommontDomainMint {
+  byocTokenId: number
+}
+
+export interface IActionDomainMint extends IActionCommontDomainMint {
+  byocSymbol: BYOCSymbol
 }
 
 export interface ByocCoin {

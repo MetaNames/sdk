@@ -1,9 +1,9 @@
 import { BN, ContractAbi, FnRpcBuilder } from '@partisiablockchain/abi-client'
 import { builderToBytesBe } from '../actions'
-import { IActionApproveMintFees, IActionDomainMint } from '../interface'
+import { IActionApproveMintFees, IActionDomainMintPayload } from '../interface'
 
 
-export const actionDomainMintPayload = (contractAbi: ContractAbi, params: IActionDomainMint): Buffer => {
+export const actionDomainMintPayload = (contractAbi: ContractAbi, params: IActionDomainMintPayload): Buffer => {
   if (!contractAbi.getFunctionByName('mint')) throw new Error('Function mint not found in contract abi')
 
   const rpc = new FnRpcBuilder('mint', contractAbi)
@@ -11,6 +11,8 @@ export const actionDomainMintPayload = (contractAbi: ContractAbi, params: IActio
 
   const address = typeof params.to === 'string' ? Buffer.from(params.to, 'hex') : params.to
   rpc.addAddress(address)
+
+  rpc.addU64(params.byocTokenId)
 
   const tokenUriOption = rpc.addOption()
   if (params.tokenUri) tokenUriOption.addString(params.tokenUri)

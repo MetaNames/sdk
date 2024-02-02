@@ -15,6 +15,7 @@ export const mintDomain = async (domain: string) => {
   const randomActionMint: IActionDomainMint = {
     domain,
     to: config.address,
+    byocSymbol: 'TEST_COIN'
   }
 
   await config.metaNames.domainRepository.register(randomActionMint)

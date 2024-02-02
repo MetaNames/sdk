@@ -13,7 +13,8 @@ test('mint domain with parent', async () => {
   const { transactionHash, fetchResult } = await config.metaNames.domainRepository.register({
     domain: randomName,
     to: config.address,
-    parentDomain: domainName
+    parentDomain: domainName,
+    byocSymbol: 'TEST_COIN'
   })
   const result = await fetchResult
 
@@ -39,6 +40,7 @@ test('mint subdomain without parent', async () => {
   const {transactionHash, fetchResult } = await config.metaNames.domainRepository.register({
     domain: subdomain,
     to: config.address,
+    byocSymbol: 'TEST_COIN'
   })
   const result = await fetchResult
 
