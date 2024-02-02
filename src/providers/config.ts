@@ -1,7 +1,7 @@
 import { mainNetConfig } from "./config/mainnet"
 import { testNetConfig } from "./config/testnet"
 
-export type BYOCSymbol = 'POLYGON_USDC' | 'TEST_COIN' | 'ETH_GOERLI'
+export type BYOCSymbol = 'POLYGON_USDC' | 'TEST_COIN' | 'ETH_GOERLI' | 'ETHEREUM_USDT' | 'MATIC' | 'ETH' | 'BNB'
 
 export interface BYOC {
   address: string

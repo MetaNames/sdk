@@ -16,5 +16,25 @@ export const mainNetConfig: Config = {
     id: 0,
     symbol: 'POLYGON_USDC',
     rounding: 1
+  },{
+    address: '011150c3a2779309ff52e86c139ff58265a93fafd4',
+    id: 1,
+    symbol: 'ETHEREUM_USDT',
+    rounding: 1
+  },{
+    address: '01d9f82e98a22b319aa371e752f3e0d85bd96c9545',
+    id: 2,
+    symbol: 'MATIC',
+    rounding: 100
+  },{
+    address: '014a6d0fd09fe2e6853a76caedcb46646ab7ee69d6',
+    id: 3,
+    symbol: 'ETH',
+    rounding: 10000
+  },{
+    address: '0137f4da8ad6a9a5305383953d4b3a9c7859c08bea',
+    id: 4,
+    symbol: 'BNB',
+    rounding: 1000
   }]
 }
