@@ -11,8 +11,10 @@ export const mainNetConfig: Config = {
       { url: "https://reader.partisiablockchain.com/shards/Shard2", shard_id: 2 },
     ],
   },
-  byoc: {
+  byoc: [{
     address: '01e0dbf1ce62c4ebd76fa8aa81f3630e0e84001206',
-    token: 'USDC'
-  }
+    id: 0,
+    symbol: 'POLYGON_USDC',
+    rounding: 1
+  }]
 }

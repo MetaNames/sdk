@@ -3,7 +3,7 @@ import { Address, IActionDomainMint, IContractRepository, IDomain, IDomainAnalyz
 import { Domain } from "../models"
 import { getParentName } from "../models/helpers/domain"
 import { getDomainNamesByOwner, getMintFeesInGas, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
-import { Config } from "../providers"
+import { Config, BYOCSymbol } from "../providers"
 import { DomainValidator } from "../validators"
 
 /**
@@ -45,17 +45,17 @@ export class DomainRepository {
    * The function will throw an error if the domain name is invalid.
    * @param domainName A valid domain name
    */
-  async approveMintFees(domainName: string, subscriptionYears = 1) {
+  async approveMintFees(domainName: string, byocSymbol: BYOCSymbol, subscriptionYears = 1) {
     if (!this.domainValidator.validate(domainName)) throw new Error('Domain validation failed')
     if (subscriptionYears < 1) throw new Error('Subscription years must be greater than 0')
 
     const normalizedDomain = this.domainValidator.normalize(domainName)
-    const { gasAmount } = await this.calculateMintFees(normalizedDomain)
+    const { gasAmount, address: byocAddress } = await this.calculateMintFees(normalizedDomain, byocSymbol)
     const totalAmount = gasAmount * subscriptionYears
-    const contract = await this.contractRepository.getContract({ contractAddress: this.config.byoc.address })
+    const contract = await this.contractRepository.getContract({ contractAddress: byocAddress })
     const payload = actionApproveMintFeesPayload(contract.abi, { address: this.config.contractAddress, amount: totalAmount })
 
-    return this.contractRepository.createTransaction({ contractAddress: this.config.byoc.address, payload })
+    return this.contractRepository.createTransaction({ contractAddress: byocAddress, payload })
   }
 
   /**
@@ -93,17 +93,26 @@ export class DomainRepository {
    * The function will throw an error if the domain name is invalid.
    * @param domainName A valid domain name
    */
-  async calculateMintFees(domainName: string) {
+  async calculateMintFees(domainName: string, tokenSymbol: BYOCSymbol) {
     if (!this.domainValidator.validate(domainName)) throw new Error('Invalid domain name')
 
     const normalizedDomain = this.domainValidator.normalize(domainName)
     const struct = await this.metaNamesContract.getState()
     const gasAmount = await getMintFeesInGas(struct, normalizedDomain)
 
-    const token = this.config.byoc.token
-    const address = this.config.byoc.address
+    const handledByoc = this.config.byoc.find((byoc) => byoc.symbol === tokenSymbol)
+    if (!handledByoc) throw new Error('BYOC not found')
+    const symbol = handledByoc.symbol
+    const address = handledByoc.address
 
-    return { gasAmount, token, address }
+    const availableCoins = await this.contractRepository.getByocCoins()
+    const networkByoc = availableCoins.find((coin) => coin.symbol === symbol.toString())
+    if (!networkByoc) throw new Error('BYOC coin not found')
+
+    const rawAmount = gasAmount / networkByoc.conversionRate.unit_value
+    const amount = Math.ceil(rawAmount * handledByoc.rounding) / handledByoc.rounding
+
+    return { gasAmount, symbol, address, amount }
   }
 
   /**

@@ -87,6 +87,14 @@ export interface IActionDomainMint {
   subscriptionYears?: number
 }
 
+export interface ByocCoin {
+  conversionRate: {
+    unit_value: number
+    scale_factor: number
+  }
+  symbol: string
+}
+
 export interface IArgMint {
   typeIndex: number
   valStruct: IStructMint[]
@@ -135,6 +143,7 @@ export interface TransactionParams {
 export interface IContractRepository {
   createTransaction(params: TransactionParams): Promise<ITransactionIntent>
   getContract(params?: ContractParams): Promise<Contract>
+  getByocCoins(): Promise<ByocCoin[]>
 }
 
 export interface IMetaNamesContractRepository extends IContractRepository {

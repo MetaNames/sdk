@@ -2,7 +2,7 @@ import { config } from "../helpers"
 
 test('mint fees transaction', async () => {
   const domainName = 'verycheapfees.meta'
-  const { transactionHash, fetchResult } = await config.metaNames.domainRepository.approveMintFees(domainName)
+  const { transactionHash, fetchResult } = await config.metaNames.domainRepository.approveMintFees(domainName, 'TEST_COIN')
   const result = await fetchResult
 
   expect(transactionHash).toBeDefined()
@@ -15,8 +15,13 @@ test('mint fees transaction', async () => {
 test('mint fees amount', async () => {
   const domainName = 'verycheap.meta'
 
-  const { gasAmount } = await config.metaNames.domainRepository.calculateMintFees(domainName)
+  const { gasAmount, symbol, amount } = await config.metaNames.domainRepository.calculateMintFees(domainName, 'TEST_COIN')
 
   expect(gasAmount).toBeDefined()
   expect(gasAmount).toBeGreaterThan(0)
+  expect(symbol).toBeDefined()
+  expect(symbol).toBe('TEST_COIN')
+  expect(amount).toBeDefined()
+  expect(amount).toBeGreaterThan(0)
+  expect(amount).toBe(10)
 })

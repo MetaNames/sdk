@@ -11,8 +11,16 @@ export const testNetConfig: Config = {
       { url: 'https://node1.testnet.partisiablockchain.com/shards/Shard2', shard_id: 2 },
     ],
   },
-  byoc: {
+  byoc: [{
     address: '01f3cc99688e6141355c53752418230211facf063c',
-    token: 'TEST_COIN'
-  }
+    id: 0,
+    symbol: 'TEST_COIN',
+    rounding: 1
+  },
+  {
+    address: '01dce90b5a0b6eb598dd6b4250f0f5924eb4a4a818',
+    id: 1,
+    symbol: 'ETH_GOERLI',
+    rounding: 10000
+  }]
 }
