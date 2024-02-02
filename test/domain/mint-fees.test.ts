@@ -11,3 +11,12 @@ test('mint fees transaction', async () => {
   expect(result.hasError).toBeFalsy()
   expect(result.eventTrace.length).toBeGreaterThan(0)
 }, 10_000)
+
+test('mint fees amount', async () => {
+  const domainName = 'verycheap.meta'
+
+  const { gasAmount } = await config.metaNames.domainRepository.calculateMintFees(domainName)
+
+  expect(gasAmount).toBeDefined()
+  expect(gasAmount).toBeGreaterThan(0)
+})

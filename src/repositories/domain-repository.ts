@@ -2,7 +2,7 @@ import { actionApproveMintFeesPayload, actionDomainMintPayload } from "../action
 import { Address, IActionDomainMint, IContractRepository, IDomain, IDomainAnalyzed, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models"
 import { getParentName } from "../models/helpers/domain"
-import { getDomainNamesByOwner, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
+import { getDomainNamesByOwner, getMintFeesInGas, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { Config } from "../providers"
 import { DomainValidator } from "../validators"
 
@@ -50,8 +50,8 @@ export class DomainRepository {
     if (subscriptionYears < 1) throw new Error('Subscription years must be greater than 0')
 
     const normalizedDomain = this.domainValidator.normalize(domainName)
-    const { amount } = await this.calculateMintFees(normalizedDomain)
-    const totalAmount = amount * subscriptionYears
+    const { gasAmount } = await this.calculateMintFees(normalizedDomain)
+    const totalAmount = gasAmount * subscriptionYears
     const contract = await this.contractRepository.getContract({ contractAddress: this.config.byoc.address })
     const payload = actionApproveMintFeesPayload(contract.abi, { address: this.config.contractAddress, amount: totalAmount })
 
@@ -93,23 +93,17 @@ export class DomainRepository {
    * The function will throw an error if the domain name is invalid.
    * @param domainName A valid domain name
    */
-  calculateMintFees(domainName: string) {
+  async calculateMintFees(domainName: string) {
     if (!this.domainValidator.validate(domainName)) throw new Error('Invalid domain name')
 
-    const mintFees: Record<number, number> = {
-      1: 200,
-      2: 150,
-      3: 100,
-      4: 50,
-    }
-
     const normalizedDomain = this.domainValidator.normalize(domainName)
+    const struct = await this.metaNamesContract.getState()
+    const gasAmount = await getMintFeesInGas(struct, normalizedDomain)
 
-    const amount = mintFees[normalizedDomain.length] || 5
     const token = this.config.byoc.token
     const address = this.config.byoc.address
 
-    return { amount, token, address }
+    return { gasAmount, token, address }
   }
 
   /**

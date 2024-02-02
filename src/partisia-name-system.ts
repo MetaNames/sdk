@@ -103,6 +103,27 @@ export function extractRecords(records: ScValueMap): Map<string, string> {
   return extractedRecords
 }
 
+export function getMintFeesInGas(contract: ScValueStruct, domain: string): number {
+  const config = contract.fieldsMap.get('config')!.structValue()
+  const mintFees = config.fieldsMap.get('mint_fees')
+  if (!mintFees) throw new Error('Mint gas key not found')
+
+  const mintGasStruct = mintFees.structValue()
+  const gasMapping = mintGasStruct.fieldsMap.get('mapping')?.vecValue()
+  if (!gasMapping) throw new Error('Gas mapping not found')
+
+  const domainLength = domain.length
+  const defaultFee = mintGasStruct.fieldsMap.get('default_fee')
+  let gasAmount: number = defaultFee!.asBN().toNumber()
+
+  const gasStruct = gasMapping.values().find((v) => v.structValue().fieldsMap.get('chars_count')!.asBN().toNumber() === domainLength)
+  if(gasStruct) gasAmount = gasStruct.structValue().fieldsMap.get('gas')!.asBN().toNumber()
+
+  if (!gasAmount) throw new Error('Gas amount not found')
+
+  return gasAmount
+}
+
 function convertScVectorToBuffer(vector: ScValueVector): Buffer {
   return Buffer.from(vector.values().map((v) => v.asNumber()))
 }
