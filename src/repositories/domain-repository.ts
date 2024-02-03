@@ -1,10 +1,12 @@
+import { BN } from "@partisiablockchain/abi-client"
 import { actionApproveMintFeesPayload, actionDomainMintPayload } from "../actions"
 import { Address, IActionDomainMint, IContractRepository, IDomain, IDomainAnalyzed, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models"
 import { getParentName } from "../models/helpers/domain"
-import { getDomainNamesByOwner, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
-import { Config } from "../providers"
+import { getDecimalsMultiplier, getDomainNamesByOwner, getMintFeesInGas, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
+import { Config, BYOCSymbol } from "../providers"
 import { DomainValidator } from "../validators"
+import { getFeesLael } from "./helpers/contract"
 
 /**
  * Repository to interact with domains on the Meta Names contract
@@ -45,17 +47,17 @@ export class DomainRepository {
    * The function will throw an error if the domain name is invalid.
    * @param domainName A valid domain name
    */
-  async approveMintFees(domainName: string, subscriptionYears = 1) {
+  async approveMintFees(domainName: string, byocSymbol: BYOCSymbol, subscriptionYears = 1) {
     if (!this.domainValidator.validate(domainName)) throw new Error('Domain validation failed')
     if (subscriptionYears < 1) throw new Error('Subscription years must be greater than 0')
 
     const normalizedDomain = this.domainValidator.normalize(domainName)
-    const { amount } = await this.calculateMintFees(normalizedDomain)
-    const totalAmount = amount * subscriptionYears
-    const contract = await this.contractRepository.getContract({ contractAddress: this.config.byoc.address })
+    const { fees, address: byocAddress } = await this.calculateMintFees(normalizedDomain, byocSymbol)
+    const totalAmount = fees.mul(new BN(subscriptionYears))
+    const contract = await this.contractRepository.getContract({ contractAddress: byocAddress })
     const payload = actionApproveMintFeesPayload(contract.abi, { address: this.config.contractAddress, amount: totalAmount })
 
-    return this.contractRepository.createTransaction({ contractAddress: this.config.byoc.address, payload })
+    return this.contractRepository.createTransaction({ contractAddress: byocAddress, payload })
   }
 
   /**
@@ -81,9 +83,12 @@ export class DomainRepository {
       subscriptionYears = params.subscriptionYears ?? 1
     }
 
+    const byoc = this.config.byoc.find((byoc) => byoc.symbol === params.byocSymbol)
+    if (!byoc) throw new Error(`BYOC ${params.byocSymbol} not found`)
+
     domain = this.domainValidator.normalize(domain, { reverse: true })
     const contract = await this.metaNamesContract.getContract()
-    const payload = actionDomainMintPayload(contract.abi, { ...params, domain, parentDomain: normalizedParentDomain, subscriptionYears })
+    const payload = actionDomainMintPayload(contract.abi, { ...params, domain, parentDomain: normalizedParentDomain, byocTokenId: byoc.id, subscriptionYears })
 
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }
@@ -93,23 +98,27 @@ export class DomainRepository {
    * The function will throw an error if the domain name is invalid.
    * @param domainName A valid domain name
    */
-  calculateMintFees(domainName: string) {
+  async calculateMintFees(domainName: string, tokenSymbol: BYOCSymbol) {
     if (!this.domainValidator.validate(domainName)) throw new Error('Invalid domain name')
 
-    const mintFees: Record<number, number> = {
-      1: 200,
-      2: 150,
-      3: 100,
-      4: 50,
-    }
-
     const normalizedDomain = this.domainValidator.normalize(domainName)
+    const struct = await this.metaNamesContract.getState()
+    const handledByoc = this.config.byoc.find((byoc) => byoc.symbol === tokenSymbol)
+    if (!handledByoc) throw new Error(`BYOC ${tokenSymbol} not handled`)
 
-    const amount = mintFees[normalizedDomain.length] || 5
-    const token = this.config.byoc.token
-    const address = this.config.byoc.address
+    const fees = await getMintFeesInGas(struct, normalizedDomain, handledByoc.id)
 
-    return { amount, token, address }
+    const symbol = handledByoc.symbol
+    const address = handledByoc.address
+
+    const availableCoins = await this.contractRepository.getByocCoins()
+    const symbolString = symbol.toString()
+    const networkByoc = availableCoins.find((coin) => coin.symbol === symbolString)
+    if (!networkByoc) throw new Error(`BYOC ${symbolString} coin not found in available coins`)
+
+    const feesLabel = getFeesLael(fees, getDecimalsMultiplier(handledByoc.decimals))
+
+    return { fees, symbol, address, feesLabel }
   }
 
   /**

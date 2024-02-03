@@ -1,11 +1,11 @@
 import { AbiParser, StateReader } from '@partisiablockchain/abi-client'
 import { PartisiaAccount } from 'partisia-blockchain-applications-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
-import { createTransactionFromPartisiaClient, createTransactionFromPrivateKey, createTransactionFromMetaMaskClient } from '../actions'
-import { Contract, ContractParams, GasCost, IContractRepository, ITransactionIntent, TransactionParams } from '../interface'
-import { SecretsProvider } from '../providers/secrets'
+import { createTransactionFromMetaMaskClient, createTransactionFromPartisiaClient, createTransactionFromPrivateKey } from '../actions'
+import { ByocCoin, Contract, ContractParams, GasCost, IContractRepository, ITransactionIntent, TransactionParams } from '../interface'
 import { Enviroment } from '../providers'
-
+import { SecretsProvider } from '../providers/secrets'
+import { convertAvlTree } from './helpers/contract'
 
 /**
  * Contract repository to interact with smart contracts on Partisia
@@ -42,10 +42,30 @@ export class ContractRepository implements IContractRepository {
     if (!('state' in serializedContract)) throw new Error('Contract state not found')
 
     const contractAbi = contract.abi
-    const reader = new StateReader(Buffer.from(serializedContract.state.data, 'base64'), contractAbi)
+    const reader = new StateReader(Buffer.from(serializedContract.state.data, 'base64'), contractAbi, contract.avlTree)
     const struct = reader.readStruct(contractAbi.getStateStruct())
 
     return struct
+  }
+
+  /**
+   * Get Byoc coins
+   * @returns ByocCoin[]
+   */
+  async getByocCoins(): Promise<ByocCoin[]> {
+    const coins = await this.rpc.fetchCoins()
+
+    const byocCoins: ByocCoin[] = coins.coins.map((coin) => {
+      return {
+        conversionRate: {
+          unit_value: Number(coin.conversionRate.numerator),
+          scale_factor: Number(coin.conversionRate.denominator),
+        },
+        symbol: coin.symbol,
+      }
+    })
+
+    return byocCoins
   }
 
 
@@ -88,7 +108,6 @@ export class ContractRepository implements IContractRepository {
       ((withState && contract.data.serializedContract) || !withState))
       return contract
 
-
     const rawContract = await this.rpc.getContract(
       contractAddress,
       this.rpc.deriveShardId(contractAddress),
@@ -100,6 +119,14 @@ export class ContractRepository implements IContractRepository {
     contract = {
       abi: fileAbi.contract,
       ...rawContract
+    }
+
+    if (rawContract.data.serializedContract) {
+      const avlTrees = rawContract.data.serializedContract.avlTrees
+      if (avlTrees) {
+        const avlTree = convertAvlTree(avlTrees)
+        contract.avlTree = avlTree
+      }
     }
 
     this.contractRegistry.set(contractAddress, contract)

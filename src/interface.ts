@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-vars */
 
-import { ContractAbi, ScValueStruct } from "@partisiablockchain/abi-client"
+import { BN, ContractAbi, ScValueStruct } from "@partisiablockchain/abi-client"
 import { IContractInfo } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
 import { IContractZk } from "partisia-blockchain-applications-rpc/lib/main/interface-zk"
 import PartisiaSdk from "partisia-sdk"
+import { BYOCSymbol } from "./providers"
 
 // TODO: Reorganize this file
 
@@ -76,15 +77,30 @@ export interface IActionRecordDelete {
 
 export interface IActionApproveMintFees {
   address: Address
-  amount: number
+  amount: BN
 }
 
-export interface IActionDomainMint {
+interface IActionCommontDomainMint {
   domain: string
   to: Address
   tokenUri?: string
   parentDomain?: string
   subscriptionYears?: number
+}
+export interface IActionDomainMintPayload extends IActionCommontDomainMint {
+  byocTokenId: number
+}
+
+export interface IActionDomainMint extends IActionCommontDomainMint {
+  byocSymbol: BYOCSymbol
+}
+
+export interface ByocCoin {
+  conversionRate: {
+    unit_value: number
+    scale_factor: number
+  }
+  symbol: string
 }
 
 export interface IArgMint {
@@ -124,6 +140,7 @@ export interface Contract {
   shard_id: number
   data: IContractInfo | IContractZk
   abi: ContractAbi
+  avlTree?: Map<number, [Buffer, Buffer][]>
 }
 
 export interface TransactionParams {
@@ -135,6 +152,7 @@ export interface TransactionParams {
 export interface IContractRepository {
   createTransaction(params: TransactionParams): Promise<ITransactionIntent>
   getContract(params?: ContractParams): Promise<Contract>
+  getByocCoins(): Promise<ByocCoin[]>
 }
 
 export interface IMetaNamesContractRepository extends IContractRepository {
@@ -151,4 +169,22 @@ export interface IValidatorInterface<T> {
   get rules(): Object
   normalize(value: T, options: IValidatorOptions): T
   validate(value: T, options: IValidatorOptions): boolean
+}
+
+export interface AvlTreeItem {
+  key: {
+    data: {
+      data: string;
+    };
+  };
+  value: {
+    data: string;
+  };
+}
+
+export interface AvlTree {
+  key: number;
+  value: {
+    avlTree: AvlTreeItem[];
+  };
 }

@@ -7,6 +7,7 @@ test('run action mint', async () => {
   const randomActionMint: IActionDomainMint = {
     domain: domainName,
     to: config.address,
+    byocSymbol: 'TEST_COIN'
   }
   const { transactionHash, fetchResult } = await config.metaNames.domainRepository.register(randomActionMint)
   const result = await fetchResult

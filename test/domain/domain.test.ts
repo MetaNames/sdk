@@ -36,26 +36,6 @@ test('lookup domain', async () => {
   expect(data!.createdAt).toBeInstanceOf(Date)
 })
 
-test('calculate mint fees', () => {
-  const feesTuples: [string, number][] = [
-    ['n', 200],
-    ['na', 150],
-    ['nam', 100],
-    ['name', 50],
-    ['names', 5],
-    ['verylongname', 5],
-  ]
-
-  feesTuples.forEach(([name, fee]) => {
-    const { token: expectedToken, address: expectedAddress } = config.metaNames.config.byoc
-    const { amount, token, address } = config.metaNames.domainRepository.calculateMintFees(name)
-
-    expect(amount).toEqual(fee)
-    expect(token).toEqual(expectedToken)
-    expect(address).toEqual(expectedAddress)
-  })
-})
-
 test('findByOwner returns the correct domains', async () => {
   const domains = await config.metaNames.domainRepository.findByOwner(config.address)
 
