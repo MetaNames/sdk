@@ -5,6 +5,7 @@ import { createTransactionFromMetaMaskClient, createTransactionFromPartisiaClien
 import { ByocCoin, Contract, ContractParams, GasCost, IContractRepository, ITransactionIntent, TransactionParams } from '../interface'
 import { Enviroment } from '../providers'
 import { SecretsProvider } from '../providers/secrets'
+import { convertAvlTree } from './helpers/contract'
 
 /**
  * Contract repository to interact with smart contracts on Partisia
@@ -41,7 +42,7 @@ export class ContractRepository implements IContractRepository {
     if (!('state' in serializedContract)) throw new Error('Contract state not found')
 
     const contractAbi = contract.abi
-    const reader = new StateReader(Buffer.from(serializedContract.state.data, 'base64'), contractAbi)
+    const reader = new StateReader(Buffer.from(serializedContract.state.data, 'base64'), contractAbi, contract.avlTree)
     const struct = reader.readStruct(contractAbi.getStateStruct())
 
     return struct
@@ -107,7 +108,6 @@ export class ContractRepository implements IContractRepository {
       ((withState && contract.data.serializedContract) || !withState))
       return contract
 
-
     const rawContract = await this.rpc.getContract(
       contractAddress,
       this.rpc.deriveShardId(contractAddress),
@@ -119,6 +119,14 @@ export class ContractRepository implements IContractRepository {
     contract = {
       abi: fileAbi.contract,
       ...rawContract
+    }
+
+    if (rawContract.data.serializedContract) {
+      const avlTrees = rawContract.data.serializedContract.avlTrees
+      if (avlTrees) {
+        const avlTree = convertAvlTree(avlTrees)
+        contract.avlTree = avlTree
+      }
     }
 
     this.contractRegistry.set(contractAddress, contract)

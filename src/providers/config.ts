@@ -7,7 +7,7 @@ export interface BYOC {
   address: string
   id: number
   symbol: BYOCSymbol
-  rounding: number
+  decimals: number
 }
 
 export interface Config {

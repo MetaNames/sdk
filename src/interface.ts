@@ -140,6 +140,7 @@ export interface Contract {
   shard_id: number
   data: IContractInfo | IContractZk
   abi: ContractAbi
+  avlTree?: Map<number, [Buffer, Buffer][]>
 }
 
 export interface TransactionParams {
@@ -169,3 +170,21 @@ export interface IValidatorInterface<T> {
   normalize(value: T, options: IValidatorOptions): T
   validate(value: T, options: IValidatorOptions): boolean
 }
+
+export interface AvlTreeItem {
+  key: {
+    data: {
+      data: string;
+    };
+  };
+  value: {
+    data: string;
+  };
+}
+
+export type AvlTree = {
+  key: number;
+  value: {
+    avlTree: AvlTreeItem[];
+  };
+};
