@@ -37,6 +37,10 @@ export class Domain implements IDomain {
     return this.name.split('.').slice(0, -1).join('.')
   }
 
+  normalizedName({ removeTLD } = { removeTLD: true }) {
+    return this.domainValidator.normalize(this.name, { removeTLD, reverse: true })
+  }
+
   get recordRepository(): RecordRepository {
     return new RecordRepository(this.contractRepository, this)
   }
