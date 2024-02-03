@@ -139,6 +139,25 @@ export class DomainRepository {
   }
 
   /**
+   * Get all registered domains
+   * @returns Domain[]
+   */
+  async getAll() {
+    const struct = await this.metaNamesContract.getState()
+    const domains = getPnsDomains(struct)
+    const nftOwners = getNftOwners(struct)
+
+    const domainNames: string[] = []
+    domains.map!.forEach((_, domainName) => {
+      domainNames.push(domainName.stringValue())
+    })
+
+    const domainsObjects = domainNames.map((domainName) => lookUpDomain(domains, nftOwners, domainName)).filter((domain) => domain !== undefined) as IDomain[]
+
+    return domainsObjects.map((domain) => new Domain(domain, this.metaNamesContract))
+  }
+
+  /**
    * Finds domains by owner address
    * @param ownerAddress Owner address
    */

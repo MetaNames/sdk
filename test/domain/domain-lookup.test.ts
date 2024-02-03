@@ -11,3 +11,8 @@ test('lookup domains by owner', async () => {
   expect(domain).toHaveProperty('parentId')
   expect(domain).toHaveProperty('records')
 })
+
+test('get all domains', async () => {
+  const domains = await config.metaNames.domainRepository.getAll()
+  console.log(domains)
+})
