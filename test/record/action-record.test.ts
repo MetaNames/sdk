@@ -5,6 +5,7 @@ import { config, generateRandomString } from '../helpers'
 const domainName = `${generateRandomString(15)}.meta`
 
 let domain: Domain
+let subDomain: Domain | undefined
 
 beforeAll(async () => {
   const randomActionMint: IActionDomainMint = {
@@ -24,7 +25,8 @@ beforeAll(async () => {
 }, 10_000)
 
 afterEach(async () => {
-  const { transactionHash, fetchResult } = await domain.recordRepository.delete(RecordClassEnum.Wallet)
+  const domainToInteract = subDomain || domain
+  const { transactionHash, fetchResult } = await domainToInteract.recordRepository.delete(RecordClassEnum.Wallet)
   const resultDelete = await fetchResult
 
   expect(resultDelete).toBeDefined()
@@ -33,6 +35,8 @@ afterEach(async () => {
     expect(transactionHash).toBe(resultDelete.transactionHash)
     expect(resultDelete.hasError).toBe(false)
     expect(resultDelete.eventTrace.length).toBeGreaterThan(0)
+
+    subDomain = undefined
   }
 }, 10_000)
 
@@ -53,6 +57,40 @@ test('action record mint', async () => {
     expect(resultMintRecord.eventTrace.length).toBeGreaterThan(0)
   }
 }, 10_000)
+
+test('action record mint with parent', async () => {
+  const subdomain = generateRandomString(15)
+  const parentDomain = domainName
+
+  const randomActionMint: IActionDomainMint = {
+    domain: subdomain,
+    parentDomain,
+    to: config.address,
+    byocSymbol: 'TEST_COIN'
+  }
+  const { fetchResult: subDomainMint } = await config.metaNames.domainRepository.register(randomActionMint)
+  const subDomainMintResult = await subDomainMint
+
+  expect(subDomainMintResult.hasError).toBe(false)
+  expect(subDomainMintResult.eventTrace.length).toBeGreaterThan(0)
+
+  subDomain = await config.metaNames.domainRepository.find(`${subdomain}.${parentDomain}`) as Domain
+
+  const actionMintRecord: IRecord = {
+    class: RecordClassEnum.Wallet,
+    data: config.address
+  }
+  const { transactionHash, fetchResult } = await subDomain.recordRepository.create(actionMintRecord)
+  const resultMintRecord = await fetchResult
+
+  expect(resultMintRecord).toBeDefined()
+  if (resultMintRecord) {
+    expect(transactionHash).toBeDefined()
+    expect(transactionHash).toBe(resultMintRecord.transactionHash)
+    expect(resultMintRecord.hasError).toBe(false)
+    expect(resultMintRecord.eventTrace.length).toBeGreaterThan(0)
+  }
+}, 20_000)
 
 test('action record update', async () => {
   const actionMintRecord: IRecord = {
