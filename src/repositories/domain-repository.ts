@@ -104,7 +104,7 @@ export class DomainRepository {
     const normalizedDomain = this.domainValidator.normalize(domainName)
     const struct = await this.metaNamesContract.getState()
     const handledByoc = this.config.byoc.find((byoc) => byoc.symbol === tokenSymbol)
-    if (!handledByoc) throw new Error('BYOC not found')
+    if (!handledByoc) throw new Error(`BYOC ${tokenSymbol} not handled`)
 
     const fees = await getMintFeesInGas(struct, normalizedDomain, handledByoc.id)
 
@@ -112,8 +112,9 @@ export class DomainRepository {
     const address = handledByoc.address
 
     const availableCoins = await this.contractRepository.getByocCoins()
-    const networkByoc = availableCoins.find((coin) => coin.symbol === symbol.toString())
-    if (!networkByoc) throw new Error('BYOC coin not found')
+    const symbolString = symbol.toString()
+    const networkByoc = availableCoins.find((coin) => coin.symbol === symbolString)
+    if (!networkByoc) throw new Error(`BYOC ${symbolString} coin not found in available coins`)
 
     const feesLabel = getFeesLael(fees, getDecimalsMultiplier(handledByoc.decimals))
 

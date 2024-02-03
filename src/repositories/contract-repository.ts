@@ -50,7 +50,7 @@ export class ContractRepository implements IContractRepository {
 
   /**
    * Get Byoc coins
-   * @returns IGlobalCoins
+   * @returns ByocCoin[]
    */
   async getByocCoins(): Promise<ByocCoin[]> {
     const coins = await this.rpc.fetchCoins()

@@ -182,9 +182,9 @@ export interface AvlTreeItem {
   };
 }
 
-export type AvlTree = {
+export interface AvlTree {
   key: number;
   value: {
     avlTree: AvlTreeItem[];
   };
-};
+}

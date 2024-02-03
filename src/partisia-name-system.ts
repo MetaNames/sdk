@@ -54,7 +54,7 @@ export function lookUpDomain(domains: ScValueAvlTreeMap, owners: ScValueMap, dom
   if (!domains.map) return
 
   const scNameString = new ScValueString(domainName)
-  const domain = domains.map!.get(scNameString)?.structValue()
+  const domain = domains.map.get(scNameString)?.structValue()
   if (!domain) return
 
   const fieldsMap = domain.fieldsMap
