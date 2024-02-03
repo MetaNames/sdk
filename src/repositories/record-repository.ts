@@ -1,4 +1,3 @@
-import { DomainValidator } from "../../lib"
 import { actionRecordDeletePayload, actionRecordMintPayload, actionRecordUpdatePayload } from "../actions"
 import { IMetaNamesContractRepository, IRecord, RecordClassEnum } from "../interface"
 import { Domain } from "../models"
