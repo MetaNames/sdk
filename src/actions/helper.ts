@@ -1,11 +1,11 @@
 import assert from 'assert'
-import { partisiaCrypto } from 'partisia-crypto'
+import { partisiaCrypto } from 'partisia-blockchain-applications-crypto'
 import { PartisiaRpc } from 'partisia-blockchain-applications-rpc'
 import { PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
 import { PartisiaRpcClass } from 'partisia-blockchain-applications-rpc/lib/main/rpc'
 import { ITransactionIntent, MetaMaskSdk } from '../interface'
 import { AbiOutputBytes, FnRpcBuilder, } from '@partisiablockchain/abi-client'
-import type PartisiaSdk from 'partisia-sdk'
+import type PartisiaSdk from 'partisia-blockchain-applications-sdk'
 import { BigEndianByteOutput } from '@secata-public/bitmanipulation-ts'
 
 export const builderToBytesBe = (rpc: FnRpcBuilder) => {

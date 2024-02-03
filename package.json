@@ -21,8 +21,9 @@
   "dependencies": {
     "@partisiablockchain/abi-client": "^3.30.0",
     "@secata-public/bitmanipulation-ts": "^3.0.6",
+    "partisia-blockchain-applications-crypto": "^1.0.22",
     "partisia-blockchain-applications-rpc": "^1.0.12",
-    "partisia-sdk": "^0.1.1",
+    "partisia-blockchain-applications-sdk": "^0.1.2",
     "tr46": "^4.1.1"
   },
   "devDependencies": {
