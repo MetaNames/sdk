@@ -15,13 +15,13 @@ test('mint fees transaction', async () => {
 test('mint fees amount', async () => {
   const domainName = 'verycheap.meta'
 
-  const { gasAmount, symbol, amount } = await config.metaNames.domainRepository.calculateMintFees(domainName, 'TEST_COIN')
+  const { fees, symbol, feesLabel } = await config.metaNames.domainRepository.calculateMintFees(domainName, 'TEST_COIN')
 
-  expect(gasAmount).toBeDefined()
-  expect(gasAmount).toBeGreaterThan(0)
+  expect(fees).toBeDefined()
+  expect(fees).toBeGreaterThan(0)
   expect(symbol).toBeDefined()
   expect(symbol).toBe('TEST_COIN')
-  expect(amount).toBeDefined()
-  expect(amount).toBeGreaterThan(0)
-  expect(amount).toBe(10)
+  expect(feesLabel).toBeDefined()
+  expect(feesLabel).toBeGreaterThan(0)
+  expect(feesLabel).toBe(10)
 })

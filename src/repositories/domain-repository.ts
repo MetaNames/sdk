@@ -50,8 +50,8 @@ export class DomainRepository {
     if (subscriptionYears < 1) throw new Error('Subscription years must be greater than 0')
 
     const normalizedDomain = this.domainValidator.normalize(domainName)
-    const { gasAmount, address: byocAddress } = await this.calculateMintFees(normalizedDomain, byocSymbol)
-    const totalAmount = gasAmount * subscriptionYears
+    const { fees, address: byocAddress } = await this.calculateMintFees(normalizedDomain, byocSymbol)
+    const totalAmount = fees * subscriptionYears
     const contract = await this.contractRepository.getContract({ contractAddress: byocAddress })
     const payload = actionApproveMintFeesPayload(contract.abi, { address: this.config.contractAddress, amount: totalAmount })
 
@@ -113,9 +113,9 @@ export class DomainRepository {
     const networkByoc = availableCoins.find((coin) => coin.symbol === symbol.toString())
     if (!networkByoc) throw new Error('BYOC coin not found')
 
-    const amount = fees / 10 ** handledByoc.decimals
+    const feesLabel = fees / 10 ** handledByoc.decimals
 
-    return { gasAmount: fees, symbol, address, amount }
+    return { fees, symbol, address, feesLabel }
   }
 
   /**
