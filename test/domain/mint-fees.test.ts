@@ -24,7 +24,7 @@ test('mint fees transaction for ETH', async () => {
   expect(result.eventTrace.length).toBeGreaterThan(0)
 }, 10_000)
 
-test('mint fees amount', async () => {
+test('mint fees amount TEST_COIN', async () => {
   const domainName = 'verycheap.meta'
 
   const { fees, symbol, feesLabel } = await config.metaNames.domainRepository.calculateMintFees(domainName, 'TEST_COIN')
@@ -33,6 +33,19 @@ test('mint fees amount', async () => {
   expect(fees.toNumber()).toBeGreaterThan(0)
   expect(symbol).toBeDefined()
   expect(symbol).toBe('TEST_COIN')
+  expect(feesLabel).toBeDefined()
+  expect(feesLabel).not.toBe('0')
+})
+
+test('mint fees amount ETH_GOERLI', async () => {
+  const domainName = 'verycheap.meta'
+
+  const { fees, symbol, feesLabel } = await config.metaNames.domainRepository.calculateMintFees(domainName, 'ETH_GOERLI')
+
+  expect(fees).toBeDefined()
+  expect(fees.toString).not.toBe('0')
+  expect(symbol).toBeDefined()
+  expect(symbol).toBe('ETH_GOERLI')
   expect(feesLabel).toBeDefined()
   expect(feesLabel).not.toBe('0')
 })
