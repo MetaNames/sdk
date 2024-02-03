@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-import { ContractAbi, ScValueStruct } from "@partisiablockchain/abi-client"
+import { BN, ContractAbi, ScValueStruct } from "@partisiablockchain/abi-client"
 import { IContractInfo } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
 import { IContractZk } from "partisia-blockchain-applications-rpc/lib/main/interface-zk"
 import PartisiaSdk from "partisia-sdk"
@@ -77,7 +77,7 @@ export interface IActionRecordDelete {
 
 export interface IActionApproveMintFees {
   address: Address
-  amount: number
+  amount: BN
 }
 
 interface IActionCommontDomainMint {

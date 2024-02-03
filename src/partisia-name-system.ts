@@ -114,7 +114,7 @@ function getPaymentInfo(contract: ScValueStruct, paymentId: number): ScValueStru
   return payment.structValue()
 }
 
-export function getMintFeesInGas(contract: ScValueStruct, domain: string, tokenId: number): number {
+export function getMintFeesInGas(contract: ScValueStruct, domain: string, tokenId: number): BN {
   const payment = getPaymentInfo(contract, tokenId)
   const fees = payment.fieldsMap.get('fees')
   if (!fees) throw new Error('Mint gas key not found')
@@ -133,9 +133,17 @@ export function getMintFeesInGas(contract: ScValueStruct, domain: string, tokenI
 
   if (!fee) throw new Error('Gas amount not found')
 
-  return fee * 10 ** decimals
+  let feeBN = new BN(fee)
+  feeBN = feeBN.mul(getDecimalsMultiplier(decimals))
+
+  return feeBN
 }
 
 function convertScVectorToBuffer(vector: ScValueVector): Buffer {
   return Buffer.from(vector.values().map((v) => v.asNumber()))
 }
+
+export function getDecimalsMultiplier(decimals: number): BN {
+  return new BN(10).pow(new BN(decimals))
+}
+

@@ -1,8 +1,9 @@
+import { BN } from "@partisiablockchain/abi-client"
 import { actionApproveMintFeesPayload, actionDomainMintPayload } from "../actions"
 import { Address, IActionDomainMint, IContractRepository, IDomain, IDomainAnalyzed, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models"
 import { getParentName } from "../models/helpers/domain"
-import { getDomainNamesByOwner, getMintFeesInGas, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
+import { getDecimalsMultiplier, getDomainNamesByOwner, getMintFeesInGas, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { Config, BYOCSymbol } from "../providers"
 import { DomainValidator } from "../validators"
 
@@ -51,7 +52,7 @@ export class DomainRepository {
 
     const normalizedDomain = this.domainValidator.normalize(domainName)
     const { fees, address: byocAddress } = await this.calculateMintFees(normalizedDomain, byocSymbol)
-    const totalAmount = fees * subscriptionYears
+    const totalAmount = fees.mul(new BN(subscriptionYears))
     const contract = await this.contractRepository.getContract({ contractAddress: byocAddress })
     const payload = actionApproveMintFeesPayload(contract.abi, { address: this.config.contractAddress, amount: totalAmount })
 
@@ -113,7 +114,7 @@ export class DomainRepository {
     const networkByoc = availableCoins.find((coin) => coin.symbol === symbol.toString())
     if (!networkByoc) throw new Error('BYOC coin not found')
 
-    const feesLabel = fees / 10 ** handledByoc.decimals
+    const feesLabel = fees.div(getDecimalsMultiplier(handledByoc.decimals)).toString()
 
     return { fees, symbol, address, feesLabel }
   }
