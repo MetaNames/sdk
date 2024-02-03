@@ -78,8 +78,8 @@ export class ContractRepository implements IContractRepository {
 
     const isMainnet = this.environment === Enviroment.mainnet
     const gasTable: Record<GasCost, number> = {
-      'low': 4490,
-      'high': 32490,
+      'low': 5000,
+      'high': 50000,
     }
 
     const gas = gasCost ? gasTable[gasCost] : gasTable.low
