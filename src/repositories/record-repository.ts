@@ -1,3 +1,4 @@
+import { DomainValidator } from "../../lib"
 import { actionRecordDeletePayload, actionRecordMintPayload, actionRecordUpdatePayload } from "../actions"
 import { IMetaNamesContractRepository, IRecord, RecordClassEnum } from "../interface"
 import { Domain } from "../models"
@@ -68,7 +69,7 @@ export class RecordRepository {
 
   private addDomainToParams<T>(params: T) {
     return {
-      domain: this.domain.nameWithoutTLD,
+      domain: this.domain.normalizedName(),
       ...params
     }
   }
