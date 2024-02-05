@@ -3,7 +3,7 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "target": "ESNext",
+    "target": "ES2022",
     "allowJs": true,
     "resolveJsonModule": true,
     "moduleDetection": "force",
@@ -12,7 +12,7 @@
     "noUncheckedIndexedAccess": true,
     "lib": ["es2022"],
     "moduleResolution": "Bundler",
-    "module": "ESNext",
+    "module": "ES2022",
     "rootDir": "./src/",
     "outDir": "./dist",
     "sourceMap": true,
