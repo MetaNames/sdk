@@ -13,6 +13,16 @@ export function getPnsDomains(contract: ScValueStruct): ScValueAvlTreeMap {
   return domains.avlTreeMapValue()
 }
 
+export function getDomainCount(contract: ScValueStruct): number {
+  const nfts = contract.fieldsMap.get('nft')
+  if (!nfts) throw new Error('Nft key not found')
+  const nftStruct = nfts.structValue()
+  const nftCount = nftStruct.fieldsMap.get('supply')
+  if (!nftCount) throw new Error('Supply key not found')
+
+  return nftCount.asBN().toNumber()
+}
+
 export function getNftOwners(contract: ScValueStruct): ScValueMap {
   const nfts = contract.fieldsMap.get('nft')
   if (!nfts) throw new Error('Nft key not found')

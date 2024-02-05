@@ -35,3 +35,9 @@ test('run action renew', async () => {
   expect(result.hasError).toBe(false)
   expect(result.eventTrace.length).toBeGreaterThan(0)
 }, 10_000)
+
+test('run action count', async () => {
+  const count = await config.metaNames.domainRepository.count()
+
+  expect(count).toBeGreaterThan(0)
+})
