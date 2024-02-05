@@ -1,6 +1,6 @@
 import { BN } from "@partisiablockchain/abi-client"
-import { actionApproveMintFeesPayload, actionDomainMintPayload } from "../actions"
-import { Address, IActionDomainMint, IContractRepository, IDomain, IDomainAnalyzed, IMetaNamesContractRepository } from "../interface"
+import { actionApproveMintFeesPayload, actionDomainMintPayload, actionDomainRenewalPayload } from "../actions"
+import { Address, IActionDomainMint, IActionDomainRenewal, IContractRepository, IDomain, IDomainAnalyzed, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models"
 import { getParentName } from "../models/helpers/domain"
 import { decorateDomain, getDecimalsMultiplier, getDomainNamesByOwner, getMintFeesInGas, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
@@ -89,6 +89,23 @@ export class DomainRepository {
     domain = this.domainValidator.normalize(domain, { reverse: true })
     const contract = await this.metaNamesContract.getContract()
     const payload = actionDomainMintPayload(contract.abi, { ...params, domain, parentDomain: normalizedParentDomain, byocTokenId: byoc.id, subscriptionYears })
+
+    return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
+  }
+
+  async renew(params: IActionDomainRenewal) {
+    const domainName = params.domain
+    const subscriptionYears = params.subscriptionYears ?? 1
+
+    if (!this.domainValidator.validate(params.domain)) throw new Error('Domain validation failed')
+    if (subscriptionYears < 1) throw new Error('Subscription years must be greater than 0')
+
+    const byoc = this.config.byoc.find((byoc) => byoc.symbol === params.byocSymbol)
+    if (!byoc) throw new Error(`BYOC ${params.byocSymbol} not found`)
+
+    const domain = this.domainValidator.normalize(domainName, { reverse: true })
+    const contract = await this.metaNamesContract.getContract()
+    const payload = actionDomainRenewalPayload(contract.abi, { ...params, domain, subscriptionYears, byocTokenId: byoc.id })
 
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }

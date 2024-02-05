@@ -80,12 +80,15 @@ export interface IActionApproveMintFees {
   amount: BN
 }
 
-interface IActionCommontDomainMint {
+interface ICommonDomain {
   domain: string
+  subscriptionYears?: number
+}
+
+interface IActionCommontDomainMint extends ICommonDomain {
   to: Address
   tokenUri?: string
   parentDomain?: string
-  subscriptionYears?: number
 }
 export interface IActionDomainMintPayload extends IActionCommontDomainMint {
   byocTokenId: number
@@ -93,6 +96,18 @@ export interface IActionDomainMintPayload extends IActionCommontDomainMint {
 
 export interface IActionDomainMint extends IActionCommontDomainMint {
   byocSymbol: BYOCSymbol
+}
+
+interface IActionCommonDomainRenew extends ICommonDomain {
+  payer: Address
+}
+
+export interface IActionDomainRenewal extends IActionCommonDomainRenew {
+  byocSymbol: BYOCSymbol
+}
+
+export interface IActionRenewDomainPayload extends IActionCommonDomainRenew {
+  byocTokenId: number
 }
 
 export interface ByocCoin {
