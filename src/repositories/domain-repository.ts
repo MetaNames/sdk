@@ -207,4 +207,21 @@ export class DomainRepository {
 
     return domainsObjects.map((domain) => new Domain(domain, this.metaNamesContract))
   }
+
+  /**
+   * Get all owners addresses
+   * @returns string[]
+   */
+  async getOwners() {
+    const struct = await this.metaNamesContract.getState()
+    const nftOwners = getNftOwners(struct)
+
+    const owners: string[] = []
+    nftOwners.map.forEach((addressValue) => {
+      const address = addressValue.addressValue().value.toString('hex')
+      if (!owners.includes(address)) owners.push(address)
+    })
+
+    return owners
+  }
 }

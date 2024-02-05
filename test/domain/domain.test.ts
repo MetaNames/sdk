@@ -56,3 +56,17 @@ test('findByOwner returns the correct domains', async () => {
   expect(domain!.tld).toEqual('meta')
   expect(domain!.createdAt).toBeInstanceOf(Date)
 }, 10_000)
+
+test('run action count', async () => {
+  const count = await config.metaNames.domainRepository.count()
+
+  expect(count).toBeGreaterThan(0)
+})
+
+test('get owners', async () => {
+  const owners = await config.metaNames.domainRepository.getOwners()
+
+  expect(owners).toBeDefined()
+  expect(owners.length).toBeGreaterThan(0)
+  expect(owners).toContain(config.address)
+})
