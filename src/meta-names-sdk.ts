@@ -1,8 +1,9 @@
 import { ContractRepository, DomainRepository } from './repositories'
-import { Config, ConfigProvider, Enviroment } from './providers'
+import { ConfigProvider, Enviroment } from './providers'
+import type { Config } from './providers'
 import { MetaNamesContractRepository } from './repositories/contracts/meta-names-contract-repository'
 import { SecretsProvider } from './providers/secrets'
-import { SigningClassType, SigningStrategyType } from './interface'
+import type { SigningClassType, SigningStrategyType } from './interface'
 
 /**
  * Meta Names SDK

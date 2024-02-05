@@ -1,4 +1,4 @@
-import PartisiaSdk from "partisia-blockchain-applications-sdk"
+import type PartisiaSdk from "partisia-blockchain-applications-sdk"
 import { MetaMaskSdk, SigningClassType, SigningStrategyType } from "../interface"
 
 export class SecretsProvider {

@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
 
-import { BN, ContractAbi, ScValueStruct } from "@partisiablockchain/abi-client"
-import { IContractInfo } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
-import { IContractZk } from "partisia-blockchain-applications-rpc/lib/main/interface-zk"
-import PartisiaSdk from "partisia-blockchain-applications-sdk"
-import { BYOCSymbol } from "./providers"
+import type { BN, ContractAbi, ScValueStruct } from "@partisiablockchain/abi-client"
+import type { IContractInfo } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
+import type { IContractZk } from "partisia-blockchain-applications-rpc/lib/main/interface-zk"
+import type PartisiaSdk from "partisia-blockchain-applications-sdk"
+import type { BYOCSymbol } from "./providers"
 
 // TODO: Reorganize this file
 
