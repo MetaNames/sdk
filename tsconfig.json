@@ -11,7 +11,6 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "lib": ["es2022"],
-    "moduleResolution": "Bundler",
     "module": "ES2022",
     "rootDir": "./src/",
     "outDir": "./dist",
