@@ -1,7 +1,6 @@
 module.exports = {
   env: {
-    browser: true,
-    es2021: true
+    es2022: true
   },
   extends: [
     'eslint:recommended',
@@ -11,12 +10,14 @@ module.exports = {
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: 'latest',
+    ecmaVersion: 2022,
     sourceType: 'module',
-    project: ['./tsconfig.json']
+    project: ['./tsconfig.json'],
   },
   plugins: ['@typescript-eslint'],
   rules: {
-    semi: ["error", "never"]
+    semi: ["error", "never"],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["error"]
   }
 }
