@@ -3,3 +3,4 @@ test/
 lib/
 coverage/
 .eslintrc.js
+jest.config.ts

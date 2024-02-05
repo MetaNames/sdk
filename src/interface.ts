@@ -166,7 +166,7 @@ export interface IValidatorOptions {
 export interface IValidatorInterface<T> {
   errors: string[]
 
-  get rules(): Object
+  get rules(): object
   normalize(value: T, options: IValidatorOptions): T
   validate(value: T, options: IValidatorOptions): boolean
 }
