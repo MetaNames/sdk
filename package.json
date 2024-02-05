@@ -13,7 +13,8 @@
     "docs": "typedoc --out docs src",
     "format": "eslint --fix src",
     "test": "jest -i",
-    "prepublishOnly": "yarn build"
+    "prepublishOnly": "yarn build",
+    "postinstall": "yarn && yarn build"
   },
   "dependencies": {
     "@partisiablockchain/abi-client": "^3.30.0",
