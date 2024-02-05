@@ -3,7 +3,7 @@ import { actionApproveMintFeesPayload, actionDomainMintPayload, actionDomainRene
 import { Address, IActionDomainMint, IActionDomainRenewal, IContractRepository, IDomain, IDomainAnalyzed, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models"
 import { getParentName } from "../models/helpers/domain"
-import { decorateDomain, getDecimalsMultiplier, getDomainNamesByOwner, getMintFeesInGas, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
+import { decorateDomain, getDecimalsMultiplier, getDomainCount, getDomainNamesByOwner, getMintFeesInGas, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { Config, BYOCSymbol } from "../providers"
 import { DomainValidator } from "../validators"
 import { getFeesLabel } from "./helpers/contract"
@@ -179,6 +179,16 @@ export class DomainRepository {
     })
 
     return domains
+  }
+
+  /**
+   * Count the number of registered domains
+   * @returns number
+   */
+  async count() {
+    const struct = await this.metaNamesContract.getState()
+
+    return getDomainCount(struct)
   }
 
   /**
