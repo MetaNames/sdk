@@ -58,6 +58,10 @@ export function lookUpDomain(domains: ScValueAvlTreeMap, owners: ScValueMap, dom
   const domain = domains.map.get(scNameString)?.structValue()
   if (!domain) return
 
+  return decorateDomain(domain, owners, domainName)
+}
+
+export function decorateDomain(domain: ScValueStruct, owners: ScValueMap, domainName: string): IDomain {
   const fieldsMap = domain.fieldsMap
   const created = (fieldsMap.get('minted_at') as ScValue).asBN().toNumber()
   const createdAt = new Date(created)
