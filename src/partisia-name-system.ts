@@ -1,4 +1,4 @@
-import { BN, ScValueAvlTreeMap, ScValueMap, ScValueNumber, ScValueString, ScValueStruct, ScValueVector, TypeIndex } from '@partisiablockchain/abi-client'
+import { BN, ScValue, ScValueAvlTreeMap, ScValueMap, ScValueNumber, ScValueString, ScValueStruct, ScValueVector, TypeIndex } from '@partisiablockchain/abi-client'
 import { IDomain, RecordClassEnum } from './interface'
 
 export function getPnsDomains(contract: ScValueStruct): ScValueAvlTreeMap {
@@ -57,8 +57,12 @@ export function lookUpDomain(domains: ScValueAvlTreeMap, owners: ScValueMap, dom
   const domain = domains.map.get(scNameString)?.structValue()
   if (!domain) return
 
+  return decorateDomain(domain, owners, domainName)
+}
+
+export function decorateDomain(domain: ScValueStruct, owners: ScValueMap, domainName: string): IDomain {
   const fieldsMap = domain.fieldsMap
-  const created = fieldsMap.get('minted_at')!.asBN().toNumber()
+  const created = (fieldsMap.get('minted_at') as ScValue).asBN().toNumber()
   const createdAt = new Date(created)
 
   const expires = fieldsMap.get('expires_at')?.optionValue().innerValue?.asBN().toNumber()
@@ -66,7 +70,7 @@ export function lookUpDomain(domains: ScValueAvlTreeMap, owners: ScValueMap, dom
 
   const scRecords = fieldsMap.get('records')?.mapValue().map
 
-  const tokenId = fieldsMap.get('token_id')!.asBN().toNumber()
+  const tokenId = (fieldsMap.get('token_id') as ScValue).asBN().toNumber()
   const owner = getOwnerAddressOf(owners, tokenId)
   if (!owner) throw new Error('Owner not found')
 

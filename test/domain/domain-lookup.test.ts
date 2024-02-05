@@ -14,5 +14,7 @@ test('lookup domains by owner', async () => {
 
 test('get all domains', async () => {
   const domains = await config.metaNames.domainRepository.getAll()
-  console.log(domains)
+
+  expect(domains.length).toBeGreaterThan(0)
+  expect(domains[0]).toHaveProperty('name')
 })

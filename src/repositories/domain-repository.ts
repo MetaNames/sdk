@@ -3,7 +3,7 @@ import { actionApproveMintFeesPayload, actionDomainMintPayload } from "../action
 import { Address, IActionDomainMint, IContractRepository, IDomain, IDomainAnalyzed, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models"
 import { getParentName } from "../models/helpers/domain"
-import { getDecimalsMultiplier, getDomainNamesByOwner, getMintFeesInGas, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
+import { decorateDomain, getDecimalsMultiplier, getDomainNamesByOwner, getMintFeesInGas, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { Config, BYOCSymbol } from "../providers"
 import { DomainValidator } from "../validators"
 import { getFeesLael } from "./helpers/contract"
@@ -144,17 +144,24 @@ export class DomainRepository {
    */
   async getAll() {
     const struct = await this.metaNamesContract.getState()
-    const domains = getPnsDomains(struct)
+    const domainsStruct = getPnsDomains(struct)
     const nftOwners = getNftOwners(struct)
 
-    const domainNames: string[] = []
-    domains.map!.forEach((_, domainName) => {
-      domainNames.push(domainName.stringValue())
+    if (!domainsStruct.map) return []
+
+    const domains: Domain[] = []
+    domainsStruct.map.forEach((domainStruct, domainName) => {
+      const domainNameStr = domainName.stringValue()
+      const domainValue = domainStruct.structValue()
+
+      const domainObj = decorateDomain(domainValue, nftOwners, domainNameStr)
+      if (!domainObj) return
+
+      const domain = new Domain(domainObj, this.metaNamesContract)
+      domains.push(domain)
     })
 
-    const domainsObjects = domainNames.map((domainName) => lookUpDomain(domains, nftOwners, domainName)).filter((domain) => domain !== undefined) as IDomain[]
-
-    return domainsObjects.map((domain) => new Domain(domain, this.metaNamesContract))
+    return domains
   }
 
   /**
