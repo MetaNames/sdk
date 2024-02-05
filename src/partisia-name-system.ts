@@ -1,4 +1,4 @@
-import { BN, ScValueAvlTreeMap, ScValueMap, ScValueNumber, ScValueString, ScValueStruct, ScValueVector, TypeIndex } from '@partisiablockchain/abi-client'
+import { BN, ScValue, ScValueAvlTreeMap, ScValueMap, ScValueNumber, ScValueString, ScValueStruct, ScValueVector, TypeIndex } from '@partisiablockchain/abi-client'
 import { IDomain, RecordClassEnum } from './interface'
 
 export function getPnsDomains(contract: ScValueStruct): ScValueAvlTreeMap {
@@ -37,9 +37,10 @@ export function getDomainNamesByOwner(domains: ScValueAvlTreeMap, owners: ScValu
     if (address.addressValue().value.equals(ownerAddress)) nftIds.push(nftId.asBN().toNumber())
   })
   if (!nftIds.length) return []
+  if (!domains.map) return []
 
   const domainNames: string[] = []
-  domains.map!.forEach((domain, name) => {
+  domains.map.forEach((domain, name) => {
     const tokenId = domain.structValue().fieldsMap.get('token_id')?.asBN().toNumber()
 
     if (tokenId === undefined || !nftIds.includes(tokenId)) return
@@ -58,7 +59,7 @@ export function lookUpDomain(domains: ScValueAvlTreeMap, owners: ScValueMap, dom
   if (!domain) return
 
   const fieldsMap = domain.fieldsMap
-  const created = fieldsMap.get('minted_at')!.asBN().toNumber()
+  const created = (fieldsMap.get('minted_at') as ScValue).asBN().toNumber()
   const createdAt = new Date(created)
 
   const expires = fieldsMap.get('expires_at')?.optionValue().innerValue?.asBN().toNumber()
@@ -66,7 +67,7 @@ export function lookUpDomain(domains: ScValueAvlTreeMap, owners: ScValueMap, dom
 
   const scRecords = fieldsMap.get('records')?.mapValue().map
 
-  const tokenId = fieldsMap.get('token_id')!.asBN().toNumber()
+  const tokenId = (fieldsMap.get('token_id') as ScValue).asBN().toNumber()
   const owner = getOwnerAddressOf(owners, tokenId)
   if (!owner) throw new Error('Owner not found')
 
@@ -105,10 +106,10 @@ export function extractRecords(records: ScValueMap): Map<string, string> {
 }
 
 function getPaymentInfo(contract: ScValueStruct, paymentId: number): ScValueStruct {
-  const config = contract.fieldsMap.get('config')!.structValue()
-  const paymentInfo = config.fieldsMap.get('payment_info')!.vecValue()
+  const config = (contract.fieldsMap.get('config') as ScValue).structValue()
+  const paymentInfo = (config.fieldsMap.get('payment_info') as ScValue).vecValue()
 
-  const payment = paymentInfo.values().find((v) => v.structValue().fieldsMap.get('id')!.asBN().toNumber() === paymentId)
+  const payment = paymentInfo.values().find((v) => (v.structValue().fieldsMap.get('id') as ScValue).asBN().toNumber() === paymentId)
   if (!payment) throw new Error('Payment info not found')
 
   return payment.structValue()
@@ -124,12 +125,12 @@ export function getMintFeesInGas(contract: ScValueStruct, domain: string, tokenI
   if (!feesMapping) throw new Error('Fees mapping not found')
 
   const domainLength = domain.length
-  const defaultFee = feesStruct.fieldsMap.get('default_fee')
-  const decimals = feesStruct.fieldsMap.get('decimals')!.asBN().toNumber()
-  let fee = defaultFee!.asBN().toNumber()
+  const defaultFee = feesStruct.fieldsMap.get('default_fee') as ScValue
+  const decimals = (feesStruct.fieldsMap.get('decimals') as ScValue).asBN().toNumber()
+  let fee = defaultFee.asBN().toNumber()
 
-  const feeStruct = feesMapping.values().find((v) => v.structValue().fieldsMap.get('chars_count')!.asBN().toNumber() === domainLength)
-  if(feeStruct) fee = feeStruct.structValue().fieldsMap.get('amount')!.asBN().toNumber()
+  const feeStruct = feesMapping.values().find((v) => (v.structValue().fieldsMap.get('chars_count') as ScValue).asBN().toNumber() === domainLength)
+  if(feeStruct) fee = (feeStruct.structValue().fieldsMap.get('amount') as ScValue).asBN().toNumber()
 
   if (!fee) throw new Error('Gas amount not found')
 

@@ -1,12 +1,13 @@
 import assert from 'assert'
-import { partisiaCrypto } from 'partisia-blockchain-applications-crypto'
 import { PartisiaRpc } from 'partisia-blockchain-applications-rpc'
-import { PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
-import { PartisiaRpcClass } from 'partisia-blockchain-applications-rpc/lib/main/rpc'
-import { ITransactionIntent, MetaMaskSdk } from '../interface'
+import type { PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
+import type { PartisiaRpcClass } from 'partisia-blockchain-applications-rpc/lib/main/rpc'
+import type { ITransactionIntent, MetaMaskSdk } from '../interface'
 import { AbiOutputBytes, FnRpcBuilder, } from '@partisiablockchain/abi-client'
 import type PartisiaSdk from 'partisia-blockchain-applications-sdk'
 import { BigEndianByteOutput } from '@secata-public/bitmanipulation-ts'
+import { deriveDigest, getTransactionPayloadData, getTrxHash, serializedTransaction } from 'partisia-blockchain-applications-crypto/lib/main/transaction'
+import { privateKeyToAccountAddress, signTransaction } from 'partisia-blockchain-applications-crypto/lib/main/wallet'
 
 export const builderToBytesBe = (rpc: FnRpcBuilder) => {
   const bitOutput = new BigEndianByteOutput()
@@ -34,7 +35,7 @@ export const createTransactionFromMetaMaskClient = async (
 
   const serializedTransaction = await serializeTransaction(rpc, walletAddress, contractAddress, payload, cost)
   const chainId = `Partisia Blockchain${isMainnet ? '' : ' Testnet'}`
-  const digest = partisiaCrypto.transaction.deriveDigest(
+  const digest = deriveDigest(
     chainId,
     serializedTransaction
   )
@@ -58,7 +59,7 @@ export const createTransactionFromMetaMaskClient = async (
   const transactionPayload = Buffer.concat([signature, serializedTransaction]).toString('base64')
 
   const rpcShard = PartisiaRpc({ baseURL: url })
-  const transactionHash = partisiaCrypto.transaction.getTrxHash(digest, signature)
+  const transactionHash = getTrxHash(digest, signature)
   const isValid = await rpcShard.broadcastTransaction(transactionPayload)
   assert(isValid, 'Unknown Error')
 
@@ -98,20 +99,20 @@ export const createTransactionFromPrivateKey = async (
   isMainnet = false,
   cost: number | string = 8490
 ): Promise<ITransactionIntent> => {
-  const walletAddress = partisiaCrypto.wallet.privateKeyToAccountAddress(privateKey)
+  const walletAddress = privateKeyToAccountAddress(privateKey)
   const shardId = rpc.deriveShardId(walletAddress)
   const url = rpc.getShardUrl(shardId)
 
   const serializedTransaction = await serializeTransaction(rpc, walletAddress, contractAddress, payload, cost)
 
-  const digest = partisiaCrypto.transaction.deriveDigest(
+  const digest = deriveDigest(
     `Partisia Blockchain${isMainnet ? '' : ' Testnet'}`,
     serializedTransaction
   )
-  const signature = partisiaCrypto.wallet.signTransaction(digest, privateKey)
-  const trx = partisiaCrypto.transaction.getTransactionPayloadData(serializedTransaction, signature)
+  const signature = signTransaction(digest, privateKey)
+  const trx = getTransactionPayloadData(serializedTransaction, signature)
 
-  const transactionHash = partisiaCrypto.transaction.getTrxHash(digest, signature)
+  const transactionHash = getTrxHash(digest, signature)
   const rpcShard = PartisiaRpc({ baseURL: url })
 
   const isValid = await rpcShard.broadcastTransaction(trx)
@@ -190,7 +191,7 @@ const serializeTransaction = async (
   const shardId = rpc.deriveShardId(walletAddress)
   const nonce = await rpc.getNonce(walletAddress, shardId)
 
-  return partisiaCrypto.transaction.serializedTransaction(
+  return serializedTransaction(
     { nonce, cost },
     { contract: contractAddress },
     payload

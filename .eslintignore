@@ -1,4 +1,6 @@
 node_modules/
+test/
 lib/
 coverage/
 .eslintrc.js
+jest.config.ts
