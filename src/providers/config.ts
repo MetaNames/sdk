@@ -21,9 +21,7 @@ export interface Config {
 }
 
 export enum Enviroment {
-  // eslint-disable-next-line no-unused-vars
   testnet = 'testnet',
-  // eslint-disable-next-line no-unused-vars
   mainnet = 'mainnet',
 }
 
