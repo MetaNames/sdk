@@ -29,7 +29,10 @@ export class DomainValidator implements IValidatorInterface<string> {
     if (typeof name !== 'string') this.errors.push('Domain name is required')
     if (name.length < this.rules.minLength) this.errors.push('Domain name is too short')
     if (name.length > this.rules.maxLength) this.errors.push('Domain name is too long')
-    if (name.includes('..') ||
+
+    const normalized = this.normalize(name, { removeTLD: true })
+    if (normalized === '.' ||
+      name.includes('..') ||
       this.normalize(name, { removeTLD: false }) === '') this.errors.push('Domain name contains invalid characters')
 
     if (options.raiseError && this.errors.length > 0) throw new Error(this.errors.join(', '))

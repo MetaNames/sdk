@@ -22,7 +22,11 @@ test('validation of an domain name with non valid chars', () => {
     const name = 'not_valid'
     expect(() => { validator.validate(name) }).toThrow('Domain name contains invalid characters')
     const name2 = 'not..valid'
-    expect(() => { validator.validate(name) }).toThrow('Domain name contains invalid characters')
+    expect(() => { validator.validate(name2) }).toThrow('Domain name contains invalid characters')
+    const name3 = '.'
+    expect(() => { validator.validate(name3) }).toThrow('Domain name contains invalid characters')
+    const name4 = '..'
+    expect(() => { validator.validate(name4) }).toThrow('Domain name contains invalid characters')
 })
 
 test('validation without raiseError option populates errors array', () => {
