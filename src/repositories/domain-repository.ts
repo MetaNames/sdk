@@ -6,7 +6,7 @@ import { getParentName } from "../models/helpers/domain"
 import { decorateDomain, getDecimalsMultiplier, getDomainNamesByOwner, getMintFeesInGas, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { Config, BYOCSymbol } from "../providers"
 import { DomainValidator } from "../validators"
-import { getFeesLael } from "./helpers/contract"
+import { getFeesLabel } from "./helpers/contract"
 
 /**
  * Repository to interact with domains on the Meta Names contract
@@ -116,7 +116,7 @@ export class DomainRepository {
     const networkByoc = availableCoins.find((coin) => coin.symbol === symbolString)
     if (!networkByoc) throw new Error(`BYOC ${symbolString} coin not found in available coins`)
 
-    const feesLabel = getFeesLael(fees, getDecimalsMultiplier(handledByoc.decimals))
+    const feesLabel = getFeesLabel(fees, getDecimalsMultiplier(handledByoc.decimals))
 
     return { fees, symbol, address, feesLabel }
   }

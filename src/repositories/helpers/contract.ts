@@ -15,7 +15,7 @@ export const convertAvlTree = (avlTrees: AvlTree[]) => {
   return avlTreeMap
 }
 
-export const getFeesLael = (fees: BN, decimals: BN) => {
+export const getFeesLabel = (fees: BN, decimals: BN) => {
   // Convert both numbers to strings
   let strDividend = fees.toString()
   let strDivisor = decimals.toString()
