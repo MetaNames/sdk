@@ -102,7 +102,7 @@ interface IActionCommonDomainRenew extends ICommonDomain {
   payer: Address
 }
 
-export interface IActionRenewDomain extends IActionCommonDomainRenew {
+export interface IActionDomainRenewal extends IActionCommonDomainRenew {
   byocSymbol: BYOCSymbol
 }
 

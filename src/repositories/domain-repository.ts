@@ -1,6 +1,6 @@
 import { BN } from "@partisiablockchain/abi-client"
 import { actionApproveMintFeesPayload, actionDomainMintPayload, actionDomainRenewalPayload } from "../actions"
-import { Address, IActionDomainMint, IActionRenewDomain, IContractRepository, IDomain, IDomainAnalyzed, IMetaNamesContractRepository } from "../interface"
+import { Address, IActionDomainMint, IActionDomainRenewal, IContractRepository, IDomain, IDomainAnalyzed, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models"
 import { getParentName } from "../models/helpers/domain"
 import { getDecimalsMultiplier, getDomainNamesByOwner, getMintFeesInGas, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
@@ -93,7 +93,7 @@ export class DomainRepository {
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }
 
-  async renew(params: IActionRenewDomain) {
+  async renew(params: IActionDomainRenewal) {
     const domainName = params.domain
     const subscriptionYears = params.subscriptionYears ?? 1
 
