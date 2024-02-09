@@ -25,7 +25,7 @@ export function signTransaction(data: BNInput, privateKey: string): Buffer {
   const keyPair = privateKeyToKeypair(privateKey)
   const signature = keyPair.sign(data, 'hex', { canonical: true })
   const recoveryParam = signature.recoveryParam
-  if (!recoveryParam) throw new Error('Invalid signature')
+  if (recoveryParam === null) throw new Error('Invalid signature')
 
   return Buffer.concat([
     Buffer.from([recoveryParam]),
@@ -108,27 +108,20 @@ function bufFromString(str: string): Buffer {
   return Buffer.concat([numToBuffer(buf.length, 32).reverse(), buf])
 }
 
-function numToBuffer(num: string | number, bytes: number): Buffer {
-  // Convert num to a BN instance
+function numToBuffer(num: string | number, bytes: number) {
   const numBN = new BN(num)
-
-  // Max size that can fit is pow(2, bytes) - 1
   const maxSize = new BN(2).pow(new BN(bytes * 8))
-  assert(numBN.lt(maxSize), 'number too big')
 
+  assert(numBN.lt(maxSize), 'number too big')
   assert(bytes % 8 === 0, 'invalid byte number')
 
-  // Prepare buffer
-  const aryBuf = new Uint8Array(bytes)
-
+  const aryBuf = new Uint8Array(bytes / 8)
   let tmpNum = new BN(numBN)
-  for (let i = bytes - 1; i >= 0; i--) {
-    // Shift right to get the byte at position i
-    const byteValue = tmpNum.shrn(i * 8).and(new BN(255))
-    aryBuf[bytes - 1 - i] = byteValue.toNumber()
 
-    // Subtract the processed byte
-    tmpNum = tmpNum.sub(byteValue.shln(i * 8))
+  for (let i = bytes - 8; i >= 0; i -= 8) {
+    const byteValue = tmpNum.shrn(i).and(new BN(255))
+    aryBuf[i / 8] = byteValue.toNumber()
+    tmpNum = tmpNum.sub(byteValue.shln(i))
   }
 
   return Buffer.from(aryBuf)
