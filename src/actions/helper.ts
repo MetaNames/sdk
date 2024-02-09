@@ -1,13 +1,14 @@
 import assert from 'assert'
 import { PartisiaRpc } from 'partisia-blockchain-applications-rpc'
-import type { PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
 import type { PartisiaRpcClass } from 'partisia-blockchain-applications-rpc/lib/main/rpc'
 import type { ITransactionIntent, MetaMaskSdk } from '../interface'
 import { AbiOutputBytes, FnRpcBuilder, } from '@partisiablockchain/abi-client'
 import type PartisiaSdk from 'partisia-blockchain-applications-sdk'
 import { BigEndianByteOutput } from '@secata-public/bitmanipulation-ts'
-import { deriveDigest, getTransactionPayloadData, getTrxHash, serializedTransaction } from 'partisia-blockchain-applications-crypto/lib/main/transaction'
+import { deriveDigest, getTransactionPayloadData, getTrxHash  } from 'partisia-blockchain-applications-crypto/lib/main/transaction'
 import { privateKeyToAccountAddress, signTransaction } from 'partisia-blockchain-applications-crypto/lib/main/wallet'
+import { PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
+import { serializeTransaction } from '../transactions'
 
 export const builderToBytesBe = (rpc: FnRpcBuilder) => {
   const bitOutput = new BigEndianByteOutput()
@@ -179,21 +180,4 @@ const broadcastTransactionPoller = async (
     }
   }
   return intCounter < num_iter
-}
-
-const serializeTransaction = async (
-  rpc: PartisiaAccountClass,
-  walletAddress: string,
-  contractAddress: string,
-  payload: Buffer,
-  cost: number | string
-) => {
-  const shardId = rpc.deriveShardId(walletAddress)
-  const nonce = await rpc.getNonce(walletAddress, shardId)
-
-  return serializedTransaction(
-    { nonce, cost },
-    { contract: contractAddress },
-    payload
-  )
 }
