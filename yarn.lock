@@ -7396,7 +7396,7 @@ parse5@^7.0.0, parse5@^7.1.1:
   dependencies:
     entities "^4.4.0"
 
-partisia-blockchain-applications-crypto@^1.0.20, partisia-blockchain-applications-crypto@^1.0.22:
+partisia-blockchain-applications-crypto@^1.0.20:
   version "1.0.22"
   resolved "https://registry.yarnpkg.com/partisia-blockchain-applications-crypto/-/partisia-blockchain-applications-crypto-1.0.22.tgz#a05ea2da0c4196345a8faebdef91bfcf0a9cb400"
   integrity sha512-VgGxZ1GWLy6JUx/QqeYIHV5H0KLhXZ4pNpeYbDRaXI7yoVK0DNpQLge9IIBCSMqfvfmw850d0sIEjokONDXwMw==
