@@ -14,5 +14,5 @@ metaNamesSdk.setSigningStrategy('privateKey', privateKey)
 export const config = {
   contract: new ConfigProvider(environment).resolve(),
   address: '00373c68dfed999aec39063194e2d3e0870f9899fa',
-  metaNames: metaNamesSdk,
+  sdk: metaNamesSdk,
 }

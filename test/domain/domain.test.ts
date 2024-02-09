@@ -3,14 +3,14 @@ import { config, mintDomain } from '../helpers'
 const domainName = 'name.meta'
 
 beforeAll(async () => {
-  const domain = await config.metaNames.domainRepository.find(domainName)
+  const domain = await config.sdk.domainRepository.find(domainName)
   if (!domain) await mintDomain(domainName)
 }, 15_000)
 
 test('analyze domain', () => {
   const domainName = 'sub.name.meta'
 
-  const domain = config.metaNames.domainRepository.analyze(domainName)
+  const domain = config.sdk.domainRepository.analyze(domainName)
 
   expect(domain).toBeDefined()
   expect(domain).toHaveProperty('name')
@@ -22,7 +22,7 @@ test('analyze domain', () => {
 })
 
 test('lookup domain', async () => {
-  const data = await config.metaNames.domainRepository.find(domainName)
+  const data = await config.sdk.domainRepository.find(domainName)
 
   expect(data).toBeDefined()
   expect(data).toHaveProperty('name')
@@ -37,7 +37,7 @@ test('lookup domain', async () => {
 })
 
 test('findByOwner returns the correct domains', async () => {
-  const domains = await config.metaNames.domainRepository.findByOwner(config.address)
+  const domains = await config.sdk.domainRepository.findByOwner(config.address)
 
   expect(domains).toBeDefined()
 
@@ -58,13 +58,13 @@ test('findByOwner returns the correct domains', async () => {
 }, 10_000)
 
 test('run action count', async () => {
-  const count = await config.metaNames.domainRepository.count()
+  const count = await config.sdk.domainRepository.count()
 
   expect(count).toBeGreaterThan(0)
 })
 
 test('get owners', async () => {
-  const owners = await config.metaNames.domainRepository.getOwners()
+  const owners = await config.sdk.domainRepository.getOwners()
 
   expect(owners).toBeDefined()
   expect(owners.length).toBeGreaterThan(0)

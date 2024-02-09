@@ -3,14 +3,14 @@ import { config, generateRandomString, mintDomain } from '../helpers'
 const domainName = 'name.meta'
 
 beforeAll(async () => {
-  const domain = await config.metaNames.domainRepository.find(domainName)
+  const domain = await config.sdk.domainRepository.find(domainName)
   if (!domain) await mintDomain(domainName)
 }, 15_000)
 
 test('mint domain with parent', async () => {
   const randomName = generateRandomString(10)
 
-  const { transactionHash, fetchResult } = await config.metaNames.domainRepository.register({
+  const { transactionHash, fetchResult } = await config.sdk.domainRepository.register({
     domain: randomName,
     to: config.address,
     parentDomain: domainName,
@@ -24,7 +24,7 @@ test('mint domain with parent', async () => {
   expect(result.hasError).toBeFalsy()
 
   const expectedDomain = [randomName, domainName].join('.')
-  const subDomain = await config.metaNames.domainRepository.find(expectedDomain)
+  const subDomain = await config.sdk.domainRepository.find(expectedDomain)
 
   expect(subDomain).toBeDefined()
   expect(subDomain).toHaveProperty('name')
@@ -37,7 +37,7 @@ test('mint subdomain without parent', async () => {
 
   const subdomain = `${randomName}.${domainName}`
 
-  const {transactionHash, fetchResult } = await config.metaNames.domainRepository.register({
+  const {transactionHash, fetchResult } = await config.sdk.domainRepository.register({
     domain: subdomain,
     to: config.address,
     byocSymbol: 'TEST_COIN'
@@ -51,7 +51,7 @@ test('mint subdomain without parent', async () => {
   expect(result.eventTrace.length).toBeGreaterThan(0)
 
   const expectedDomain = subdomain
-  const subDomain = await config.metaNames.domainRepository.find(expectedDomain)
+  const subDomain = await config.sdk.domainRepository.find(expectedDomain)
 
   expect(subDomain).toBeDefined()
   expect(subDomain).toHaveProperty('name')
