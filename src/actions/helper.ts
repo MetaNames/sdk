@@ -5,10 +5,8 @@ import type { ITransactionIntent, MetaMaskSdk } from '../interface'
 import { AbiOutputBytes, FnRpcBuilder, } from '@partisiablockchain/abi-client'
 import type PartisiaSdk from 'partisia-blockchain-applications-sdk'
 import { BigEndianByteOutput } from '@secata-public/bitmanipulation-ts'
-import { deriveDigest, getTransactionPayloadData, getTrxHash  } from 'partisia-blockchain-applications-crypto/lib/main/transaction'
-import { privateKeyToAccountAddress, signTransaction } from 'partisia-blockchain-applications-crypto/lib/main/wallet'
 import { PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
-import { serializeTransaction } from '../transactions'
+import { deriveDigest, getTransactionPayloadData, getTrxHash, privateKeyToAccountAddress, serializeTransaction, signTransaction } from '../transactions'
 
 export const builderToBytesBe = (rpc: FnRpcBuilder) => {
   const bitOutput = new BigEndianByteOutput()
@@ -36,10 +34,6 @@ export const createTransactionFromMetaMaskClient = async (
 
   const serializedTransaction = await serializeTransaction(rpc, walletAddress, contractAddress, payload, cost)
   const chainId = `Partisia Blockchain${isMainnet ? '' : ' Testnet'}`
-  const digest = deriveDigest(
-    chainId,
-    serializedTransaction
-  )
 
   const signatureHex: string = await client.request({
     method: "wallet_invokeSnap",
@@ -60,6 +54,7 @@ export const createTransactionFromMetaMaskClient = async (
   const transactionPayload = Buffer.concat([signature, serializedTransaction]).toString('base64')
 
   const rpcShard = PartisiaRpc({ baseURL: url })
+  const digest = deriveDigest(chainId, serializedTransaction)
   const transactionHash = getTrxHash(digest, signature)
   const isValid = await rpcShard.broadcastTransaction(transactionPayload)
   assert(isValid, 'Unknown Error')
