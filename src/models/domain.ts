@@ -1,4 +1,5 @@
-import { IDomain, IMetaNamesContractRepository } from "../interface"
+import { IDomain } from "../interface"
+import { MetaNamesSdk } from "../meta-names-sdk"
 import { RecordRepository } from "../repositories"
 import { DomainValidator } from "../validators"
 
@@ -15,21 +16,18 @@ export class Domain implements IDomain {
   parentId?: string
   records: Map<string, string | Buffer>
 
-  private contractRepository: IMetaNamesContractRepository
-  private domainValidator: DomainValidator
-
-  constructor(domain: IDomain, contractRepository: IMetaNamesContractRepository) {
-    this.contractRepository = contractRepository
-    this.domainValidator = new DomainValidator(domain.tld)
+  constructor(domain: IDomain) {
+    // Do not save the validator in the instance to keep the memory usage low
+    const domainValidator = new DomainValidator(domain.tld)
 
     const normalizationOptions = { reverse: true }
     this.tld = domain.tld
-    this.name = [this.domainValidator.normalize(domain.name, normalizationOptions), this.tld].join('.')
+    this.name = [domainValidator.normalize(domain.name, normalizationOptions), this.tld].join('.')
     this.createdAt = domain.createdAt
     this.expiresAt = domain.expiresAt
     this.owner = domain.owner
     this.tokenId = domain.tokenId
-    this.parentId = domain.parentId ? [this.domainValidator.normalize(domain.parentId, normalizationOptions), this.tld].join('.') : undefined
+    this.parentId = domain.parentId ? [domainValidator.normalize(domain.parentId, normalizationOptions), this.tld].join('.') : undefined
     this.records = domain.records
   }
 
@@ -37,11 +35,24 @@ export class Domain implements IDomain {
     return this.name.split('.').slice(0, -1).join('.')
   }
 
+  /**
+   * Normalize the name by reversing the domain name, apply the toUnicode
+   * and by default remove the TLD
+   * @param options: { removeTLD: true }
+   * @returns Normalized domain name
+   */
   normalizedName({ removeTLD } = { removeTLD: true }) {
-    return this.domainValidator.normalize(this.name, { removeTLD, reverse: true })
+    const domainValidator = new DomainValidator(this.tld)
+    return domainValidator.normalize(this.name, { removeTLD, reverse: true })
   }
 
-  get recordRepository(): RecordRepository {
-    return new RecordRepository(this.contractRepository, this)
+  /**
+   * Syntax sugar method to get the record repository
+   * @param sdk MetaNamesSdk
+   * @returns RecordRepository
+   */
+  getRecordRepository(sdk: MetaNamesSdk): RecordRepository {
+    const contract = sdk.contract
+    return new RecordRepository(contract, this)
   }
 }

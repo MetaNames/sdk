@@ -26,7 +26,7 @@ beforeAll(async () => {
 
 afterEach(async () => {
   const domainToInteract = subDomain || domain
-  const { transactionHash, fetchResult } = await domainToInteract.recordRepository.delete(RecordClassEnum.Wallet)
+  const { transactionHash, fetchResult } = await domainToInteract.getRecordRepository(config.metaNames).delete(RecordClassEnum.Wallet)
   const resultDelete = await fetchResult
 
   expect(resultDelete).toBeDefined()
@@ -46,7 +46,7 @@ test('action record mint', async () => {
     class: RecordClassEnum.Wallet,
     data: config.address
   }
-  const { transactionHash, fetchResult } = await domain.recordRepository.create(actionMintRecord)
+  const { transactionHash, fetchResult } = await domain.getRecordRepository(config.metaNames).create(actionMintRecord)
   const resultMintRecord = await fetchResult
 
   expect(resultMintRecord).toBeDefined()
@@ -80,7 +80,7 @@ test('action record mint with parent', async () => {
     class: RecordClassEnum.Wallet,
     data: config.address
   }
-  const { transactionHash, fetchResult } = await subDomain.recordRepository.create(actionMintRecord)
+  const { transactionHash, fetchResult } = await subDomain.getRecordRepository(config.metaNames).create(actionMintRecord)
   const resultMintRecord = await fetchResult
 
   expect(resultMintRecord).toBeDefined()
@@ -97,7 +97,7 @@ test('action record update', async () => {
     class: RecordClassEnum.Wallet,
     data: config.address
   }
-  const { transactionHash, fetchResult } = await domain.recordRepository.create(actionMintRecord)
+  const { transactionHash, fetchResult } = await domain.getRecordRepository(config.metaNames).create(actionMintRecord)
   const resultMintRecord = await fetchResult
 
   expect(resultMintRecord).toBeDefined()
@@ -112,7 +112,7 @@ test('action record update', async () => {
     class: RecordClassEnum.Wallet,
     data: generateRandomString(40)
   }
-  const { transactionHash: updateTransactionHash, fetchResult: fetchUpdateResult } = await domain.recordRepository.update(actionUpdateRecord)
+  const { transactionHash: updateTransactionHash, fetchResult: fetchUpdateResult } = await domain.getRecordRepository(config.metaNames).update(actionUpdateRecord)
   const resultUpdateRecord = await fetchUpdateResult
 
   expect(resultUpdateRecord).toBeDefined()

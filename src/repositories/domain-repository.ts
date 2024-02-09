@@ -152,7 +152,7 @@ export class DomainRepository {
     const domain = lookUpDomain(domains, nftOwners, normalizedDomain)
     if (!domain) return null
 
-    return new Domain(domain, this.metaNamesContract)
+    return new Domain(domain)
   }
 
   /**
@@ -174,7 +174,7 @@ export class DomainRepository {
       const domainObj = decorateDomain(domainValue, nftOwners, domainNameStr)
       if (!domainObj) return
 
-      const domain = new Domain(domainObj, this.metaNamesContract)
+      const domain = new Domain(domainObj)
       domains.push(domain)
     })
 
@@ -205,7 +205,7 @@ export class DomainRepository {
 
     const domainsObjects = domainNames.map((domainName) => lookUpDomain(domains, nftOwners, domainName)).filter((domain) => domain !== undefined) as IDomain[]
 
-    return domainsObjects.map((domain) => new Domain(domain, this.metaNamesContract))
+    return domainsObjects.map((domain) => new Domain(domain))
   }
 
   /**

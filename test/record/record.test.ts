@@ -13,18 +13,18 @@ beforeAll(async () => {
 
   domain = await config.metaNames.domainRepository.find(domainName) as Domain
 
-  const record = await domain.recordRepository.find(recordClass)
+  const record = await domain.getRecordRepository(config.metaNames).find(recordClass)
   if (!record) await mintRecord(domainName, recordClass, recordValue)
 }, 15_000)
 
 test('lookup domain record', async () => {
-  const data = await domain.recordRepository.find(recordClass)
+  const data = await domain.getRecordRepository(config.metaNames).find(recordClass)
 
   expect(data).toBe(recordValue)
 })
 
 test('lookup domain record with non existent record', async () => {
-  const data = await domain.recordRepository.find(RecordClassEnum.Twitter)
+  const data = await domain.getRecordRepository(config.metaNames).find(RecordClassEnum.Twitter)
 
   expect(data).toBeNull()
 })
