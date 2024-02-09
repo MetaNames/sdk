@@ -197,15 +197,20 @@ export class DomainRepository {
    */
   async findByOwner(ownerAddress: Address): Promise<Domain[]> {
     const struct = await this.metaNamesContract.getState()
-    const domains = getPnsDomains(struct)
+    const domainsTreeMap = getPnsDomains(struct)
     const nftOwners = getNftOwners(struct)
 
     const address = Buffer.isBuffer(ownerAddress) ? ownerAddress : Buffer.from(ownerAddress, 'hex')
-    const domainNames = getDomainNamesByOwner(domains, nftOwners, address)
+    const domainNames = getDomainNamesByOwner(domainsTreeMap, nftOwners, address)
 
-    const domainsObjects = domainNames.map((domainName) => lookUpDomain(domains, nftOwners, domainName)).filter((domain) => domain !== undefined) as IDomain[]
+    const domains = domainNames.map((domainName) => {
+      const domainObj = lookUpDomain(domainsTreeMap, nftOwners, domainName)
+      if (!domainObj) throw new Error('Domain not found')
 
-    return domainsObjects.map((domain) => new Domain(domain))
+      return new Domain(domainObj)
+    })
+
+    return domains
   }
 
   /**
