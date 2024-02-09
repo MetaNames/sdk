@@ -22,6 +22,7 @@
     "@secata-public/bitmanipulation-ts": "^3.0.6",
     "bn.js": "^5.2.1",
     "elliptic": "^6.5.4",
+    "partisia-blockchain-applications-crypto": "^1.0.22",
     "partisia-blockchain-applications-rpc": "^1.0.12",
     "partisia-blockchain-applications-sdk": "^0.1.2",
     "tr46": "^4.1.1"
