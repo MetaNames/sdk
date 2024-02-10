@@ -190,7 +190,9 @@ const serializeTransaction = async (
 ) => {
   const shardId = rpc.deriveShardId(walletAddress)
   const nonce = await rpc.getNonce(walletAddress, shardId)
-  const validTo = String(new Date().getTime() + 60_000) // 1 minute
+  // Set validTo to 1 minute from now
+  // Need to pass a number otherwise the internal library will throw an error
+  const validTo = (new Date().getTime() +  60_000) as unknown as string
 
   return serializedTransaction(
     { nonce, cost, validTo },
