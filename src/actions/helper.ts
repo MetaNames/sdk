@@ -190,9 +190,10 @@ const serializeTransaction = async (
 ) => {
   const shardId = rpc.deriveShardId(walletAddress)
   const nonce = await rpc.getNonce(walletAddress, shardId)
+  const validTo = String(new Date().getTime() + 60_000) // 1 minute
 
   return serializedTransaction(
-    { nonce, cost },
+    { nonce, cost, validTo },
     { contract: contractAddress },
     payload
   )
