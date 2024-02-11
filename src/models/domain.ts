@@ -55,4 +55,20 @@ export class Domain implements IDomain {
     const contract = sdk.contract
     return new RecordRepository(contract, this)
   }
+
+  /**
+   * Get the JSON representation of the domain
+   */
+  toJSON() {
+    return {
+      name: this.name,
+      tld: this.tld,
+      createdAt: this.createdAt,
+      expiresAt: this.expiresAt,
+      owner: this.owner,
+      tokenId: this.tokenId,
+      parentId: this.parentId,
+      records: this.records,
+    }
+  }
 }
