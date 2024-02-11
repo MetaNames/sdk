@@ -2,7 +2,7 @@ import { config } from "../helpers"
 
 test('mint fees transaction for TEST_COINT', async () => {
   const domainName = 'verycheapfees.meta'
-  const { transactionHash, fetchResult } = await config.metaNames.domainRepository.approveMintFees(domainName, 'TEST_COIN')
+  const { transactionHash, fetchResult } = await config.sdk.domainRepository.approveMintFees(domainName, 'TEST_COIN')
   const result = await fetchResult
 
   expect(transactionHash).toBeDefined()
@@ -14,7 +14,7 @@ test('mint fees transaction for TEST_COINT', async () => {
 
 test('mint fees transaction for ETH', async () => {
   const domainName = 'verycheapfees.meta'
-  const { transactionHash, fetchResult } = await config.metaNames.domainRepository.approveMintFees(domainName, 'ETH_GOERLI')
+  const { transactionHash, fetchResult } = await config.sdk.domainRepository.approveMintFees(domainName, 'ETH_GOERLI')
   const result = await fetchResult
 
   expect(transactionHash).toBeDefined()
@@ -27,7 +27,7 @@ test('mint fees transaction for ETH', async () => {
 test('mint fees amount TEST_COIN', async () => {
   const domainName = 'verycheap.meta'
 
-  const { fees, symbol, feesLabel } = await config.metaNames.domainRepository.calculateMintFees(domainName, 'TEST_COIN')
+  const { fees, symbol, feesLabel } = await config.sdk.domainRepository.calculateMintFees(domainName, 'TEST_COIN')
 
   expect(fees).toBeDefined()
   expect(fees.toNumber()).toBeGreaterThan(0)
@@ -40,7 +40,7 @@ test('mint fees amount TEST_COIN', async () => {
 test('mint fees amount ETH_GOERLI', async () => {
   const domainName = 'verycheap.meta'
 
-  const { fees, symbol, feesLabel } = await config.metaNames.domainRepository.calculateMintFees(domainName, 'ETH_GOERLI')
+  const { fees, symbol, feesLabel } = await config.sdk.domainRepository.calculateMintFees(domainName, 'ETH_GOERLI')
 
   expect(fees).toBeDefined()
   expect(fees.toString).not.toBe('0')

@@ -9,7 +9,7 @@ test('run action mint', async () => {
     to: config.address,
     byocSymbol: 'TEST_COIN'
   }
-  const { transactionHash, fetchResult } = await config.metaNames.domainRepository.register(randomActionMint)
+  const { transactionHash, fetchResult } = await config.sdk.domainRepository.register(randomActionMint)
   const result = await fetchResult
 
   expect(transactionHash).toBeDefined()
@@ -26,7 +26,7 @@ test('run action renew', async () => {
     payer: config.address,
     byocSymbol: 'TEST_COIN'
   }
-  const { transactionHash, fetchResult } = await config.metaNames.domainRepository.renew(randomActionRenew)
+  const { transactionHash, fetchResult } = await config.sdk.domainRepository.renew(randomActionRenew)
   const result = await fetchResult
 
   expect(transactionHash).toBeDefined()

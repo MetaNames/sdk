@@ -18,7 +18,7 @@ export const mintDomain = async (domain: string) => {
     byocSymbol: 'TEST_COIN'
   }
 
-  await config.metaNames.domainRepository.register(randomActionMint)
+  await config.sdk.domainRepository.register(randomActionMint)
 }
 
 export const mintRecord = async (domainName: string, recordClass: RecordClassEnum, data: string) => {
@@ -27,6 +27,7 @@ export const mintRecord = async (domainName: string, recordClass: RecordClassEnu
     data,
   }
 
-  await (await config.metaNames.domainRepository.find(domainName))?.recordRepository.create(actionMintRecord)
+  const domain = await config.sdk.domainRepository.find(domainName)
+  await domain?.getRecordRepository(config.sdk).create(actionMintRecord)
 }
 

@@ -8,23 +8,23 @@ const recordValue = '00373c68dfed999aec39063194e2d3e0870f9899fa'
 let domain: Domain
 
 beforeAll(async () => {
-  const domainOpt = await config.metaNames.domainRepository.find(domainName)
+  const domainOpt = await config.sdk.domainRepository.find(domainName)
   if (!domainOpt) await mintDomain(domainName)
 
-  domain = await config.metaNames.domainRepository.find(domainName) as Domain
+  domain = await config.sdk.domainRepository.find(domainName) as Domain
 
-  const record = await domain.recordRepository.find(recordClass)
+  const record = await domain.getRecordRepository(config.sdk).find(recordClass)
   if (!record) await mintRecord(domainName, recordClass, recordValue)
 }, 15_000)
 
 test('lookup domain record', async () => {
-  const data = await domain.recordRepository.find(recordClass)
+  const data = await domain.getRecordRepository(config.sdk).find(recordClass)
 
   expect(data).toBe(recordValue)
 })
 
 test('lookup domain record with non existent record', async () => {
-  const data = await domain.recordRepository.find(RecordClassEnum.Twitter)
+  const data = await domain.getRecordRepository(config.sdk).find(RecordClassEnum.Twitter)
 
   expect(data).toBeNull()
 })

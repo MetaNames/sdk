@@ -1,5 +1,5 @@
 import { actionRecordDeletePayload, actionRecordMintPayload, actionRecordUpdatePayload } from "../actions"
-import { IMetaNamesContractRepository, IRecord, RecordClassEnum } from "../interface"
+import { IDomain, IMetaNamesContractRepository, IRecord, RecordClassEnum } from "../interface"
 import { Domain } from "../models"
 import { lookUpRecord } from "../partisia-name-system"
 import { RecordValidator } from "../validators"
@@ -12,9 +12,9 @@ export class RecordRepository {
   private domain: Domain
   public recordValidator: RecordValidator
 
-  constructor(contractRepository: IMetaNamesContractRepository, domain: Domain) {
+  constructor(contractRepository: IMetaNamesContractRepository, domain: IDomain) {
     this.contractRepository = contractRepository
-    this.domain = domain
+    this.domain = new Domain(domain)
     this.recordValidator = new RecordValidator()
   }
 
@@ -68,7 +68,7 @@ export class RecordRepository {
 
   private addDomainToParams<T>(params: T) {
     return {
-      domain: this.domain.normalizedName(),
+      domain: this.domain.nameWithoutTLD,
       ...params
     }
   }

@@ -1,7 +1,7 @@
 import { config } from '../helpers'
 
 test('lookup domains by owner', async () => {
-  const domains = await config.metaNames.domainRepository.findByOwner(config.address)
+  const domains = await config.sdk.domainRepository.findByOwner(config.address)
 
   expect(domains.length).toBeGreaterThan(0)
 
@@ -13,7 +13,7 @@ test('lookup domains by owner', async () => {
 })
 
 test('get all domains', async () => {
-  const domains = await config.metaNames.domainRepository.getAll()
+  const domains = await config.sdk.domainRepository.getAll()
 
   expect(domains.length).toBeGreaterThan(0)
   expect(domains[0]).toHaveProperty('name')
