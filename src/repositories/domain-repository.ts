@@ -119,7 +119,7 @@ export class DomainRepository {
     if (!this.domainValidator.validate(domainName)) throw new Error('Invalid domain name')
 
     const normalizedDomain = this.domainValidator.normalize(domainName)
-    const struct = await this.metaNamesContract.getState()
+    const struct = await this.metaNamesContract.getState({ force: false })
     const handledByoc = this.config.byoc.find((byoc) => byoc.symbol === tokenSymbol)
     if (!handledByoc) throw new Error(`BYOC ${tokenSymbol} not handled`)
 
