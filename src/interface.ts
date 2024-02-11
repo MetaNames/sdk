@@ -24,6 +24,8 @@ export interface MetaMaskSdk {
   request<T>(args: MetamaskRequestArguments): Promise<T>;
 }
 
+export type Records = Record<string, string | Buffer>
+
 export interface IDomain {
   name: string
   tld: string
@@ -32,7 +34,7 @@ export interface IDomain {
   owner: string
   tokenId: number
   parentId?: string
-  records: Map<string, string | Buffer>
+  records: Records
 }
 
 export interface IDomainAnalyzed {

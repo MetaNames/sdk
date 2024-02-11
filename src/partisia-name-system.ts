@@ -93,18 +93,18 @@ export function decorateDomain(domain: ScValueStruct, owners: ScValueMap, domain
     owner,
     tokenId,
     parentId: fieldsMap.get('parent_id')?.optionValue().innerValue?.stringValue(),
-    records: scRecords ? extractRecords(new ScValueMap(scRecords)) : new Map(),
+    records: scRecords ? extractRecords(new ScValueMap(scRecords)) : {},
   }
 }
 
 export function lookUpRecord(domain: IDomain, recordClass: RecordClassEnum): string | Buffer | undefined {
   const recordClassName = RecordClassEnum[recordClass]
 
-  return domain.records.get(recordClassName)
+  return domain.records[recordClassName]
 }
 
-export function extractRecords(records: ScValueMap): Map<string, string> {
-  const extractedRecords = new Map<string, string>()
+export function extractRecords(records: ScValueMap) {
+  const extractedRecords: Record<string, string> = {}
 
   for (const [scKey, scValue] of records.mapValue().map) {
     const key = scKey.enumValue().name
@@ -113,7 +113,7 @@ export function extractRecords(records: ScValueMap): Map<string, string> {
 
     const vectorData = convertScVectorToBuffer(data.vecValue())
 
-    extractedRecords.set(key, vectorData.toString())
+    extractedRecords[key] = vectorData.toString()
   }
 
   return extractedRecords
@@ -144,7 +144,7 @@ export function getMintFeesInGas(contract: ScValueStruct, domain: string, tokenI
   let fee = defaultFee.asBN().toNumber()
 
   const feeStruct = feesMapping.values().find((v) => (v.structValue().fieldsMap.get('chars_count') as ScValue).asBN().toNumber() === domainLength)
-  if(feeStruct) fee = (feeStruct.structValue().fieldsMap.get('amount') as ScValue).asBN().toNumber()
+  if (feeStruct) fee = (feeStruct.structValue().fieldsMap.get('amount') as ScValue).asBN().toNumber()
 
   if (!fee) throw new Error('Gas amount not found')
 
