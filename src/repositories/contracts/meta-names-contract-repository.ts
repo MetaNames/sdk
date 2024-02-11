@@ -24,10 +24,12 @@ export class MetaNamesContractRepository extends ContractRepository implements I
   /**
    * Get the Meta Names contract state
    */
-  async getState(): Promise<MetaNamesState> {
+  async getState(params?: { force?: boolean }): Promise<MetaNamesState> {
+    if (!params) params = { force: true }
+
     return super.getState({
       contractAddress: this.metaNamesContractAddress,
-      force: true,
+      force: params.force,
       withState: true
     })
   }
