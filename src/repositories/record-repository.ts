@@ -68,7 +68,7 @@ export class RecordRepository {
 
   private addDomainToParams<T>(params: T) {
     return {
-      domain: this.domain.normalizedName(),
+      domain: this.domain.nameWithoutTLD,
       ...params
     }
   }
