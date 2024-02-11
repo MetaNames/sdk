@@ -14,7 +14,7 @@ export class Domain implements IDomain {
   owner: string
   tokenId: number
   parentId?: string
-  records: Map<string, string | Buffer>
+  records: Record<string, string | Buffer>
 
   constructor(domain: IDomain) {
     // Do not save the validator in the instance to keep the memory usage low
