@@ -13,8 +13,8 @@ import { getAddressFromProxyContractState } from "../helpers/contract"
 export class MetaNamesContractRepository extends ContractRepository implements IMetaNamesContractRepository {
   private proxyAddress: string
 
-  constructor(contractAddress: string, rpc: IPartisiaRpcConfig, environment: Enviroment, secrets: SecretsProvider) {
-    super(rpc, environment, secrets)
+  constructor(contractAddress: string, rpc: IPartisiaRpcConfig, environment: Enviroment, secrets: SecretsProvider, ttl: number) {
+    super(rpc, environment, secrets, ttl)
     this.proxyAddress = contractAddress
   }
 

@@ -8,8 +8,6 @@ import { SecretsProvider } from '../providers/secrets'
 import { convertAvlTree } from './helpers/contract'
 
 
-const DEFAULT_TTL = 10 * 60 * 1000 // 10 minutes
-
 /**
  * Contract repository to interact with smart contracts on Partisia
  */
@@ -17,10 +15,9 @@ export class ContractRepository implements IContractRepository {
   private rpc: PartisiaAccountClass
   private contractRegistry: Map<string, ContractEntry>
 
-  constructor(rpc: IPartisiaRpcConfig, private environment: Enviroment, private secrets: SecretsProvider, private ttl = DEFAULT_TTL) {
+  constructor(rpc: IPartisiaRpcConfig, private environment: Enviroment, private secrets: SecretsProvider, private ttl: number) {
     this.contractRegistry = new Map()
     this.rpc = PartisiaAccount(rpc)
-    this.secrets = secrets
   }
 
   /**

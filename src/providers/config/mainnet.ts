@@ -1,6 +1,7 @@
 import { Config } from "../config"
 
 export const mainNetConfig: Config = {
+  cache_ttl: 10 * 60 * 1000, // 10 minutes
   tld: 'meta',
   contractAddress: '02bb03946a0b6d1feaa96f78cfc8ef3f5a4ceee727',
   rpcConfig: {
