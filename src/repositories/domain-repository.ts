@@ -142,8 +142,9 @@ export class DomainRepository {
    * Finds a domain by name
    * @param domainName Domain name
    */
-  async find(domainName: string) {
-    const struct = await this.metaNamesContract.getState()
+  async find(domainName: string, options?: { cache?: boolean }) {
+    const { cache } = { cache: true, ...options }
+    const struct = await this.metaNamesContract.getState({ force: !cache })
     const domains = getPnsDomains(struct)
     const nftOwners = getNftOwners(struct)
 
