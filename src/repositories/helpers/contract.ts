@@ -1,4 +1,4 @@
-import { BN } from "@partisiablockchain/abi-client"
+import { BN, ScValueStruct } from "@partisiablockchain/abi-client"
 import { AvlTree } from "../../interface"
 
 export const convertAvlTree = (avlTrees: AvlTree[]) => {
@@ -43,4 +43,12 @@ export const getFeesLabel = (fees: BN, decimals: BN) => {
     console.log("Fee label may not be accurate due to size")
     return parseFloat(strDividend) / parseFloat(strDivisor)
   }
+}
+
+
+export const getAddressFromProxyContractState = (state: ScValueStruct) => {
+  const addressValue = state.fieldsMap.get('address')
+  if (!addressValue) throw new Error('Address not found')
+
+  return addressValue.addressValue().value.toString('hex')
 }

@@ -3,6 +3,7 @@ import { ContractRepository } from "../contract-repository"
 import { Contract, ContractParams, IMetaNamesContractRepository, ITransactionIntent, MetaNamesState, TransactionParams } from "../../interface"
 import { Enviroment } from "../../providers"
 import { SecretsProvider } from "../../providers/secrets"
+import { getAddressFromProxyContractState } from "../helpers/contract"
 
 /**
  * Meta Names contract repository
@@ -10,31 +11,47 @@ import { SecretsProvider } from "../../providers/secrets"
  * @extends ContractRepository
  */
 export class MetaNamesContractRepository extends ContractRepository implements IMetaNamesContractRepository {
-  private metaNamesContractAddress: string
+  private proxyAddress: string
 
   constructor(contractAddress: string, rpc: IPartisiaRpcConfig, environment: Enviroment, secrets: SecretsProvider) {
     super(rpc, environment, secrets)
-    this.metaNamesContractAddress = contractAddress
+    this.proxyAddress = contractAddress
   }
 
-  async getContract(params: ContractParams = { contractAddress: this.metaNamesContractAddress, force: true, withState: true }): Promise<Contract> {
+  async getContract(params?: ContractParams): Promise<Contract> {
+    if (!params) {
+      const metaNamesContractAddress = await this.getMetaNamesAddress()
+      params = { contractAddress: metaNamesContractAddress }
+    }
+
     return super.getContract(params)
   }
 
   /**
    * Get the Meta Names contract state
+   * By default it will get the cached state
    */
   async getState(params?: { force?: boolean }): Promise<MetaNamesState> {
-    if (!params) params = { force: true }
+    if (!params) params = {}
+    const metaNamesContractAddress = await this.getMetaNamesAddress()
 
     return super.getState({
-      contractAddress: this.metaNamesContractAddress,
+      contractAddress: metaNamesContractAddress,
       force: params.force,
       withState: true
     })
   }
 
   async createTransaction({ payload, gasCost }: TransactionParams): Promise<ITransactionIntent> {
-    return super.createTransaction({ contractAddress: this.metaNamesContractAddress, payload, gasCost })
+    const metaNamesContractAddress = await this.getMetaNamesAddress()
+
+    return super.createTransaction({ contractAddress: metaNamesContractAddress, payload, gasCost })
+  }
+
+  private async getMetaNamesAddress() {
+    const contract = await super.getState({ contractAddress: this.proxyAddress, withState: true })
+    const metaNamesAddress = getAddressFromProxyContractState(contract)
+
+    return metaNamesAddress
   }
 }

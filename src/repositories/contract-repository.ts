@@ -35,7 +35,7 @@ export class ContractRepository implements IContractRepository {
   }
 
   async getState(params: ContractParams) {
-    const contract = await this.getContract(params)
+    const contract = await this.getContract({ ...params, withState: true })
 
     const serializedContract = contract.data.serializedContract
     if (!serializedContract) throw new Error('Contract state not found')
