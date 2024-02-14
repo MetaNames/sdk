@@ -20,7 +20,7 @@ export class MetaNamesContractRepository extends ContractRepository implements I
 
   async getContract(params?: ContractParams): Promise<Contract> {
     if (!params) {
-      const metaNamesContractAddress = await this.getMetaNamesAddress()
+      const metaNamesContractAddress = await this.getContractAddress()
       params = { contractAddress: metaNamesContractAddress }
     }
 
@@ -33,7 +33,7 @@ export class MetaNamesContractRepository extends ContractRepository implements I
    */
   async getState(params?: { force?: boolean }): Promise<MetaNamesState> {
     if (!params) params = {}
-    const metaNamesContractAddress = await this.getMetaNamesAddress()
+    const metaNamesContractAddress = await this.getContractAddress()
 
     return super.getState({
       contractAddress: metaNamesContractAddress,
@@ -43,12 +43,12 @@ export class MetaNamesContractRepository extends ContractRepository implements I
   }
 
   async createTransaction({ payload, gasCost }: TransactionParams): Promise<ITransactionIntent> {
-    const metaNamesContractAddress = await this.getMetaNamesAddress()
+    const metaNamesContractAddress = await this.getContractAddress()
 
     return super.createTransaction({ contractAddress: metaNamesContractAddress, payload, gasCost })
   }
 
-  private async getMetaNamesAddress() {
+  async getContractAddress() {
     const contract = await super.getState({ contractAddress: this.proxyAddress, withState: true })
     const metaNamesAddress = getAddressFromProxyContractState(contract)
 
