@@ -21,6 +21,8 @@ export interface Config {
   byoc: BYOC[]
 }
 
+export interface ConfigOverrides extends Partial<Config> {}
+
 export enum Enviroment {
   testnet = 'testnet',
   mainnet = 'mainnet',
