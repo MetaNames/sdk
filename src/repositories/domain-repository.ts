@@ -55,7 +55,8 @@ export class DomainRepository {
     const { fees, address: byocAddress } = await this.calculateMintFees(normalizedDomain, byocSymbol)
     const totalAmount = fees.mul(new BN(subscriptionYears))
     const contract = await this.contractRepository.getContract({ contractAddress: byocAddress })
-    const payload = actionApproveMintFeesPayload(contract.abi, { address: this.config.contractAddress, amount: totalAmount })
+    const metanamesContractAddress = await this.metaNamesContract.getContractAddress()
+    const payload = actionApproveMintFeesPayload(contract.abi, { address: metanamesContractAddress, amount: totalAmount })
 
     return this.contractRepository.createTransaction({ contractAddress: byocAddress, payload })
   }

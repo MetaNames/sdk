@@ -174,6 +174,7 @@ export interface IContractRepository {
 
 export interface IMetaNamesContractRepository extends IContractRepository {
   getState(options?: { force?: boolean }): Promise<MetaNamesState>
+  getContractAddress(): Promise<string>
 }
 
 export interface IValidatorOptions {
