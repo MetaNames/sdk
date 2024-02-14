@@ -11,6 +11,7 @@ export interface BYOC {
 }
 
 export interface Config {
+  cache_ttl: number,
   tld: string,
   contractAddress: string,
   rpcConfig: {

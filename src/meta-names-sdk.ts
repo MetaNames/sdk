@@ -16,11 +16,12 @@ export class MetaNamesSdk {
   secrets: SecretsProvider
 
   constructor(environment: Enviroment = Enviroment.testnet, overrideConfig?: Config) {
-    this.config = overrideConfig ?? new ConfigProvider(environment).resolve()
+    const config = new ConfigProvider(environment).resolve()
+    this.config = overrideConfig ? { ...config, ...overrideConfig } : config
     this.secrets = new SecretsProvider()
 
-    this.contractRepository = new ContractRepository(this.config.rpcConfig, environment, this.secrets)
-    this.contract = new MetaNamesContractRepository(this.config.contractAddress, this.config.rpcConfig, environment, this.secrets)
+    this.contractRepository = new ContractRepository(this.config.rpcConfig, environment, this.secrets, this.config.cache_ttl)
+    this.contract = new MetaNamesContractRepository(this.config.contractAddress, this.config.rpcConfig, environment, this.secrets, this.config.cache_ttl)
 
     this.domainRepository = new DomainRepository(this.contractRepository, this.contract, this.config)
   }
