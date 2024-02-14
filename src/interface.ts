@@ -205,3 +205,9 @@ export interface AvlTree {
     avlTree: AvlTreeItem[];
   };
 }
+
+
+export interface ContractEntry {
+  contract: Contract
+  fetchedAt: number
+}

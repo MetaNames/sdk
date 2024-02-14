@@ -2,23 +2,23 @@ import { AbiParser, StateReader } from '@partisiablockchain/abi-client'
 import { PartisiaAccount } from 'partisia-blockchain-applications-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
 import { createTransactionFromMetaMaskClient, createTransactionFromPartisiaClient, createTransactionFromPrivateKey } from '../actions'
-import { ByocCoin, Contract, ContractParams, GasCost, IContractRepository, ITransactionIntent, TransactionParams } from '../interface'
+import { ByocCoin, Contract, ContractEntry, ContractParams, GasCost, IContractRepository, ITransactionIntent, TransactionParams } from '../interface'
 import { Enviroment } from '../providers'
 import { SecretsProvider } from '../providers/secrets'
 import { convertAvlTree } from './helpers/contract'
+
+
+const DEFAULT_TTL = 10 * 60 * 1000 // 10 minutes
 
 /**
  * Contract repository to interact with smart contracts on Partisia
  */
 export class ContractRepository implements IContractRepository {
   private rpc: PartisiaAccountClass
-  private contractRegistry: Map<string, Contract>
-  private environment: Enviroment
-  private secrets: SecretsProvider
+  private contractRegistry: Map<string, ContractEntry>
 
-  constructor(rpc: IPartisiaRpcConfig, environment: Enviroment, secrets: SecretsProvider) {
+  constructor(rpc: IPartisiaRpcConfig, private environment: Enviroment, private secrets: SecretsProvider, private ttl = DEFAULT_TTL) {
     this.contractRegistry = new Map()
-    this.environment = environment
     this.rpc = PartisiaAccount(rpc)
     this.secrets = secrets
   }
@@ -107,13 +107,11 @@ export class ContractRepository implements IContractRepository {
   }
 
   private async getContractFromRegistry({ contractAddress, force, withState }: ContractParams): Promise<Contract | undefined> {
-    let contract = this.contractRegistry.get(contractAddress)
-    // Return contract if it was found and:
-    // the retrival wasn't forced
-    // or if the state is requested, then require the state to be present
-    if (contract && !force &&
-      ((withState && contract.data.serializedContract) || !withState))
-      return contract
+    let contractEntry = this.contractRegistry.get(contractAddress)
+    if (contractEntry && !force &&
+      ((withState && contractEntry.contract.data.serializedContract) || !withState) &&
+      ((Date.now() - contractEntry.fetchedAt) < this.ttl))
+      return contractEntry.contract
 
     const rawContract = await this.rpc.getContract(
       contractAddress,
@@ -123,21 +121,24 @@ export class ContractRepository implements IContractRepository {
     if (!rawContract) return
 
     const fileAbi = new AbiParser(Buffer.from(rawContract.data.abi, 'base64')).parseAbi()
-    contract = {
-      abi: fileAbi.contract,
-      ...rawContract
+    contractEntry = {
+      fetchedAt: Date.now(),
+      contract: {
+        abi: fileAbi.contract,
+        ...rawContract
+      }
     }
 
     if (rawContract.data.serializedContract) {
       const avlTrees = rawContract.data.serializedContract.avlTrees
       if (avlTrees) {
         const avlTree = convertAvlTree(avlTrees)
-        contract.avlTree = avlTree
+        contractEntry.contract.avlTree = avlTree
       }
     }
 
-    this.contractRegistry.set(contractAddress, contract)
+    this.contractRegistry.set(contractAddress, contractEntry)
 
-    return contract
+    return contractEntry.contract
   }
 }
