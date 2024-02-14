@@ -1,6 +1,6 @@
 import { ContractRepository, DomainRepository } from './repositories'
 import { ConfigProvider, Enviroment } from './providers'
-import type { Config } from './providers'
+import type { Config, ConfigOverrides } from './providers'
 import { MetaNamesContractRepository } from './repositories/contracts/meta-names-contract-repository'
 import { SecretsProvider } from './providers/secrets'
 import type { SigningClassType, SigningStrategyType } from './interface'
@@ -15,7 +15,7 @@ export class MetaNamesSdk {
   domainRepository: DomainRepository
   secrets: SecretsProvider
 
-  constructor(environment: Enviroment = Enviroment.testnet, overrideConfig?: Config) {
+  constructor(environment: Enviroment = Enviroment.testnet, overrideConfig?: ConfigOverrides) {
     const config = new ConfigProvider(environment).resolve()
     this.config = overrideConfig ? { ...config, ...overrideConfig } : config
     this.secrets = new SecretsProvider()
