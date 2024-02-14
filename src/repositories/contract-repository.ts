@@ -84,6 +84,9 @@ export class ContractRepository implements IContractRepository {
 
     const gas = gasCost ? gasTable[gasCost] : gasTable.low
 
+    // Remove contract cache as the state will change
+    this.cleanCache(contractAddress)
+
     switch (this.secrets.strategy) {
       case 'privateKey':
         return createTransactionFromPrivateKey(this.rpc, contractAddress, this.secrets.privateKey, payload, isMainnet, gas)
@@ -97,6 +100,10 @@ export class ContractRepository implements IContractRepository {
       default:
         throw new Error('Signing strategy not found')
     }
+  }
+
+  private cleanCache(contractAddress: string) {
+    this.contractRegistry.delete(contractAddress)
   }
 
   private async getContractFromRegistry({ contractAddress, force, withState }: ContractParams): Promise<Contract | undefined> {
