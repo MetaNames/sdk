@@ -207,7 +207,6 @@ export interface AvlTree {
   };
 }
 
-
 export interface ContractEntry {
   contract: Contract
   fetchedAt: number
