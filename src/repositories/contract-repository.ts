@@ -5,7 +5,7 @@ import { createTransactionFromMetaMaskClient, createTransactionFromPartisiaClien
 import { ByocCoin, Contract, ContractEntry, ContractParams, GasCost, IContractRepository, ITransactionIntent, TransactionParams } from '../interface'
 import { Enviroment } from '../providers'
 import { SecretsProvider } from '../providers/secrets'
-import { convertAvlTree } from './helpers/contract'
+import { convertAvlTree, promiseRetry } from './helpers/contract'
 
 
 /**
@@ -50,7 +50,7 @@ export class ContractRepository implements IContractRepository {
    * @returns ByocCoin[]
    */
   async getByocCoins(): Promise<ByocCoin[]> {
-    const coins = await this.rpc.fetchCoins()
+    const coins = await promiseRetry(() => this.rpc.fetchCoins())
 
     const byocCoins: ByocCoin[] = coins.coins.map((coin) => {
       return {
@@ -110,11 +110,11 @@ export class ContractRepository implements IContractRepository {
       ((Date.now() - contractEntry.fetchedAt) < this.ttl))
       return contractEntry.contract
 
-    const rawContract = await this.rpc.getContract(
+    const rawContract = await promiseRetry(() => this.rpc.getContract(
       contractAddress,
       this.rpc.deriveShardId(contractAddress),
       withState
-    )
+    ))
     if (!rawContract) return
 
     const fileAbi = new AbiParser(Buffer.from(rawContract.data.abi, 'base64')).parseAbi()

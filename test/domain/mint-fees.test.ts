@@ -10,7 +10,7 @@ test('mint fees transaction for TEST_COINT', async () => {
   expect(result).toBeDefined()
   expect(result.hasError).toBeFalsy()
   expect(result.eventTrace.length).toBeGreaterThan(0)
-}, 10_000)
+}, 20_000)
 
 test('mint fees transaction for ETH', async () => {
   const domainName = 'verycheapfees.meta'
@@ -22,7 +22,7 @@ test('mint fees transaction for ETH', async () => {
   expect(result).toBeDefined()
   expect(result.hasError).toBeFalsy()
   expect(result.eventTrace.length).toBeGreaterThan(0)
-}, 10_000)
+}, 20_000)
 
 test('mint fees amount TEST_COIN', async () => {
   const domainName = 'verycheap.meta'

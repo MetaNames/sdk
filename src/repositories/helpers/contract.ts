@@ -45,10 +45,15 @@ export const getFeesLabel = (fees: BN, decimals: BN) => {
   }
 }
 
-
 export const getAddressFromProxyContractState = (state: ScValueStruct) => {
   const addressValue = state.fieldsMap.get('address')
   if (!addressValue) throw new Error('Address not found')
 
   return addressValue.addressValue().value.toString('hex')
+}
+
+export async function promiseRetry<T>(fn: () => Promise<T>, retries = 5, err?: unknown): Promise<T> {
+  await new Promise(resolve => setTimeout(resolve, (5 - retries) * 500))
+
+  return !retries ? Promise.reject(err) : fn().catch(error => promiseRetry(fn, (retries - 1), error))
 }
