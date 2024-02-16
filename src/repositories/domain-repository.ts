@@ -1,10 +1,10 @@
 import { BN } from "@partisiablockchain/abi-client"
-import { actionApproveMintFeesPayload, actionDomainMintPayload, actionDomainRenewalPayload } from "../actions"
-import { Address, IActionDomainMint, IActionDomainRenewal, IContractRepository, IDomain, IDomainAnalyzed, IMetaNamesContractRepository } from "../interface"
+import { actionApproveMintFeesPayload, actionDomainMintPayload, actionDomainRenewalPayload, actionDomainTransferPayload } from "../actions"
+import { Address, IActionDomainMint, IActionDomainRenewal, IActionDomainTransfer, IContractRepository, IDomainAnalyzed, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models"
 import { getParentName } from "../models/helpers/domain"
 import { decorateDomain, getDecimalsMultiplier, getDomainCount, getDomainNamesByOwner, getMintFeesInGas, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
-import { Config, BYOCSymbol } from "../providers"
+import { BYOCSymbol, Config } from "../providers"
 import { DomainValidator } from "../validators"
 import { getFeesLabel } from "./helpers/contract"
 
@@ -94,6 +94,11 @@ export class DomainRepository {
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }
 
+  /**
+   * Renew a domain
+   * @param params Domain renewal params
+   * @returns transaction intent
+   */
   async renew(params: IActionDomainRenewal) {
     const domainName = params.domain
     const subscriptionYears = params.subscriptionYears ?? 1
@@ -110,6 +115,18 @@ export class DomainRepository {
 
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }
+
+  async transfer(params: IActionDomainTransfer) {
+    const { domain, from, to } = params
+    if (!this.domainValidator.validate(domain)) throw new Error('Domain validation failed')
+
+    const normalizedDomain = this.domainValidator.normalize(domain, { reverse: true })
+    const contract = await this.metaNamesContract.getContract()
+    const payload = actionDomainTransferPayload(contract.abi, { domain: normalizedDomain, from, to })
+
+    return this.metaNamesContract.createTransaction({ payload, gasCost: 'medium' })
+  }
+
 
   /**
    * Calculate mint fees for a domain.

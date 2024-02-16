@@ -1,4 +1,4 @@
-import { IActionDomainMint, IActionDomainRenewal } from '../../src/interface'
+import { IActionDomainMint, IActionDomainRenewal, IActionDomainTransfer } from '../../src/interface'
 import { config, generateRandomString } from '../helpers'
 
 const domainName = `${generateRandomString(15)}.meta`
@@ -27,6 +27,22 @@ test('run action renew', async () => {
     byocSymbol: 'TEST_COIN'
   }
   const { transactionHash, fetchResult } = await config.sdk.domainRepository.renew(randomActionRenew)
+  const result = await fetchResult
+
+  expect(transactionHash).toBeDefined()
+  expect(transactionHash.length).toBe(64)
+  expect(transactionHash).toBe(result.transactionHash)
+  expect(result.hasError).toBe(false)
+  expect(result.eventTrace.length).toBeGreaterThan(0)
+}, 10_000)
+
+test('run action transfer', async () => {
+  const transferParams: IActionDomainTransfer = {
+    domain: domainName,
+    from: config.address,
+    to: config.address2
+  }
+  const { transactionHash, fetchResult } = await config.sdk.domainRepository.transfer(transferParams)
   const result = await fetchResult
 
   expect(transactionHash).toBeDefined()
