@@ -94,6 +94,11 @@ export class DomainRepository {
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }
 
+  /**
+   * Renew a domain
+   * @param params Domain renewal params
+   * @returns transaction intent
+   */
   async renew(params: IActionDomainRenewal) {
     const domainName = params.domain
     const subscriptionYears = params.subscriptionYears ?? 1
