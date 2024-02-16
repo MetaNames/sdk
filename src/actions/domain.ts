@@ -1,6 +1,6 @@
 import { BN, ContractAbi, FnRpcBuilder } from '@partisiablockchain/abi-client'
 import { builderToBytesBe } from '../actions'
-import { IActionApproveMintFees, IActionDomainMintPayload, IActionRenewDomainPayload } from '../interface'
+import { IActionApproveMintFees, IActionDomainMintPayload, IActionDomainTransfer, IActionRenewDomainPayload } from '../interface'
 
 
 export const actionDomainMintPayload = (contractAbi: ContractAbi, params: IActionDomainMintPayload): Buffer => {
@@ -48,6 +48,18 @@ export const actionDomainRenewalPayload = (contractAbi: ContractAbi, params: IAc
   rpc.addAddress(payer)
 
   rpc.addU32(params.subscriptionYears ?? 1)
+
+  return builderToBytesBe(rpc)
+}
+
+export const actionDomainTransferPayload = (contractAbi: ContractAbi, params: IActionDomainTransfer): Buffer => {
+  const rpc = new FnRpcBuilder('transfer_domain', contractAbi)
+
+  const { from, to, domain } = params
+
+  rpc.addAddress(from)
+  rpc.addAddress(to)
+  rpc.addString(domain)
 
   return builderToBytesBe(rpc)
 }

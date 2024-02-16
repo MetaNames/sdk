@@ -8,7 +8,7 @@ import type { BYOCSymbol } from "./providers"
 
 // TODO: Reorganize this file
 
-export type GasCost = 'low' | 'high'
+export type GasCost = 'low' | 'medium' | 'high'
 
 export type SigningStrategyType = 'privateKey' | 'partisiaSdk' | 'MetaMask'
 export type SigningClassType = string | PartisiaSdk | MetaMaskSdk
@@ -110,6 +110,12 @@ export interface IActionDomainRenewal extends IActionCommonDomainRenew {
 
 export interface IActionRenewDomainPayload extends IActionCommonDomainRenew {
   byocTokenId: number
+}
+
+export interface IActionDomainTransfer {
+  from: Address
+  to: Address
+  domain: string
 }
 
 export interface ByocCoin {
