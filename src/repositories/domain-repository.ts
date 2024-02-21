@@ -124,7 +124,7 @@ export class DomainRepository {
     const contract = await this.metaNamesContract.getContract()
     const payload = actionDomainTransferPayload(contract.abi, { domain: normalizedDomain, from, to })
 
-    return this.metaNamesContract.createTransaction({ payload, gasCost: 'medium' })
+    return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }
 
 
