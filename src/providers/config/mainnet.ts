@@ -3,7 +3,7 @@ import { Config } from "../config"
 export const mainNetConfig: Config = {
   cache_ttl: 10 * 60 * 1000, // 10 minutes
   tld: 'meta',
-  contractAddress: '02bb03946a0b6d1feaa96f78cfc8ef3f5a4ceee727',
+  contractAddress: '02c9a6290864e27b587331c88ec8e69a8280c290dc',
   rpcConfig: {
     urlBaseGlobal: { url: "https://reader.partisiablockchain.com", shard_id: 99 },
     urlBaseShards: [
