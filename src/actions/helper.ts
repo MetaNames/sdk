@@ -168,9 +168,9 @@ const broadcastTransactionPoller = async (
       if (resTx.finalized) {
         break
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      if (!error.message.includes('404')) console.error(error.message)
+    } catch (error) {
+      if (error instanceof Error && !error.message.includes('404')) console.error(error.message)
+      else console.error(error)
     } finally {
       const sleep = (ms: number) => {
         return new Promise((resolve) => setTimeout(resolve, ms))
@@ -192,7 +192,7 @@ const serializeTransaction = async (
   const nonce = await rpc.getNonce(walletAddress, shardId)
   // Set validTo to 2 minute from now
   // Need to pass a number otherwise the internal library will throw an error
-  const validTo = (new Date().getTime() +  120_000) as unknown as string
+  const validTo = (new Date().getTime() + 120_000) as unknown as string
 
   return serializedTransaction(
     { nonce, cost, validTo },
