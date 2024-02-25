@@ -1,7 +1,7 @@
 import { config } from "../helpers"
 
 test('mint fees transaction for TEST_COINT', async () => {
-  const domainName = 'verycheapfees.meta'
+  const domainName = 'verycheapfees.mpc'
   const { transactionHash, fetchResult } = await config.sdk.domainRepository.approveMintFees(domainName, 'TEST_COIN')
   const result = await fetchResult
 
@@ -13,7 +13,7 @@ test('mint fees transaction for TEST_COINT', async () => {
 }, 20_000)
 
 test('mint fees transaction for ETH', async () => {
-  const domainName = 'verycheapfees.meta'
+  const domainName = 'verycheapfees.mpc'
   const { transactionHash, fetchResult } = await config.sdk.domainRepository.approveMintFees(domainName, 'ETH_GOERLI')
   const result = await fetchResult
 
@@ -25,7 +25,7 @@ test('mint fees transaction for ETH', async () => {
 }, 20_000)
 
 test('mint fees amount TEST_COIN', async () => {
-  const domainName = 'verycheap.meta'
+  const domainName = 'verycheap.mpc'
 
   const { fees, symbol, feesLabel } = await config.sdk.domainRepository.calculateMintFees(domainName, 'TEST_COIN')
 
@@ -38,7 +38,7 @@ test('mint fees amount TEST_COIN', async () => {
 })
 
 test('mint fees amount ETH_GOERLI', async () => {
-  const domainName = 'verycheap.meta'
+  const domainName = 'verycheap.mpc'
 
   const { fees, symbol, feesLabel } = await config.sdk.domainRepository.calculateMintFees(domainName, 'ETH_GOERLI')
 

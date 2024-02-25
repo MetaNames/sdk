@@ -9,10 +9,10 @@ export interface INormalizeOptions extends IValidatorOptions {
 
 export class DomainValidator implements IValidatorInterface<string> {
   errors: string[] = []
-  tld: string
+  tld: string[]
 
-  constructor(tld: string) {
-    this.tld = tld
+  constructor(tld: string | string[]) {
+    this.tld = Array.isArray(tld) ? tld : [tld]
   }
 
   get rules() {
@@ -43,7 +43,7 @@ export class DomainValidator implements IValidatorInterface<string> {
   normalize(name: string, options: INormalizeOptions = {}): string {
     const { removeTLD, reverse } = { removeTLD: true, ...options }
 
-    if (removeTLD && name.endsWith(`.${this.tld}`)) name = name.replace(`.${this.tld}`, '')
+    if (removeTLD) name = this.removeTld(name)
     if (reverse) name = name.split('.').reverse().join('.')
     if (name.includes('..')) name = name.replace(/\.\./g, '.')
 
@@ -52,5 +52,15 @@ export class DomainValidator implements IValidatorInterface<string> {
     const { domain, error } = toUnicode(name, { useSTD3ASCIIRules: true }) as any
 
     return error ? '' : domain
+  }
+
+  private removeTld(name: string): string {
+    let normalizedName = name
+
+    this.tld.forEach(tld => {
+      if (name.endsWith(`.${tld}`)) normalizedName = name.replace(`.${tld}`, '')
+    })
+
+    return normalizedName
   }
 }

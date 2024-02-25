@@ -1,6 +1,6 @@
 import { config, generateRandomString, mintDomain } from '../helpers'
 
-const domainName = 'name.meta'
+const domainName = 'name.mpc'
 
 beforeAll(async () => {
   const domain = await config.sdk.domainRepository.find(domainName)
@@ -29,7 +29,7 @@ test('mint domain with parent', async () => {
   expect(subDomain).toBeDefined()
   expect(subDomain).toHaveProperty('name')
   expect(subDomain!.name).toEqual(expectedDomain)
-  expect(subDomain!.parentId).toEqual('name.meta')
+  expect(subDomain!.parentId).toEqual('name.mpc')
 }, 10_000)
 
 test('mint subdomain without parent', async () => {
@@ -56,5 +56,5 @@ test('mint subdomain without parent', async () => {
   expect(subDomain).toBeDefined()
   expect(subDomain).toHaveProperty('name')
   expect(subDomain!.name).toEqual(expectedDomain)
-  expect(subDomain!.parentId).toEqual('name.meta')
+  expect(subDomain!.parentId).toEqual('name.mpc')
 }, 10_000)

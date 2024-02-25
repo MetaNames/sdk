@@ -21,7 +21,7 @@ export class DomainRepository {
     this.config = config
     this.contractRepository = contractRepository
     this.metaNamesContract = metaNamesContractRepository
-    this.domainValidator = new DomainValidator(this.config.tld)
+    this.domainValidator = new DomainValidator(this.config.tlds)
   }
 
   /**
@@ -32,7 +32,8 @@ export class DomainRepository {
   analyze(domainName: string): IDomainAnalyzed {
     if (!this.domainValidator.validate(domainName)) throw new Error('Domain validation failed')
 
-    const fullName = domainName.endsWith(`.${this.config.tld}`) ? domainName : `${domainName}.${this.config.tld}`
+    const domainWithoutTld = this.domainValidator.normalize(domainName, { reverse: false, removeTLD: true })
+    const fullName = `${domainWithoutTld}.${this.config.tld}`
 
     return {
       name: fullName,
@@ -168,7 +169,7 @@ export class DomainRepository {
 
     const normalizedDomain = this.domainValidator.normalize(domainName, { reverse: true })
 
-    const domain = lookUpDomain(domains, nftOwners, normalizedDomain)
+    const domain = lookUpDomain(domains, nftOwners, normalizedDomain, this.config.tld)
     if (!domain) return null
 
     return new Domain(domain)
@@ -190,7 +191,7 @@ export class DomainRepository {
       const domainNameStr = domainName.stringValue()
       const domainValue = domainStruct.structValue()
 
-      const domainObj = decorateDomain(domainValue, nftOwners, domainNameStr)
+      const domainObj = decorateDomain(domainValue, nftOwners, domainNameStr, this.config.tld)
       if (!domainObj) return
 
       const domain = new Domain(domainObj)
@@ -223,7 +224,7 @@ export class DomainRepository {
     const domainNames = getDomainNamesByOwner(domainsTreeMap, nftOwners, address)
 
     const domains = domainNames.map((domainName) => {
-      const domainObj = lookUpDomain(domainsTreeMap, nftOwners, domainName)
+      const domainObj = lookUpDomain(domainsTreeMap, nftOwners, domainName, this.config.tld)
       if (!domainObj) throw new Error('Domain not found')
 
       return new Domain(domainObj)
