@@ -13,6 +13,7 @@ export interface BYOC {
 export interface Config {
   cache_ttl: number,
   tld: string,
+  tlds: string[],
   contractAddress: string,
   rpcConfig: {
     urlBaseGlobal: { url: string, shard_id: number },

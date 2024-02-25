@@ -4,7 +4,7 @@ import { config } from '../helpers'
 const validator = new DomainValidator(config.contract.tld)
 
 test('validation of proper domain name', () => {
-    const name = 'name.meta'
+    const name = 'name.mpc'
     expect(validator.validate(name)).toBe(true)
 })
 
@@ -14,7 +14,7 @@ test('validation of a too long domain name fails', () => {
 })
 
 test('validation of an domain name with emoji', () => {
-    const name = '🌎.meta'
+    const name = '🌎.mpc'
     expect(validator.validate(name)).toBe(true)
 })
 
@@ -38,27 +38,27 @@ test('validation without raiseError option populates errors array', () => {
 })
 
 test('normalization of proper domain name', () => {
-    const name = 'name.meta'
+    const name = 'name.mpc'
     expect(validator.normalize(name)).toBe('name')
 })
 
 test('normalization of proper domain name uppercase', () => {
-    const name = 'NaME.meta'
+    const name = 'NaME.mpc'
     expect(validator.normalize(name)).toBe('name')
 })
 
 test('normalization of proper subdomain name', () => {
-    const name = 'the.name.meta'
+    const name = 'the.name.mpc'
     expect(validator.normalize(name)).toBe('the.name')
 })
 
 test('normalization with reverse option', () => {
-    const name = 'the.name.meta'
+    const name = 'the.name.mpc'
     expect(validator.normalize(name, { reverse: true })).toBe('name.the')
 })
 
 test('normalization of an domain name with emoji', () => {
-    const name = '🌎.meta'
+    const name = '🌎.mpc'
     expect(validator.normalize(name)).toBe('🌎')
 })
 

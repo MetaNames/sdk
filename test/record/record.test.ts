@@ -2,7 +2,7 @@ import { RecordClassEnum } from '../../src/interface'
 import { Domain } from '../../src/models'
 import { config, mintDomain, mintRecord } from '../helpers'
 
-const domainName = 'name.meta'
+const domainName = 'name.mpc'
 const recordClass = RecordClassEnum.Wallet
 const recordValue = '00373c68dfed999aec39063194e2d3e0870f9899fa'
 let domain: Domain

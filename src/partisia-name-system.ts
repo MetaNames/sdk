@@ -61,17 +61,17 @@ export function getDomainNamesByOwner(domains: ScValueAvlTreeMap, owners: ScValu
   return domainNames
 }
 
-export function lookUpDomain(domains: ScValueAvlTreeMap, owners: ScValueMap, domainName: string): IDomain | undefined {
+export function lookUpDomain(domains: ScValueAvlTreeMap, owners: ScValueMap, domainName: string, tld: string): IDomain | undefined {
   if (!domains.map) return
 
   const scNameString = new ScValueString(domainName)
   const domain = domains.map.get(scNameString)?.structValue()
   if (!domain) return
 
-  return decorateDomain(domain, owners, domainName)
+  return decorateDomain(domain, owners, domainName, tld)
 }
 
-export function decorateDomain(domain: ScValueStruct, owners: ScValueMap, domainName: string): IDomain {
+export function decorateDomain(domain: ScValueStruct, owners: ScValueMap, domainName: string, tld: string): IDomain {
   const fieldsMap = domain.fieldsMap
   const created = (fieldsMap.get('minted_at') as ScValue).asBN().toNumber()
   const createdAt = new Date(created)
@@ -87,7 +87,7 @@ export function decorateDomain(domain: ScValueStruct, owners: ScValueMap, domain
 
   return {
     name: domainName,
-    tld: 'meta',
+    tld,
     createdAt,
     expiresAt,
     owner,

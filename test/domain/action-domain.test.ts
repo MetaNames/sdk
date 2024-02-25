@@ -1,7 +1,7 @@
 import { IActionDomainMint, IActionDomainRenewal, IActionDomainTransfer } from '../../src/interface'
 import { config, generateRandomString } from '../helpers'
 
-const domainName = `${generateRandomString(15)}.meta`
+const domainName = `${generateRandomString(15)}.mpc`
 
 test('run action mint', async () => {
   const randomActionMint: IActionDomainMint = {

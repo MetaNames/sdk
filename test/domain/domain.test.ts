@@ -1,6 +1,6 @@
 import { config, mintDomain } from '../helpers'
 
-const domainName = 'name.meta'
+const domainName = 'name.mpc'
 
 beforeAll(async () => {
   const domain = await config.sdk.domainRepository.find(domainName)
@@ -8,7 +8,7 @@ beforeAll(async () => {
 }, 15_000)
 
 test('analyze domain', () => {
-  const domainName = 'sub.name.meta'
+  const domainName = 'sub.name.mpc'
 
   const domain = config.sdk.domainRepository.analyze(domainName)
 
@@ -17,8 +17,8 @@ test('analyze domain', () => {
   expect(domain).toHaveProperty('parentId')
   expect(domain).toHaveProperty('tld')
   expect(domain!.name).toEqual(domainName)
-  expect(domain!.tld).toEqual('meta')
-  expect(domain!.parentId).toEqual('name.meta')
+  expect(domain!.tld).toEqual('mpc')
+  expect(domain!.parentId).toEqual('name.mpc')
 })
 
 test('lookup domain', async () => {
@@ -53,7 +53,7 @@ test('findByOwner returns the correct domains', async () => {
   expect(domain).toHaveProperty('parentId')
   expect(domain).toHaveProperty('records')
   expect(domain!.owner).toEqual(config.address)
-  expect(domain!.tld).toEqual('meta')
+  expect(domain!.tld).toEqual('mpc')
   expect(domain!.createdAt).toBeInstanceOf(Date)
 }, 10_000)
 
@@ -85,7 +85,7 @@ test('toJson', async () => {
   expect(json).toHaveProperty('parentId')
   expect(json).toHaveProperty('records')
   expect(json!.name).toEqual(domainName)
-  expect(json!.tld).toEqual('meta')
+  expect(json!.tld).toEqual('mpc')
   expect(json!.createdAt).toBeInstanceOf(Date)
   expect(json!.owner).toEqual(config.address)
   expect(json!.tokenId).toBeGreaterThan(0)
