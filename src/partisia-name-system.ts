@@ -129,7 +129,7 @@ function getPaymentInfo(contract: ScValueStruct, paymentId: number): ScValueStru
   return payment.structValue()
 }
 
-export function getMintFeesInGas(contract: ScValueStruct, domain: string, tokenId: number): BN {
+export function getMintFees(contract: ScValueStruct, domain: string, tokenId: number): BN {
   const payment = getPaymentInfo(contract, tokenId)
   const fees = payment.fieldsMap.get('fees')
   if (!fees) throw new Error('Mint gas key not found')
