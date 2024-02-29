@@ -3,7 +3,7 @@ import { actionApproveMintFeesPayload, actionDomainMintPayload, actionDomainRene
 import { Address, IActionDomainMint, IActionDomainRenewal, IActionDomainTransfer, IContractRepository, IDomainAnalyzed, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models"
 import { getParentName } from "../models/helpers/domain"
-import { decorateDomain, getDecimalsMultiplier, getDomainCount, getDomainNamesByOwner, getMintFeesInGas, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
+import { decorateDomain, getDecimalsMultiplier, getDomainCount, getDomainNamesByOwner, getMintFees, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { BYOCSymbol, Config } from "../providers"
 import { DomainValidator } from "../validators"
 import { getFeesLabel } from "./helpers/contract"
@@ -142,7 +142,7 @@ export class DomainRepository {
     const handledByoc = this.config.byoc.find((byoc) => byoc.symbol === tokenSymbol)
     if (!handledByoc) throw new Error(`BYOC ${tokenSymbol} not handled`)
 
-    const fees = await getMintFeesInGas(struct, normalizedDomain, handledByoc.id)
+    const fees = await getMintFees(struct, normalizedDomain, handledByoc.id)
 
     const symbol = handledByoc.symbol
     const address = handledByoc.address

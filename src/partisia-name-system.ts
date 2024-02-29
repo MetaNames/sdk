@@ -129,7 +129,7 @@ function getPaymentInfo(contract: ScValueStruct, paymentId: number): ScValueStru
   return payment.structValue()
 }
 
-export function getMintFeesInGas(contract: ScValueStruct, domain: string, tokenId: number): BN {
+export function getMintFees(contract: ScValueStruct, domain: string, tokenId: number): BN {
   const payment = getPaymentInfo(contract, tokenId)
   const fees = payment.fieldsMap.get('fees')
   if (!fees) throw new Error('Mint gas key not found')
@@ -138,7 +138,14 @@ export function getMintFeesInGas(contract: ScValueStruct, domain: string, tokenI
   const feesMapping = feesStruct.fieldsMap.get('mapping')?.vecValue()
   if (!feesMapping) throw new Error('Fees mapping not found')
 
-  const domainLength = domain.length
+  let domainLength = domain.length
+
+  try {
+    domainLength = [...new Intl.Segmenter().segment('👩‍👩‍👧‍👦')].length
+  } catch(e) {
+    console.log(e)
+  }
+
   const defaultFee = feesStruct.fieldsMap.get('default_fee') as ScValue
   const decimals = (feesStruct.fieldsMap.get('decimals') as ScValue).asBN().toNumber()
   let fee = defaultFee.asBN().toNumber()
@@ -146,7 +153,7 @@ export function getMintFeesInGas(contract: ScValueStruct, domain: string, tokenI
   const feeStruct = feesMapping.values().find((v) => (v.structValue().fieldsMap.get('chars_count') as ScValue).asBN().toNumber() === domainLength)
   if (feeStruct) fee = (feeStruct.structValue().fieldsMap.get('amount') as ScValue).asBN().toNumber()
 
-  if (!fee) throw new Error('Gas amount not found')
+  if (!fee) throw new Error('Amount not found')
 
   let feeBN = new BN(fee)
   feeBN = feeBN.mul(getDecimalsMultiplier(decimals))
