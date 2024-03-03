@@ -19,7 +19,7 @@ export class MetaNamesContractRepository extends ContractRepository implements I
   }
 
   async getContract(params?: ContractParams): Promise<Contract> {
-    if (!params) {
+    if (!params?.contractAddress) {
       const metaNamesContractAddress = await this.getContractAddress()
       params = { contractAddress: metaNamesContractAddress }
     }
