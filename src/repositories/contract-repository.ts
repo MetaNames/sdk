@@ -118,12 +118,12 @@ export class ContractRepository implements IContractRepository {
     let contractEntry = this.contractRegistry.get(contractAddress)
 
     const serializedContract = contractEntry?.contract.data.serializedContract
-    const hasPartialState = serializedContract?.state !== null
-    const hasFullState = hasPartialState && serializedContract?.avlTree !== null
+    const hasPartialState = serializedContract?.state !== undefined
+    const hasFullState = hasPartialState && serializedContract?.avlTree !== undefined
 
     if (contractEntry && !force &&
-      ((partial && hasPartialState) ||
-        (withState && hasFullState) ||
+      ((withState && hasFullState) ||
+        (partial && hasPartialState) ||
         !withState) &&
       ((Date.now() - contractEntry.fetchedAt) < this.ttl))
       return contractEntry.contract
@@ -166,7 +166,7 @@ export class ContractRepository implements IContractRepository {
 
         let avlTree
         if (serializedContract?.avlTrees)
-          avlTree = convertAvlTree(contract.data.serializedContract.avlTrees)
+          avlTree = convertAvlTree(serializedContract.avlTrees)
 
         return {
           abi: contract.data.abi,
