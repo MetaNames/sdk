@@ -1,4 +1,4 @@
-import { config, mintDomain } from '../helpers'
+import { config, generateRandomString, mintDomain } from '../helpers'
 
 const domainName = 'name.mpc'
 
@@ -34,6 +34,12 @@ test('lookup domain', async () => {
   expect(data).toHaveProperty('records')
   expect(data!.name).toEqual(domainName)
   expect(data!.createdAt).toBeInstanceOf(Date)
+})
+
+test('lookup domain of non existant domain returns null', async () => {
+  const data = await config.sdk.domainRepository.find(generateRandomString(15))
+
+  expect(data).toBeNull()
 })
 
 test('findByOwner returns the correct domains', async () => {
