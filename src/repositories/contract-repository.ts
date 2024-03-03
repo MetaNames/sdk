@@ -158,14 +158,16 @@ export class ContractRepository implements IContractRepository {
         const contract = await this.rpc.getContract(contractAddress, this.rpc.deriveShardId(contractAddress), normalizedOptions.withState)
         if (!contract) return
 
+        const serializedContract = contract.data.serializedContract
+
         let avlTree
-        if (contract.data.serializedContract.avlTrees)
+        if (serializedContract?.avlTrees)
           avlTree = convertAvlTree(contract.data.serializedContract.avlTrees)
 
         return {
           abi: contract.data.abi,
           serializedContract: {
-            state: contract.data.serializedContract.state,
+            state: serializedContract?.state,
             avlTree,
           }
         }
