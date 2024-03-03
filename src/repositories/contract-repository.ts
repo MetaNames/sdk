@@ -1,4 +1,4 @@
-import { AbiParser, StateReader } from '@partisiablockchain/abi-client'
+import { AbiParser, FileAbi, StateReader } from '@partisiablockchain/abi-client'
 import { PartisiaAccount } from 'partisia-blockchain-applications-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
 import { createTransactionFromMetaMaskClient, createTransactionFromPartisiaClient, createTransactionFromPrivateKey } from '../actions'
@@ -50,7 +50,7 @@ export class ContractRepository implements IContractRepository {
     return struct
   }
 
-  async getAbi(contractAddress?: string) {
+  async getAbi(contractAddress?: string): Promise<FileAbi> {
     if(!contractAddress) throw new Error('Contract address not found')
 
     const contract = await this.getContract({ contractAddress, partial: true })

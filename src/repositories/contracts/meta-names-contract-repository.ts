@@ -4,6 +4,7 @@ import { Contract, ContractParams, IMetaNamesContractRepository, ITransactionInt
 import { Enviroment } from "../../providers"
 import { SecretsProvider } from "../../providers/secrets"
 import { getAddressFromProxyContractState } from "../helpers/contract"
+import { FileAbi } from "@partisiablockchain/abi-client"
 
 /**
  * Meta Names contract repository
@@ -42,7 +43,7 @@ export class MetaNamesContractRepository extends ContractRepository implements I
     })
   }
 
-  async getAbi() {
+  async getAbi(): Promise<FileAbi> {
     const metaNamesContractAddress = await this.getContractAddress()
     return super.getAbi(metaNamesContractAddress)
   }
