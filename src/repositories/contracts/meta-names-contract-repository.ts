@@ -5,6 +5,7 @@ import { Enviroment } from "../../providers"
 import { SecretsProvider } from "../../providers/secrets"
 import { getAddressFromProxyContractState } from "../helpers/contract"
 import { FileAbi } from "@partisiablockchain/abi-client"
+import { AxiosError } from "axios"
 
 /**
  * Meta Names contract repository
@@ -56,13 +57,14 @@ export class MetaNamesContractRepository extends ContractRepository implements I
   async getStateAvlValue(treeId: number, key: Buffer): Promise<Buffer | undefined> {
     const metaNamesContractAddress = await this.getContractAddress()
 
-    const buffer = await this.avlClient.getContractStateAvlValue(metaNamesContractAddress, treeId, key)
-    if (!buffer) return undefined
-
-    return buffer
+    try {
+      const buffer = await this.avlClient.getContractStateAvlValue(metaNamesContractAddress, treeId, key)
+      return buffer
+    } catch (e) {
+      if (e instanceof AxiosError && e.response?.status === 404) return
+      else console.log(e)
+    }
   }
-
-
 
   async createTransaction({ payload, gasCost }: TransactionParams): Promise<ITransactionIntent> {
     const metaNamesContractAddress = await this.getContractAddress()
