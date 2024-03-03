@@ -1,8 +1,7 @@
 /* eslint-disable no-unused-vars */
 
-import type { BN, ContractAbi, ScValueStruct } from "@partisiablockchain/abi-client"
+import type { BN, ContractAbi, FileAbi, ScValueStruct } from "@partisiablockchain/abi-client"
 import type { IContractInfo } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
-import type { IContractZk } from "partisia-blockchain-applications-rpc/lib/main/interface-zk"
 import type PartisiaSdk from "partisia-blockchain-applications-sdk"
 import type { BYOCSymbol } from "./providers"
 
@@ -153,17 +152,19 @@ export interface ITransactionIntent {
 
 export type MetaNamesState = ScValueStruct
 
+export type ContractData = Pick<IContractInfo, 'abi' | 'serializedContract'> & { serializedContract: { avlTree?: Map<number, [Buffer, Buffer][]> } };
+
+
 export interface ContractParams {
   contractAddress: string
   force?: boolean
   withState?: boolean
+  partial?: boolean
 }
 
 export interface Contract {
-  shard_id: number
-  data: IContractInfo | IContractZk
+  data: ContractData
   abi: ContractAbi
-  avlTree?: Map<number, [Buffer, Buffer][]>
 }
 
 export interface TransactionParams {
@@ -176,11 +177,17 @@ export interface IContractRepository {
   createTransaction(params: TransactionParams): Promise<ITransactionIntent>
   getContract(params?: ContractParams): Promise<Contract>
   getByocCoins(): Promise<ByocCoin[]>
+  getAbi(contractAddress: string): Promise<FileAbi>
 }
 
+export interface getStateParams {
+  force?: boolean,
+  partial?: boolean
+}
 export interface IMetaNamesContractRepository extends IContractRepository {
-  getState(options?: { force?: boolean }): Promise<MetaNamesState>
+  getState(options?: getStateParams): Promise<MetaNamesState>
   getContractAddress(): Promise<string>
+  getStateAvlValue(treeId: number, key: Buffer): Promise<Buffer | undefined>
 }
 
 export interface IValidatorOptions {
