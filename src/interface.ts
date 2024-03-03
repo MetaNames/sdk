@@ -180,12 +180,13 @@ export interface IContractRepository {
   getAbi(contractAddress: string): Promise<FileAbi>
 }
 
-export interface getStateParams {
+export interface GetStateParams {
   force?: boolean,
   partial?: boolean
 }
+
 export interface IMetaNamesContractRepository extends IContractRepository {
-  getState(options?: getStateParams): Promise<MetaNamesState>
+  getState(options?: GetStateParams): Promise<MetaNamesState>
   getContractAddress(): Promise<string>
   getStateAvlValue(treeId: number, key: Buffer): Promise<Buffer | undefined>
 }

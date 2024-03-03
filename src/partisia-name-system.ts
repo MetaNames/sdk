@@ -63,9 +63,9 @@ export function getDomainNamesByOwner(domains: ScValueAvlTreeMap, owners: ScValu
 export function deserializeDomain(bytes: Buffer, contractAbi: ContractAbi, owners: ScValueMap, domainName: string, tld: string): IDomain {
   const reader = new StateReader(bytes, contractAbi)
   const domainStructIndex = 16
-  const scValue = reader.readStateValue({ typeIndex: TypeIndex.Named, index: domainStructIndex }) as ScValueStruct
+  const struct = reader.readStateValue({ typeIndex: TypeIndex.Named, index: domainStructIndex }).structValue()
 
-  return decorateDomain(scValue, owners, domainName, tld)
+  return decorateDomain(struct, owners, domainName, tld)
 }
 
 export function lookUpDomain(domains: ScValueAvlTreeMap, owners: ScValueMap, domainName: string, tld: string): IDomain | undefined {

@@ -52,7 +52,7 @@ export class ContractRepository implements IContractRepository {
     const contract = await this.getContract({ contractAddress, partial: true })
     if (!contract) throw new Error('Contract not found')
 
-    return new AbiParser(Buffer.from(contract.data.abi, 'base64')).parseAbi()
+    return this.parseAbi(contract.data.abi)
   }
 
   /**
@@ -118,8 +118,8 @@ export class ContractRepository implements IContractRepository {
     let contractEntry = this.contractRegistry.get(contractAddress)
 
     const serializedContract = contractEntry?.contract.data.serializedContract
-    const hasPartialState = serializedContract?.state && true
-    const hasFullState = hasPartialState && serializedContract?.avlTree && true
+    const hasPartialState = serializedContract?.state !== null
+    const hasFullState = hasPartialState && serializedContract?.avlTree !== null
 
     if (contractEntry && !force &&
       ((partial && hasPartialState) ||
@@ -131,7 +131,7 @@ export class ContractRepository implements IContractRepository {
     const rawContract = await this.fetchContract(contractAddress, { partial, withState })
     if (!rawContract) return
 
-    const fileAbi = new AbiParser(Buffer.from(rawContract.abi, 'base64')).parseAbi()
+    const fileAbi = this.parseAbi(rawContract.abi)
     contractEntry = {
       fetchedAt: Date.now(),
       contract: {
@@ -143,6 +143,10 @@ export class ContractRepository implements IContractRepository {
     this.contractRegistry.set(contractAddress, contractEntry)
 
     return contractEntry.contract
+  }
+
+  private parseAbi(abi: string) {
+    return new AbiParser(Buffer.from(abi, 'base64')).parseAbi()
   }
 
   private async fetchContract(contractAddress: string, options: { partial?: boolean, withState?: boolean } = {}): Promise<ContractData | undefined> {
