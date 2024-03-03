@@ -48,7 +48,9 @@ export class ContractRepository implements IContractRepository {
     return struct
   }
 
-  async getAbi(contractAddress: string) {
+  async getAbi(contractAddress?: string) {
+    if(!contractAddress) throw new Error('Contract address not found')
+
     const contract = await this.getContract({ contractAddress, partial: true })
     if (!contract) throw new Error('Contract not found')
 

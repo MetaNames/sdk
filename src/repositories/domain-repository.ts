@@ -175,8 +175,7 @@ export class DomainRepository {
     const domainBuffer = await this.metaNamesContract.getStateAvlValue(0, domainBufferBuilder.toBuffer())
     if (!domainBuffer) return null
 
-    const metanamesContractAddress = await this.metaNamesContract.getContractAddress()
-    const abi = await this.contractRepository.getAbi(metanamesContractAddress)
+    const abi = await this.metaNamesContract.getAbi()
     const domain = deserializeDomain(domainBuffer, abi.contract, nftOwners, normalizedDomain, this.config.tld)
 
     return new Domain(domain)

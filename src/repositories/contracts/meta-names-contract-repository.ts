@@ -42,6 +42,11 @@ export class MetaNamesContractRepository extends ContractRepository implements I
     })
   }
 
+  async getAbi() {
+    const metaNamesContractAddress = await this.getContractAddress()
+    return super.getAbi(metaNamesContractAddress)
+  }
+
   /**
    * Get the AVL value from the Meta Names contract state
    * @param treeId avl tree id
