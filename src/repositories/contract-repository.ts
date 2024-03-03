@@ -2,10 +2,11 @@ import { AbiParser, StateReader } from '@partisiablockchain/abi-client'
 import { PartisiaAccount } from 'partisia-blockchain-applications-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
 import { createTransactionFromMetaMaskClient, createTransactionFromPartisiaClient, createTransactionFromPrivateKey } from '../actions'
-import { ByocCoin, Contract, ContractEntry, ContractParams, GasCost, IContractRepository, ITransactionIntent, TransactionParams } from '../interface'
+import { ByocCoin, Contract, ContractData, ContractEntry, ContractParams, GasCost, IContractRepository, ITransactionIntent, TransactionParams } from '../interface'
 import { Enviroment } from '../providers'
 import { SecretsProvider } from '../providers/secrets'
 import { convertAvlTree, promiseRetry } from './helpers/contract'
+import { AvlClient } from './helpers/avl-client'
 
 
 /**
@@ -14,10 +15,12 @@ import { convertAvlTree, promiseRetry } from './helpers/contract'
 export class ContractRepository implements IContractRepository {
   private rpc: PartisiaAccountClass
   private contractRegistry: Map<string, ContractEntry>
+  protected avlClient: AvlClient
 
   constructor(rpc: IPartisiaRpcConfig, private environment: Enviroment, private secrets: SecretsProvider, private ttl: number) {
     this.contractRegistry = new Map()
     this.rpc = PartisiaAccount(rpc)
+    this.avlClient = new AvlClient(rpc.urlBaseGlobal.url, rpc.urlBaseShards.map((shard) => shard.shard_id))
   }
 
   /**
@@ -39,10 +42,17 @@ export class ContractRepository implements IContractRepository {
     if (!('state' in serializedContract)) throw new Error('Contract state not found')
 
     const contractAbi = contract.abi
-    const reader = new StateReader(Buffer.from(serializedContract.state.data, 'base64'), contractAbi, contract.avlTree)
+    const reader = new StateReader(Buffer.from(serializedContract.state.data, 'base64'), contractAbi, serializedContract.avlTree)
     const struct = reader.readStruct(contractAbi.getStateStruct())
 
     return struct
+  }
+
+  async getAbi(contractAddress: string) {
+    const contract = await this.getContract({ contractAddress, partial: true })
+    if (!contract) throw new Error('Contract not found')
+
+    return this.parseAbi(contract.data.abi)
   }
 
   /**
@@ -104,39 +114,71 @@ export class ContractRepository implements IContractRepository {
     this.contractRegistry.delete(contractAddress)
   }
 
-  private async getContractFromRegistry({ contractAddress, force, withState }: ContractParams): Promise<Contract | undefined> {
+  private async getContractFromRegistry({ contractAddress, force, withState, partial }: ContractParams): Promise<Contract | undefined> {
     let contractEntry = this.contractRegistry.get(contractAddress)
+
+    const serializedContract = contractEntry?.contract.data.serializedContract
+    const hasPartialState = serializedContract?.state !== undefined
+    const hasFullState = hasPartialState && serializedContract?.avlTree !== undefined
+
     if (contractEntry && !force &&
-      ((withState && contractEntry.contract.data.serializedContract) || !withState) &&
+      ((withState && hasFullState) ||
+        (partial && hasPartialState) ||
+        !withState) &&
       ((Date.now() - contractEntry.fetchedAt) < this.ttl))
       return contractEntry.contract
 
-    const rawContract = await promiseRetry(() => this.rpc.getContract(
-      contractAddress,
-      this.rpc.deriveShardId(contractAddress),
-      withState
-    ))
+    const rawContract = await this.fetchContract(contractAddress, { partial, withState })
     if (!rawContract) return
 
-    const fileAbi = new AbiParser(Buffer.from(rawContract.data.abi, 'base64')).parseAbi()
+    const fileAbi = this.parseAbi(rawContract.abi)
     contractEntry = {
       fetchedAt: Date.now(),
       contract: {
-        abi: fileAbi.contract,
-        ...rawContract
-      }
-    }
-
-    if (rawContract.data.serializedContract) {
-      const avlTrees = rawContract.data.serializedContract.avlTrees
-      if (avlTrees) {
-        const avlTree = convertAvlTree(avlTrees)
-        contractEntry.contract.avlTree = avlTree
+        data: rawContract,
+        abi: fileAbi.contract
       }
     }
 
     this.contractRegistry.set(contractAddress, contractEntry)
 
     return contractEntry.contract
+  }
+
+  private parseAbi(abi: string) {
+    return new AbiParser(Buffer.from(abi, 'base64')).parseAbi()
+  }
+
+  private async fetchContract(contractAddress: string, options: { partial?: boolean, withState?: boolean } = {}): Promise<ContractData | undefined> {
+    const normalizedOptions = {
+      withState: false,
+      partial: false,
+      ...options,
+    }
+
+    let contract
+    if (!normalizedOptions.partial)
+      contract = await promiseRetry(async () => {
+        const contract = await this.rpc.getContract(contractAddress, this.rpc.deriveShardId(contractAddress), normalizedOptions.withState)
+        if (!contract) return
+
+        const serializedContract = contract.data.serializedContract
+
+        let avlTree
+        if (serializedContract?.avlTrees)
+          avlTree = convertAvlTree(serializedContract.avlTrees)
+
+        return {
+          abi: contract.data.abi,
+          serializedContract: {
+            state: serializedContract?.state,
+            avlTree,
+          }
+        }
+      })
+    else
+      contract = await promiseRetry(() => this.avlClient.getBinaryContractState(contractAddress))
+
+    return contract
   }
 }

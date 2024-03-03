@@ -1,4 +1,4 @@
-import { BN, ScValue, ScValueAvlTreeMap, ScValueMap, ScValueNumber, ScValueString, ScValueStruct, ScValueVector, TypeIndex } from '@partisiablockchain/abi-client'
+import { BN, ContractAbi, ScValue, ScValueAvlTreeMap, ScValueMap, ScValueNumber, ScValueString, ScValueStruct, ScValueVector, StateReader, TypeIndex } from '@partisiablockchain/abi-client'
 import { IDomain, RecordClassEnum } from './interface'
 
 export function getPnsDomains(contract: ScValueStruct): ScValueAvlTreeMap {
@@ -40,7 +40,6 @@ export function getOwnerAddressOf(owners: ScValueMap, tokenId: number) {
   return owners.get(nftId)?.addressValue().value.toString('hex')
 }
 
-
 export function getDomainNamesByOwner(domains: ScValueAvlTreeMap, owners: ScValueMap, ownerAddress: Buffer): string[] {
   const nftIds: number[] = []
   owners.map.forEach((address, nftId) => {
@@ -59,6 +58,14 @@ export function getDomainNamesByOwner(domains: ScValueAvlTreeMap, owners: ScValu
   })
 
   return domainNames
+}
+
+export function deserializeDomain(bytes: Buffer, contractAbi: ContractAbi, owners: ScValueMap, domainName: string, tld: string): IDomain {
+  const reader = new StateReader(bytes, contractAbi)
+  const domainStructIndex = 16
+  const struct = reader.readStateValue({ typeIndex: TypeIndex.Named, index: domainStructIndex }).structValue()
+
+  return decorateDomain(struct, owners, domainName, tld)
 }
 
 export function lookUpDomain(domains: ScValueAvlTreeMap, owners: ScValueMap, domainName: string, tld: string): IDomain | undefined {
@@ -142,7 +149,7 @@ export function getMintFees(contract: ScValueStruct, domain: string, tokenId: nu
 
   try {
     domainLength = [...new Intl.Segmenter().segment('👩‍👩‍👧‍👦')].length
-  } catch(e) {
+  } catch (e) {
     console.log(e)
   }
 

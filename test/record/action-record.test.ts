@@ -22,7 +22,7 @@ beforeAll(async () => {
   expect(resultMint.eventTrace.length).toBeGreaterThan(0)
 
   domain = await config.sdk.domainRepository.find(domainName) as Domain
-}, 10_000)
+}, 15_000)
 
 afterEach(async () => {
   const domainToInteract = subDomain || domain
@@ -38,7 +38,7 @@ afterEach(async () => {
 
     subDomain = undefined
   }
-}, 10_000)
+}, 15_000)
 
 
 test('action record mint', async () => {
@@ -56,7 +56,7 @@ test('action record mint', async () => {
     expect(resultMintRecord.hasError).toBe(false)
     expect(resultMintRecord.eventTrace.length).toBeGreaterThan(0)
   }
-}, 10_000)
+}, 15_000)
 
 test('action record mint with parent', async () => {
   const subdomain = generateRandomString(15)

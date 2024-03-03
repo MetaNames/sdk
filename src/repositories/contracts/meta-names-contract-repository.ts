@@ -1,6 +1,6 @@
 import { IPartisiaRpcConfig } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
 import { ContractRepository } from "../contract-repository"
-import { Contract, ContractParams, IMetaNamesContractRepository, ITransactionIntent, MetaNamesState, TransactionParams } from "../../interface"
+import { Contract, ContractParams, IMetaNamesContractRepository, ITransactionIntent, MetaNamesState, TransactionParams, GetStateParams } from "../../interface"
 import { Enviroment } from "../../providers"
 import { SecretsProvider } from "../../providers/secrets"
 import { getAddressFromProxyContractState } from "../helpers/contract"
@@ -19,7 +19,7 @@ export class MetaNamesContractRepository extends ContractRepository implements I
   }
 
   async getContract(params?: ContractParams): Promise<Contract> {
-    if (!params) {
+    if (!params?.contractAddress) {
       const metaNamesContractAddress = await this.getContractAddress()
       params = { contractAddress: metaNamesContractAddress }
     }
@@ -31,16 +31,32 @@ export class MetaNamesContractRepository extends ContractRepository implements I
    * Get the Meta Names contract state
    * By default it will get the cached state
    */
-  async getState(params?: { force?: boolean }): Promise<MetaNamesState> {
+  async getState(params?: GetStateParams): Promise<MetaNamesState> {
     if (!params) params = {}
     const metaNamesContractAddress = await this.getContractAddress()
 
     return super.getState({
       contractAddress: metaNamesContractAddress,
       force: params.force,
-      withState: true
+      partial: params.partial
     })
   }
+
+  /**
+   * Get the AVL value from the Meta Names contract state
+   * @param treeId avl tree id
+   * @param key avl key
+   */
+  async getStateAvlValue(treeId: number, key: Buffer): Promise<Buffer | undefined> {
+    const metaNamesContractAddress = await this.getContractAddress()
+
+    const buffer = await this.avlClient.getContractStateAvlValue(metaNamesContractAddress, treeId, key)
+    if (!buffer) return undefined
+
+    return buffer
+  }
+
+
 
   async createTransaction({ payload, gasCost }: TransactionParams): Promise<ITransactionIntent> {
     const metaNamesContractAddress = await this.getContractAddress()

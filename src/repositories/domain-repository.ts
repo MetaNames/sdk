@@ -3,10 +3,11 @@ import { actionApproveMintFeesPayload, actionDomainMintPayload, actionDomainRene
 import { Address, IActionDomainMint, IActionDomainRenewal, IActionDomainTransfer, IContractRepository, IDomainAnalyzed, IMetaNamesContractRepository } from "../interface"
 import { Domain } from "../models"
 import { getParentName } from "../models/helpers/domain"
-import { decorateDomain, getDecimalsMultiplier, getDomainCount, getDomainNamesByOwner, getMintFees, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
+import { decorateDomain, deserializeDomain, getDecimalsMultiplier, getDomainCount, getDomainNamesByOwner, getMintFees, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { BYOCSymbol, Config } from "../providers"
 import { DomainValidator } from "../validators"
 import { getFeesLabel } from "./helpers/contract"
+import { LittleEndianByteOutput } from "@secata-public/bitmanipulation-ts"
 
 /**
  * Repository to interact with domains on the Meta Names contract
@@ -163,14 +164,20 @@ export class DomainRepository {
    */
   async find(domainName: string, options?: { cache?: boolean }) {
     const { cache } = { cache: true, ...options }
-    const struct = await this.metaNamesContract.getState({ force: !cache })
-    const domains = getPnsDomains(struct)
+    const struct = await this.metaNamesContract.getState({ force: !cache, partial: true })
     const nftOwners = getNftOwners(struct)
 
     const normalizedDomain = this.domainValidator.normalize(domainName, { reverse: true })
 
-    const domain = lookUpDomain(domains, nftOwners, normalizedDomain, this.config.tld)
-    if (!domain) return null
+    const domainBufferBuilder = new LittleEndianByteOutput()
+    domainBufferBuilder.writeString(normalizedDomain)
+
+    const domainBuffer = await this.metaNamesContract.getStateAvlValue(0, domainBufferBuilder.toBuffer())
+    if (!domainBuffer) return null
+
+    const metanamesContractAddress = await this.metaNamesContract.getContractAddress()
+    const abi = await this.contractRepository.getAbi(metanamesContractAddress)
+    const domain = deserializeDomain(domainBuffer, abi.contract, nftOwners, normalizedDomain, this.config.tld)
 
     return new Domain(domain)
   }

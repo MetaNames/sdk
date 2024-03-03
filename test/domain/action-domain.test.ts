@@ -17,7 +17,7 @@ test('run action mint', async () => {
   expect(transactionHash).toBe(result.transactionHash)
   expect(result.hasError).toBe(false)
   expect(result.eventTrace.length).toBeGreaterThan(0)
-}, 10_000)
+}, 15_000)
 
 test('run action renew', async () => {
   const randomActionRenew: IActionDomainRenewal = {
@@ -34,7 +34,7 @@ test('run action renew', async () => {
   expect(transactionHash).toBe(result.transactionHash)
   expect(result.hasError).toBe(false)
   expect(result.eventTrace.length).toBeGreaterThan(0)
-}, 10_000)
+}, 15_000)
 
 test('run action transfer', async () => {
   const transferParams: IActionDomainTransfer = {
@@ -50,4 +50,4 @@ test('run action transfer', async () => {
   expect(transactionHash).toBe(result.transactionHash)
   expect(result.hasError).toBe(false)
   expect(result.eventTrace.length).toBeGreaterThan(0)
-}, 10_000)
+}, 15_000)
