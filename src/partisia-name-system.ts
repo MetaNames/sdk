@@ -146,9 +146,8 @@ export function getMintFees(contract: ScValueStruct, domain: string, tokenId: nu
   if (!feesMapping) throw new Error('Fees mapping not found')
 
   let domainLength = domain.length
-
   try {
-    domainLength = [...new Intl.Segmenter().segment('👩‍👩‍👧‍👦')].length
+    domainLength = [...new Intl.Segmenter().segment(domain)].length
   } catch (e) {
     console.log(e)
   }
