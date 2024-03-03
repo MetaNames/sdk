@@ -1,4 +1,4 @@
-import { AbiParser, StateReader } from '@partisiablockchain/abi-client'
+import { AbiParser, FileAbi, StateReader } from '@partisiablockchain/abi-client'
 import { PartisiaAccount } from 'partisia-blockchain-applications-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
 import { createTransactionFromMetaMaskClient, createTransactionFromPartisiaClient, createTransactionFromPrivateKey } from '../actions'
@@ -25,7 +25,6 @@ export class ContractRepository implements IContractRepository {
 
   /**
    * Get a smart contract
-   * @param force Force to get the contract
    */
   async getContract(params: ContractParams) {
     const contract = await this.getContractFromRegistry(params)
@@ -34,6 +33,9 @@ export class ContractRepository implements IContractRepository {
     return contract
   }
 
+  /**
+   * Get the contract state
+   */
   async getState(params: ContractParams) {
     const contract = await this.getContract({ ...params, withState: true })
 
@@ -48,7 +50,9 @@ export class ContractRepository implements IContractRepository {
     return struct
   }
 
-  async getAbi(contractAddress: string) {
+  async getAbi(contractAddress?: string): Promise<FileAbi> {
+    if(!contractAddress) throw new Error('Contract address not found')
+
     const contract = await this.getContract({ contractAddress, partial: true })
     if (!contract) throw new Error('Contract not found')
 
@@ -122,8 +126,8 @@ export class ContractRepository implements IContractRepository {
     const hasFullState = hasPartialState && serializedContract?.avlTree !== undefined
 
     if (contractEntry && !force &&
-      ((withState && hasFullState) ||
-        (partial && hasPartialState) ||
+      ((partial && hasPartialState) ||
+        (withState && hasFullState) ||
         !withState) &&
       ((Date.now() - contractEntry.fetchedAt) < this.ttl))
       return contractEntry.contract
