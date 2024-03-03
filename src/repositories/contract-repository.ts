@@ -124,8 +124,8 @@ export class ContractRepository implements IContractRepository {
     const hasFullState = hasPartialState && serializedContract?.avlTree !== undefined
 
     if (contractEntry && !force &&
-      ((withState && hasFullState) ||
-        (partial && hasPartialState) ||
+      ((partial && hasPartialState) ||
+        (withState && hasFullState) ||
         !withState) &&
       ((Date.now() - contractEntry.fetchedAt) < this.ttl))
       return contractEntry.contract
