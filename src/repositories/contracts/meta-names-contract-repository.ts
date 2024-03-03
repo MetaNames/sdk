@@ -70,7 +70,7 @@ export class MetaNamesContractRepository extends ContractRepository implements I
   }
 
   async getContractAddress() {
-    const contract = await super.getState({ contractAddress: this.proxyAddress, withState: true })
+    const contract = await super.getState({ contractAddress: this.proxyAddress, partial: true })
     const metaNamesAddress = getAddressFromProxyContractState(contract)
 
     return metaNamesAddress
