@@ -176,6 +176,7 @@ export interface TransactionParams {
 export interface IContractRepository {
   createTransaction(params: TransactionParams): Promise<ITransactionIntent>
   getContract(params?: ContractParams): Promise<Contract>
+  getState(params?: ContractParams): Promise<ScValueStruct>
   getByocCoins(): Promise<ByocCoin[]>
   getAbi(contractAddress?: string): Promise<FileAbi>
 }

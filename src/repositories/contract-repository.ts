@@ -25,7 +25,6 @@ export class ContractRepository implements IContractRepository {
 
   /**
    * Get a smart contract
-   * @param force Force to get the contract
    */
   async getContract(params: ContractParams) {
     const contract = await this.getContractFromRegistry(params)
@@ -34,6 +33,9 @@ export class ContractRepository implements IContractRepository {
     return contract
   }
 
+  /**
+   * Get the contract state
+   */
   async getState(params: ContractParams) {
     const contract = await this.getContract({ ...params, withState: true })
 
