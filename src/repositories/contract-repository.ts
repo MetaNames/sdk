@@ -2,11 +2,12 @@ import { AbiParser, FileAbi, StateReader } from '@partisiablockchain/abi-client'
 import { PartisiaAccount } from 'partisia-blockchain-applications-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
 import { createTransactionFromMetaMaskClient, createTransactionFromPartisiaClient, createTransactionFromPrivateKey } from '../actions'
-import { ByocCoin, Contract, ContractData, ContractEntry, ContractParams, GasCost, IContractRepository, ITransactionIntent, TransactionParams } from '../interface'
+import { ByocCoin, Contract, ContractData, ContractEntry, ContractParams, GasCost, IContractRepository, ITransactionIntent, RawContractData, TransactionParams } from '../interface'
 import { Enviroment } from '../providers'
 import { SecretsProvider } from '../providers/secrets'
 import { convertAvlTree, promiseRetry } from './helpers/contract'
 import { AvlClient } from './helpers/avl-client'
+import { getRequest } from './helpers/client'
 
 
 /**
@@ -15,12 +16,14 @@ import { AvlClient } from './helpers/avl-client'
 export class ContractRepository implements IContractRepository {
   private rpc: PartisiaAccountClass
   private contractRegistry: Map<string, ContractEntry>
+  private hostUrl: string
   protected avlClient: AvlClient
 
   constructor(rpc: IPartisiaRpcConfig, private environment: Enviroment, private secrets: SecretsProvider, private ttl: number) {
     this.contractRegistry = new Map()
     this.rpc = PartisiaAccount(rpc)
-    this.avlClient = new AvlClient(rpc.urlBaseGlobal.url, rpc.urlBaseShards.map((shard) => shard.shard_id))
+    this.hostUrl = rpc.urlBaseGlobal.url
+    this.avlClient = new AvlClient(this.hostUrl, rpc.urlBaseShards.map((shard) => shard.shard_id))
   }
 
   /**
@@ -51,7 +54,7 @@ export class ContractRepository implements IContractRepository {
   }
 
   async getAbi(contractAddress?: string): Promise<FileAbi> {
-    if(!contractAddress) throw new Error('Contract address not found')
+    if (!contractAddress) throw new Error('Contract address not found')
 
     const contract = await this.getContract({ contractAddress, partial: true })
     if (!contract) throw new Error('Contract not found')
@@ -163,17 +166,17 @@ export class ContractRepository implements IContractRepository {
     let contract
     if (!normalizedOptions.partial)
       contract = await promiseRetry(async () => {
-        const contract = await this.rpc.getContract(contractAddress, this.rpc.deriveShardId(contractAddress), normalizedOptions.withState)
+        const contract = await getRequest<RawContractData>(`${this.hostUrl}/shards/Shard${this.rpc.deriveShardId(contractAddress)}/blockchain/contracts/${contractAddress}?requireContractState=${normalizedOptions.withState}`)
         if (!contract) return
 
-        const serializedContract = contract.data.serializedContract
+        const serializedContract = contract.serializedContract
 
         let avlTree
         if (serializedContract?.avlTrees)
           avlTree = convertAvlTree(serializedContract.avlTrees)
 
         return {
-          abi: contract.data.abi,
+          abi: contract.abi,
           serializedContract: {
             state: serializedContract?.state,
             avlTree,
