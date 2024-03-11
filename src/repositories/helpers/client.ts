@@ -1,22 +1,12 @@
-import axios, {AxiosResponse, RawAxiosRequestHeaders} from 'axios'
+import fetch, { Response } from 'node-fetch'
 
-// axios.interceptors.request.use(request => {
-//   console.log('Starting Request', JSON.stringify(request, null, 2))
-//   return request
-// })
-
-// axios.interceptors.response.use(response => {
-//   console.log('Response:', JSON.stringify(response, null, 2))
-//   return response
-// })
-
-const getHeaders  = {
+const getHeaders = {
   Accept: "application/json, text/plain, */*",
 }
 
 export type RequestType = "GET"
 
-function buildOptions(method: RequestType, headers: RawAxiosRequestHeaders) {
+function buildOptions(method: RequestType, headers: Record<string, string>) {
   const result = { method, headers }
 
   return result
@@ -24,13 +14,13 @@ function buildOptions(method: RequestType, headers: RawAxiosRequestHeaders) {
 
 export function getRequest<R>(url: string): Promise<R | undefined> {
   const options = buildOptions("GET", getHeaders)
-  return handleFetch(axios.get(url, options))
+
+  return handleFetch(fetch(url, options))
 }
 
-function handleFetch<T>(promise: Promise<AxiosResponse>): Promise<T | undefined> {
-  return promise
-    .then((response) => {
-      if (response.status === 200) return response.data
-      else return undefined
-    })
+async function handleFetch<T>(promise: Promise<Response>): Promise<T | undefined> {
+  const response = await promise
+
+  if (response.status === 200) return response.json() as unknown as T
+  else return undefined
 }
