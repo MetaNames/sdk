@@ -152,6 +152,7 @@ export interface ITransactionIntent {
 
 export type MetaNamesState = ScValueStruct
 
+export type RawContractData = Pick<IContractInfo, 'abi' | 'serializedContract'> & { serializedContract: { avlTrees: AvlTree[] } }
 export type ContractData = Pick<IContractInfo, 'abi' | 'serializedContract'> & { serializedContract: { avlTree?: Map<number, [Buffer, Buffer][]> } };
 
 
