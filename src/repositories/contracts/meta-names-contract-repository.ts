@@ -5,7 +5,7 @@ import { Enviroment } from "../../providers"
 import { SecretsProvider } from "../../providers/secrets"
 import { getAddressFromProxyContractState } from "../helpers/contract"
 import { FileAbi } from "@partisiablockchain/abi-client"
-import { AxiosError } from "axios"
+import { FetchError } from "node-fetch"
 
 /**
  * Meta Names contract repository
@@ -61,7 +61,7 @@ export class MetaNamesContractRepository extends ContractRepository implements I
       const buffer = await this.avlClient.getContractStateAvlValue(metaNamesContractAddress, treeId, key)
       return buffer
     } catch (e) {
-      if (e instanceof AxiosError && e.response?.status === 404) return
+      if (e instanceof FetchError && e.code === '404') return
       else console.log(e)
     }
   }
