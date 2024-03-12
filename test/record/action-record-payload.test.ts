@@ -12,7 +12,7 @@ test('payload for action record mint', async () => {
     class: RecordClassEnum.Wallet,
     data: '00373c68dfed999aec40063194e2d3e0870f9893bb'
   }
-  const contract = await config.sdk.contract.getContract()
+  const contract = await config.sdk.contract.getContract({ partial: true})
   const data = actionRecordMintPayload(contract.abi, params)
 
   expect(data.toString('hex')).toBe(expectedHex)
@@ -26,7 +26,7 @@ test('payload for action record update', async () => {
     class: RecordClassEnum.Wallet,
     data: '00373c68dfed999aec40063194e2d3e0870f9893bc'
   }
-  const contract = await config.sdk.contract.getContract()
+  const contract = await config.sdk.contract.getContract({ partial: true})
   const data = actionRecordUpdatePayload(contract.abi, params)
 
   expect(data.toString('hex')).toBe(expectedHex)
@@ -40,7 +40,7 @@ test('payload for action delete record', async () => {
     domain,
     class: RecordClassEnum.Wallet,
   }
-  const contract = await config.sdk.contract.getContract()
+  const contract = await config.sdk.contract.getContract({ partial: true})
   const data = actionRecordDeletePayload(contract.abi, params)
 
   expect(data.toString('hex')).toBe(expectedHex)

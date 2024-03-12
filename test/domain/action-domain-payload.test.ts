@@ -14,7 +14,7 @@ test('payload for action domain mint', async () => {
     subscriptionYears: 1,
     byocTokenId: 0
   }
-  const contract = await config.sdk.contract.getContract()
+  const contract = await config.sdk.contract.getContract({ partial: true })
   const data = actionDomainMintPayload(contract.abi, params)
 
   expect(data.toString('hex')).toBe(expectedHex)
@@ -29,7 +29,7 @@ test('payload for action domain renew', async () => {
     payer: config.address,
     byocTokenId: 0
   }
-  const contract = await config.sdk.contract.getContract()
+  const contract = await config.sdk.contract.getContract({ partial: true })
   const data = actionDomainRenewalPayload(contract.abi, params)
 
   expect(data.toString('hex')).toBe(expectedHex)

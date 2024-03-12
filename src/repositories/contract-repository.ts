@@ -122,6 +122,8 @@ export class ContractRepository implements IContractRepository {
   }
 
   private async getContractFromRegistry({ contractAddress, force, withState, partial }: ContractParams): Promise<Contract | undefined> {
+    if (!contractAddress) throw new Error('Contract address not specified')
+
     let contractEntry = this.contractRegistry.get(contractAddress)
 
     const serializedContract = contractEntry?.contract.data.serializedContract

@@ -157,7 +157,7 @@ export type ContractData = Pick<IContractInfo, 'abi' | 'serializedContract'> & {
 
 
 export interface ContractParams {
-  contractAddress: string
+  contractAddress?: string
   force?: boolean
   withState?: boolean
   partial?: boolean
