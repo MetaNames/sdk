@@ -35,6 +35,15 @@ export class AvlClient {
     return data === undefined ? undefined : Buffer.from(data.data, "base64")
   }
 
+  public async getContractStateAvlTree(
+    address: string,
+    treeId: number,
+  ): Promise<Array<Record<string, string>> | undefined> {
+    return getRequest<Array<Record<string, string>>>(
+      `${this.contractStateQueryUrl(address)}/avl/${treeId}/next`
+    )
+  }
+
   public getContractStateAvlNextN(
     address: string,
     treeId: number,

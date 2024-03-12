@@ -51,9 +51,3 @@ export const getAddressFromProxyContractState = (state: ScValueStruct) => {
 
   return addressValue.addressValue().value.toString('hex')
 }
-
-export async function promiseRetry<T>(fn: () => Promise<T>, retries = 10, err?: unknown): Promise<T> {
-  await new Promise(resolve => setTimeout(resolve, (10 - retries) * 300))
-
-  return !retries ? Promise.reject(err) : fn().catch(error => promiseRetry(fn, (retries - 1), error))
-}

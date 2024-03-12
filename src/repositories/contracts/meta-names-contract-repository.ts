@@ -1,11 +1,12 @@
 import { IPartisiaRpcConfig } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
 import { ContractRepository } from "../contract-repository"
-import { Contract, ContractParams, IMetaNamesContractRepository, ITransactionIntent, MetaNamesState, TransactionParams, GetStateParams } from "../../interface"
+import { Contract, ContractParams, IMetaNamesContractRepository, ITransactionIntent, MetaNamesState, TransactionParams, GetStateParams, MetaNamesAvlTrees } from "../../interface"
 import { Enviroment } from "../../providers"
 import { SecretsProvider } from "../../providers/secrets"
 import { getAddressFromProxyContractState } from "../helpers/contract"
 import { FileAbi } from "@partisiablockchain/abi-client"
 import { FetchError } from "node-fetch"
+
 
 /**
  * Meta Names contract repository
@@ -50,16 +51,30 @@ export class MetaNamesContractRepository extends ContractRepository implements I
   }
 
   /**
+   * Get the AVL tree from the Meta Names contract state
+   * @param treeId avl tree id
+   */
+  async getStateAvlTree(treeId: MetaNamesAvlTrees): Promise<Array<Record<string, string>> | undefined> {
+    const metaNamesContractAddress = await this.getContractAddress()
+
+    try {
+      return this.avlClient.getContractStateAvlTree(metaNamesContractAddress, treeId)
+    } catch (e) {
+      if (e instanceof FetchError && e.code === '404') return
+      else console.log(e)
+    }
+  }
+
+  /**
    * Get the AVL value from the Meta Names contract state
    * @param treeId avl tree id
    * @param key avl key
    */
-  async getStateAvlValue(treeId: number, key: Buffer): Promise<Buffer | undefined> {
+  async getStateAvlValue(treeId: MetaNamesAvlTrees, key: Buffer): Promise<Buffer | undefined> {
     const metaNamesContractAddress = await this.getContractAddress()
 
     try {
-      const buffer = await this.avlClient.getContractStateAvlValue(metaNamesContractAddress, treeId, key)
-      return buffer
+      return this.avlClient.getContractStateAvlValue(metaNamesContractAddress, treeId, key)
     } catch (e) {
       if (e instanceof FetchError && e.code === '404') return
       else console.log(e)

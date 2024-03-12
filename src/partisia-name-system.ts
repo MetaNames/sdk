@@ -1,5 +1,6 @@
 import { BN, ContractAbi, ScValue, ScValueAvlTreeMap, ScValueMap, ScValueNumber, ScValueString, ScValueStruct, ScValueVector, StateReader, TypeIndex } from '@partisiablockchain/abi-client'
-import { IDomain, RecordClassEnum } from './interface'
+import { Contract, IDomain, IDomainPartial, RecordClassEnum } from './interface'
+import { BigEndianByteInput, LittleEndianByteInput } from '@secata-public/bitmanipulation-ts'
 
 export function getPnsDomains(contract: ScValueStruct): ScValueAvlTreeMap {
   const pns = contract.fieldsMap.get('pns')
@@ -60,12 +61,12 @@ export function getDomainNamesByOwner(domains: ScValueAvlTreeMap, owners: ScValu
   return domainNames
 }
 
-export function deserializeDomain(bytes: Buffer, contractAbi: ContractAbi, owners: ScValueMap, domainName: string, tld: string): IDomain {
+export function deserializeDomain(bytes: Buffer, contractAbi: ContractAbi, domainName: string, tld: string): IDomainPartial {
   const reader = new StateReader(bytes, contractAbi)
-  const domainStructIndex = 16
+  const domainStructIndex = 17
   const struct = reader.readStateValue({ typeIndex: TypeIndex.Named, index: domainStructIndex }).structValue()
 
-  return decorateDomain(struct, owners, domainName, tld)
+  return decorateDomainPartial(struct, domainName, tld)
 }
 
 export function lookUpDomain(domains: ScValueAvlTreeMap, owners: ScValueMap, domainName: string, tld: string): IDomain | undefined {
@@ -78,7 +79,7 @@ export function lookUpDomain(domains: ScValueAvlTreeMap, owners: ScValueMap, dom
   return decorateDomain(domain, owners, domainName, tld)
 }
 
-export function decorateDomain(domain: ScValueStruct, owners: ScValueMap, domainName: string, tld: string): IDomain {
+export function decorateDomainPartial(domain: ScValueStruct, domainName: string, tld: string): IDomainPartial {
   const fieldsMap = domain.fieldsMap
   const created = (fieldsMap.get('minted_at') as ScValue).asBN().toNumber()
   const createdAt = new Date(created)
@@ -89,18 +90,27 @@ export function decorateDomain(domain: ScValueStruct, owners: ScValueMap, domain
   const scRecords = fieldsMap.get('records')?.mapValue().map
 
   const tokenId = (fieldsMap.get('token_id') as ScValue).asBN().toNumber()
-  const owner = getOwnerAddressOf(owners, tokenId)
-  if (!owner) throw new Error('Owner not found')
 
   return {
     name: domainName,
     tld,
     createdAt,
     expiresAt,
-    owner,
     tokenId,
     parentId: fieldsMap.get('parent_id')?.optionValue().innerValue?.stringValue(),
     records: scRecords ? extractRecords(new ScValueMap(scRecords)) : {},
+  }
+}
+
+export function decorateDomain(domain: ScValueStruct, owners: ScValueMap, domainName: string, tld: string): IDomain {
+  const partial = decorateDomainPartial(domain, domainName, tld)
+
+  const owner = getOwnerAddressOf(owners, partial.tokenId)
+  if (!owner) throw new Error('Owner not found')
+
+  return {
+    ...partial,
+    owner
   }
 }
 
@@ -166,6 +176,43 @@ export function getMintFees(contract: ScValueStruct, domain: string, tokenId: nu
 
   return feeBN
 }
+
+export function deserializeOwnersAvl(owners: Record<string, string>[]): Map<number, string> {
+  const ownersMap = new Map<number, string>()
+
+  for (const tuple of owners) {
+    const [tokenIdBuffer] = Object.keys(tuple)
+    const [ownerBuffer] = Object.values(tuple)
+    if (!tokenIdBuffer || !ownerBuffer) continue
+
+    const reader = new LittleEndianByteInput(Buffer.from(tokenIdBuffer, 'base64'))
+    const tokenId = reader.readUnsignedBigInteger(16).toNumber()
+    const owner = Buffer.from(ownerBuffer, 'base64').toString('hex')
+
+    ownersMap.set(tokenId, owner)
+  }
+
+  return ownersMap
+}
+
+export function deserializeDomainsAvl(owners: Record<string, string>[], abi: ContractAbi, tld: string): IDomainPartial[] {
+  const domainsList = []
+
+  for (const tuple of owners) {
+    const [domainNameBuffer] = Object.keys(tuple)
+    const [domainStructBuffer] = Object.values(tuple)
+    if (!domainNameBuffer || !domainStructBuffer) continue
+
+    const reader = new LittleEndianByteInput(Buffer.from(domainNameBuffer, 'base64'))
+    const domainName = reader.readString()
+    const domain = deserializeDomain(Buffer.from(domainStructBuffer, 'base64'), abi, domainName, tld)
+
+    domainsList.push(domain)
+  }
+
+  return domainsList
+}
+
 
 function convertScVectorToBuffer(vector: ScValueVector): Buffer {
   return Buffer.from(vector.values().map((v) => v.asNumber()))

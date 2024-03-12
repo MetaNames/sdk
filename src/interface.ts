@@ -25,6 +25,10 @@ export interface MetaMaskSdk {
 
 export type Records = Record<string, string | Buffer>
 
+export interface IDomainPartial extends Omit<IDomain, 'owner'> {
+  owner?: string
+}
+
 export interface IDomain {
   name: string
   tld: string
@@ -153,7 +157,7 @@ export interface ITransactionIntent {
 export type MetaNamesState = ScValueStruct
 
 export type RawContractData = Pick<IContractInfo, 'abi' | 'serializedContract'> & { serializedContract: { avlTrees: AvlTree[] } }
-export type ContractData = Pick<IContractInfo, 'abi' | 'serializedContract'> & { serializedContract: { avlTree?: Map<number, [Buffer, Buffer][]> } };
+export type ContractData = Pick<IContractInfo, 'abi' | 'serializedContract'> & { serializedContract: { avlTrees?: Map<number, [Buffer, Buffer][]> } };
 
 
 export interface ContractParams {
@@ -187,10 +191,16 @@ export interface GetStateParams {
   partial?: boolean
 }
 
+export enum MetaNamesAvlTrees {
+  domains = 0,
+  owners = 2
+}
+
 export interface IMetaNamesContractRepository extends IContractRepository {
   getState(options?: GetStateParams): Promise<MetaNamesState>
   getContractAddress(): Promise<string>
-  getStateAvlValue(treeId: number, key: Buffer): Promise<Buffer | undefined>
+  getStateAvlValue(treeId: MetaNamesAvlTrees, key: Buffer): Promise<Buffer | undefined>
+  getStateAvlTree(treeId: MetaNamesAvlTrees): Promise<Array<Record<string, string>> | undefined>
 }
 
 export interface IValidatorOptions {
