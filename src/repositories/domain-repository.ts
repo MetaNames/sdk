@@ -56,7 +56,7 @@ export class DomainRepository {
     const normalizedDomain = this.domainValidator.normalize(domainName)
     const { fees, address: byocAddress } = await this.calculateMintFees(normalizedDomain, byocSymbol)
     const totalAmount = fees.mul(new BN(subscriptionYears))
-    const contract = await this.contractRepository.getContract({ contractAddress: byocAddress })
+    const contract = await this.contractRepository.getContract({ contractAddress: byocAddress, partial: true })
     const metanamesContractAddress = await this.metaNamesContract.getContractAddress()
     const payload = actionApproveMintFeesPayload(contract.abi, { address: metanamesContractAddress, amount: totalAmount })
 
@@ -90,8 +90,8 @@ export class DomainRepository {
     if (!byoc) throw new Error(`BYOC ${params.byocSymbol} not found`)
 
     domain = this.domainValidator.normalize(domain, { reverse: true })
-    const contract = await this.metaNamesContract.getContract()
-    const payload = actionDomainMintPayload(contract.abi, { ...params, domain, parentDomain: normalizedParentDomain, byocTokenId: byoc.id, subscriptionYears })
+    const abi = await this.metaNamesContract.getAbi()
+    const payload = actionDomainMintPayload(abi.contract, { ...params, domain, parentDomain: normalizedParentDomain, byocTokenId: byoc.id, subscriptionYears })
 
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }
@@ -112,8 +112,8 @@ export class DomainRepository {
     if (!byoc) throw new Error(`BYOC ${params.byocSymbol} not found`)
 
     const domain = this.domainValidator.normalize(domainName, { reverse: true })
-    const contract = await this.metaNamesContract.getContract()
-    const payload = actionDomainRenewalPayload(contract.abi, { ...params, domain, subscriptionYears, byocTokenId: byoc.id })
+    const abi = await this.metaNamesContract.getAbi()
+    const payload = actionDomainRenewalPayload(abi.contract, { ...params, domain, subscriptionYears, byocTokenId: byoc.id })
 
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }
@@ -123,8 +123,8 @@ export class DomainRepository {
     if (!this.domainValidator.validate(domain)) throw new Error('Domain validation failed')
 
     const normalizedDomain = this.domainValidator.normalize(domain, { reverse: true })
-    const contract = await this.metaNamesContract.getContract()
-    const payload = actionDomainTransferPayload(contract.abi, { domain: normalizedDomain, from, to })
+    const abi = await this.metaNamesContract.getAbi()
+    const payload = actionDomainTransferPayload(abi.contract, { domain: normalizedDomain, from, to })
 
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }
