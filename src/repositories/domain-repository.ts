@@ -138,17 +138,19 @@ export class DomainRepository {
   async calculateMintFees(domainName: string, tokenSymbol: BYOCSymbol) {
     if (!this.domainValidator.validate(domainName)) throw new Error('Invalid domain name')
 
+    const [struct, availableCoins] = await Promise.all([
+      this.metaNamesContract.getState({ partial: true }),
+      this.contractRepository.getByocCoins()
+    ])
+
     const normalizedDomain = this.domainValidator.normalize(domainName)
-    const struct = await this.metaNamesContract.getState()
     const handledByoc = this.config.byoc.find((byoc) => byoc.symbol === tokenSymbol)
     if (!handledByoc) throw new Error(`BYOC ${tokenSymbol} not handled`)
 
-    const fees = await getMintFees(struct, normalizedDomain, handledByoc.id)
-
+    const fees = getMintFees(struct, normalizedDomain, handledByoc.id)
     const symbol = handledByoc.symbol
     const address = handledByoc.address
 
-    const availableCoins = await this.contractRepository.getByocCoins()
     const symbolString = symbol.toString()
     const networkByoc = availableCoins.find((coin) => coin.symbol === symbolString)
     if (!networkByoc) throw new Error(`BYOC ${symbolString} coin not found in available coins`)
