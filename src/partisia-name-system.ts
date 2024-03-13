@@ -1,6 +1,6 @@
 import { BN, ContractAbi, ScValue, ScValueAvlTreeMap, ScValueMap, ScValueNumber, ScValueString, ScValueStruct, ScValueVector, StateReader, TypeIndex } from '@partisiablockchain/abi-client'
-import { Contract, IDomain, IDomainPartial, RecordClassEnum } from './interface'
-import { BigEndianByteInput, LittleEndianByteInput } from '@secata-public/bitmanipulation-ts'
+import { IDomain, IDomainPartial, RecordClassEnum } from './interface'
+import { LittleEndianByteInput } from '@secata-public/bitmanipulation-ts'
 
 export function getPnsDomains(contract: ScValueStruct): ScValueAvlTreeMap {
   const pns = contract.fieldsMap.get('pns')
