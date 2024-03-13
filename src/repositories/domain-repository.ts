@@ -205,11 +205,8 @@ export class DomainRepository {
     if (!onwersAvl) throw new Error('Owners not found')
     const nftOwners = deserializeOwnersAvl(onwersAvl)
 
-    console.log(nftOwners)
-
     const domains: Domain[] = []
     domainsList.forEach((domainObj) => {
-      console.log(domainObj.tokenId)
       const owner = nftOwners.get(domainObj.tokenId)
       if (!owner) throw new Error('Owner not found')
       const domain = { ...domainObj, owner }

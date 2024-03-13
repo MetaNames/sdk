@@ -159,7 +159,7 @@ export function getMintFees(contract: ScValueStruct, domain: string, tokenId: nu
   try {
     domainLength = [...new Intl.Segmenter().segment(domain)].length
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 
   const defaultFee = feesStruct.fieldsMap.get('default_fee') as ScValue

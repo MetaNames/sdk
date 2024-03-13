@@ -59,9 +59,8 @@ export class MetaNamesContractRepository extends ContractRepository implements I
 
     try {
       return this.avlClient.getContractStateAvlTree(metaNamesContractAddress, treeId)
-    } catch (e) {
-      if (e instanceof FetchError && e.code === '404') return
-      else console.log(e)
+    } catch (error) {
+      if (error instanceof Error && !error.message.includes('404')) console.error(error.message)
     }
   }
 
