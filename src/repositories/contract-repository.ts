@@ -92,12 +92,14 @@ export class ContractRepository implements IContractRepository {
 
     const isMainnet = this.environment === Enviroment.mainnet
     const gasTable: Record<GasCost, number> = {
-      'low': 15000,
-      'medium': 40000,
-      'high': 50000,
+      'low': 8_000,
+      'medium': 40_000,
+      'high': 50_000,
+      'extra-high': 100_000,
     }
 
-    const gas = gasCost ? gasTable[gasCost] : gasTable.low
+    let gas = gasTable.low
+    if (gasCost) gas = typeof gasCost === 'number' ? gasCost : gasTable[gasCost]
 
     // Remove contract cache as the state will change
     this.cleanCache(contractAddress)

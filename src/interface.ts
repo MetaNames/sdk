@@ -7,7 +7,7 @@ import type { BYOCSymbol } from "./providers"
 
 // TODO: Reorganize this file
 
-export type GasCost = 'low' | 'medium' | 'high'
+export type GasCost = 'low' | 'medium' | 'high' | 'extra-high'
 
 export type SigningStrategyType = 'privateKey' | 'partisiaSdk' | 'MetaMask'
 export type SigningClassType = string | PartisiaSdk | MetaMaskSdk
@@ -121,6 +121,10 @@ export interface IActionDomainTransfer {
   domain: string
 }
 
+export interface IActionDomainTransferPayload extends Omit<IActionDomainTransfer, 'domain'> {
+  tokenId: number
+}
+
 export interface ByocCoin {
   conversionRate: {
     unit_value: number
@@ -175,7 +179,7 @@ export interface Contract {
 export interface TransactionParams {
   contractAddress?: string
   payload: Buffer
-  gasCost?: GasCost
+  gasCost?: GasCost | number
 }
 
 export interface IContractRepository {
