@@ -1,6 +1,6 @@
 import { BN, ContractAbi, FnRpcBuilder } from '@partisiablockchain/abi-client'
 import { builderToBytesBe } from '../actions'
-import { IActionApproveMintFees, IActionDomainMintPayload, IActionDomainTransfer, IActionRenewDomainPayload } from '../interface'
+import { IActionApproveMintFees, IActionDomainMintPayload, IActionDomainTransferPayload, IActionRenewDomainPayload } from '../interface'
 
 
 export const actionDomainMintPayload = (contractAbi: ContractAbi, params: IActionDomainMintPayload): Buffer => {
@@ -22,6 +22,33 @@ export const actionDomainMintPayload = (contractAbi: ContractAbi, params: IActio
 
   const subscriptionYearsOption = rpc.addOption()
   if (params.subscriptionYears) subscriptionYearsOption.addU32(params.subscriptionYears)
+
+  return builderToBytesBe(rpc)
+}
+
+export const actionDomainMintBatchPayload = (contractAbi: ContractAbi, params: IActionDomainMintPayload[]): Buffer => {
+  const rpc = new FnRpcBuilder('mint_batch', contractAbi)
+
+  const vecBuilder = rpc.addVec()
+  params.forEach((param) => {
+    const structBuilder = vecBuilder.addStruct()
+
+    structBuilder.addString(param.domain)
+
+    const address = typeof param.to === 'string' ? Buffer.from(param.to, 'hex') : param.to
+    structBuilder.addAddress(address)
+
+    structBuilder.addU64(param.byocTokenId)
+
+    const tokenUriOption = structBuilder.addOption()
+    if (param.tokenUri) tokenUriOption.addString(param.tokenUri)
+
+    const parentOption = structBuilder.addOption()
+    if (param.parentDomain) parentOption.addString(param.parentDomain)
+
+    const subscriptionYearsOption = structBuilder.addOption()
+    if (param.subscriptionYears) subscriptionYearsOption.addU32(param.subscriptionYears)
+  })
 
   return builderToBytesBe(rpc)
 }
@@ -52,14 +79,14 @@ export const actionDomainRenewalPayload = (contractAbi: ContractAbi, params: IAc
   return builderToBytesBe(rpc)
 }
 
-export const actionDomainTransferPayload = (contractAbi: ContractAbi, params: IActionDomainTransfer): Buffer => {
-  const rpc = new FnRpcBuilder('transfer_domain', contractAbi)
+export const actionDomainTransferFromPayload = (contractAbi: ContractAbi, params: IActionDomainTransferPayload): Buffer => {
+  const rpc = new FnRpcBuilder('transfer_from', contractAbi)
 
-  const { from, to, domain } = params
+  const { from, to, tokenId } = params
 
   rpc.addAddress(from)
   rpc.addAddress(to)
-  rpc.addString(domain)
+  rpc.addU128(new BN(tokenId))
 
   return builderToBytesBe(rpc)
 }

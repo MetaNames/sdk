@@ -1,6 +1,6 @@
 import { BN } from "@partisiablockchain/abi-client"
 import { LittleEndianByteOutput } from "@secata-public/bitmanipulation-ts"
-import { actionApproveMintFeesPayload, actionDomainMintPayload, actionDomainRenewalPayload, actionDomainTransferPayload } from "../actions"
+import { actionApproveMintFeesPayload, actionDomainMintBatchPayload, actionDomainMintPayload, actionDomainRenewalPayload, actionDomainTransferFromPayload } from "../actions"
 import { Address, IActionDomainMint, IActionDomainRenewal, IActionDomainTransfer, IContractRepository, IDomainAnalyzed, IMetaNamesContractRepository, MetaNamesAvlTrees } from "../interface"
 import { Domain } from "../models"
 import { getParentName } from "../models/helpers/domain"
@@ -96,6 +96,40 @@ export class DomainRepository {
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }
 
+  async registerBatch(params: IActionDomainMint[]) {
+    const normalizedParams = params.map((mint) => {
+      if (!this.domainValidator.validate(mint.domain)) throw new Error(`Domain validation failed for ${mint.domain}`)
+
+      let domain = mint.domain
+      let parentDomain = mint.parentDomain
+
+      if (!parentDomain) parentDomain = getParentName(domain)
+
+      let subscriptionYears: number | undefined
+      let normalizedParentDomain: string | undefined
+      if (parentDomain) {
+        if (!this.domainValidator.validate(parentDomain)) throw new Error(`Parent domain validation failed for ${parentDomain}`)
+
+        normalizedParentDomain = this.domainValidator.normalize(parentDomain, { reverse: true })
+        if (!domain.endsWith(parentDomain)) domain = `${domain}.${parentDomain}`
+      } else {
+        subscriptionYears = mint.subscriptionYears ?? 1
+      }
+
+      const byoc = this.config.byoc.find((byoc) => byoc.symbol === mint.byocSymbol)
+      if (!byoc) throw new Error(`BYOC ${mint.byocSymbol} not found`)
+
+      domain = this.domainValidator.normalize(domain, { reverse: true })
+
+      return { ...mint, domain, parentDomain: normalizedParentDomain, byocTokenId: byoc.id, subscriptionYears }
+    })
+
+    const abi = await this.metaNamesContract.getAbi()
+    const payload = actionDomainMintBatchPayload(abi.contract, normalizedParams)
+
+    return this.metaNamesContract.createTransaction({ payload, gasCost: 'extra-high' })
+  }
+
   /**
    * Renew a domain
    * @param params Domain renewal params
@@ -122,11 +156,15 @@ export class DomainRepository {
     const { domain, from, to } = params
     if (!this.domainValidator.validate(domain)) throw new Error('Domain validation failed')
 
-    const normalizedDomain = this.domainValidator.normalize(domain, { reverse: true })
     const abi = await this.metaNamesContract.getAbi()
-    const payload = actionDomainTransferPayload(abi.contract, { domain: normalizedDomain, from, to })
+    const domainObject = await this.find(domain)
+    if (!domainObject) throw new Error('Domain not found')
+    if (domainObject.tokenId === undefined) throw new Error('Token id not found')
 
-    return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
+    const tokenId = domainObject.tokenId
+    const payload = actionDomainTransferFromPayload(abi.contract, { tokenId, from, to })
+
+    return this.metaNamesContract.createTransaction({ payload, gasCost: 'extra-high' })
   }
 
 
