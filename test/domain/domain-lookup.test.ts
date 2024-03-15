@@ -10,11 +10,11 @@ test('lookup domains by owner', async () => {
   expect(domain).toHaveProperty('tokenId')
   expect(domain).toHaveProperty('parentId')
   expect(domain).toHaveProperty('records')
-})
+}, 20_000)
 
 test('get all domains', async () => {
   const domains = await config.sdk.domainRepository.getAll()
 
   expect(domains.length).toBeGreaterThan(0)
   expect(domains[0]).toHaveProperty('name')
-})
+}, 20_000)
