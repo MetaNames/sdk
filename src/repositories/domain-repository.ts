@@ -247,7 +247,7 @@ export class DomainRepository {
    * @returns number
    */
   async count() {
-    const struct = await this.metaNamesContract.getState()
+    const struct = await this.metaNamesContract.getState({ partial: true })
 
     return getDomainCount(struct)
   }
