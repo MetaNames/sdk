@@ -1,6 +1,6 @@
 import { IActionDomainMint, IRecord, RecordClassEnum } from '../../src/interface'
 import { Domain } from '../../src/models'
-import { config, generateRandomString } from '../helpers'
+import { config, generateRandomString, verifyTransactionResult } from '../helpers'
 
 const domainName = `${generateRandomString(15)}.mpc`
 
@@ -16,10 +16,7 @@ beforeAll(async () => {
   const { transactionHash, fetchResult } = await config.sdk.domainRepository.register(randomActionMint)
   const resultMint = await fetchResult
 
-  expect(transactionHash).toBeDefined()
-  expect(transactionHash).toBe(resultMint.transactionHash)
-  expect(resultMint.hasError).toBe(false)
-  expect(resultMint.eventTrace.length).toBeGreaterThan(0)
+  verifyTransactionResult(transactionHash, resultMint)
 
   domain = await config.sdk.domainRepository.find(domainName) as Domain
 }, 15_000)
@@ -31,10 +28,7 @@ afterEach(async () => {
 
   expect(resultDelete).toBeDefined()
   if (resultDelete) {
-    expect(transactionHash).toBeDefined()
-    expect(transactionHash).toBe(resultDelete.transactionHash)
-    expect(resultDelete.hasError).toBe(false)
-    expect(resultDelete.eventTrace.length).toBeGreaterThan(0)
+    verifyTransactionResult(transactionHash, resultDelete)
 
     subDomain = undefined
   }
@@ -50,12 +44,23 @@ test('action record mint', async () => {
   const resultMintRecord = await fetchResult
 
   expect(resultMintRecord).toBeDefined()
-  if (resultMintRecord) {
-    expect(transactionHash).toBeDefined()
-    expect(transactionHash).toBe(resultMintRecord.transactionHash)
-    expect(resultMintRecord.hasError).toBe(false)
-    expect(resultMintRecord.eventTrace.length).toBeGreaterThan(0)
+  if (resultMintRecord) verifyTransactionResult(transactionHash, resultMintRecord)
+}, 15_000)
+
+test('action record mint batch', async () => {
+  const actionMintRecord: IRecord = {
+    class: RecordClassEnum.Wallet,
+    data: config.address
   }
+  const actionMintRecord2: IRecord = {
+    class: RecordClassEnum.Twitter,
+    data: config.address
+  }
+  const { transactionHash, fetchResult } = await domain.getRecordRepository(config.sdk).createBatch([actionMintRecord, actionMintRecord2])
+  const recordMintBatchResult = await fetchResult
+
+  expect(recordMintBatchResult).toBeDefined()
+  if (recordMintBatchResult) verifyTransactionResult(transactionHash, recordMintBatchResult)
 }, 15_000)
 
 test('action record mint with parent', async () => {
@@ -84,12 +89,7 @@ test('action record mint with parent', async () => {
   const resultMintRecord = await fetchResult
 
   expect(resultMintRecord).toBeDefined()
-  if (resultMintRecord) {
-    expect(transactionHash).toBeDefined()
-    expect(transactionHash).toBe(resultMintRecord.transactionHash)
-    expect(resultMintRecord.hasError).toBe(false)
-    expect(resultMintRecord.eventTrace.length).toBeGreaterThan(0)
-  }
+  if (resultMintRecord) verifyTransactionResult(transactionHash, resultMintRecord)
 }, 20_000)
 
 test('action record update', async () => {
@@ -101,12 +101,7 @@ test('action record update', async () => {
   const resultMintRecord = await fetchResult
 
   expect(resultMintRecord).toBeDefined()
-  if (resultMintRecord) {
-    expect(transactionHash).toBeDefined()
-    expect(transactionHash).toBe(resultMintRecord.transactionHash)
-    expect(resultMintRecord.hasError).toBe(false)
-    expect(resultMintRecord.eventTrace.length).toBeGreaterThan(0)
-  }
+  if (resultMintRecord) verifyTransactionResult(transactionHash, resultMintRecord)
 
   const actionUpdateRecord: IRecord = {
     class: RecordClassEnum.Wallet,
@@ -116,10 +111,5 @@ test('action record update', async () => {
   const resultUpdateRecord = await fetchUpdateResult
 
   expect(resultUpdateRecord).toBeDefined()
-  if (resultUpdateRecord) {
-    expect(updateTransactionHash).toBeDefined()
-    expect(updateTransactionHash).toBe(resultUpdateRecord.transactionHash)
-    expect(resultUpdateRecord.hasError).toBe(false)
-    expect(resultUpdateRecord.eventTrace.length).toBeGreaterThan(0)
-  }
+  if (resultUpdateRecord) verifyTransactionResult(updateTransactionHash, resultUpdateRecord)
 }, 15_000)

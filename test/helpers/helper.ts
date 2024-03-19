@@ -1,4 +1,4 @@
-import { IActionDomainMint, IRecord, RecordClassEnum } from '../../src/interface'
+import { IActionDomainMint, IRecord, ITransactionResult, RecordClassEnum } from '../../src/interface'
 import { config } from './config'
 
 export const generateRandomString = (length: number): string => {
@@ -31,3 +31,10 @@ export const mintRecord = async (domainName: string, recordClass: RecordClassEnu
   await domain?.getRecordRepository(config.sdk).create(actionMintRecord)
 }
 
+
+export const verifyTransactionResult = (hash: string, result: ITransactionResult) => {
+  expect(hash).toBeDefined()
+  expect(hash).toBe(result.transactionHash)
+  expect(result.hasError).toBe(false)
+  expect(result.eventTrace.length).toBeGreaterThan(0)
+}
