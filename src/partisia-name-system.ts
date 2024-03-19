@@ -1,6 +1,6 @@
-import { BN, ContractAbi, ScValue, ScValueAvlTreeMap, ScValueMap, ScValueNumber, ScValueString, ScValueStruct, ScValueVector, StateReader, TypeIndex } from '@partisiablockchain/abi-client'
-import { IDomain, IDomainPartial, RecordClassEnum } from './interface'
+import { BN, ContractAbi, ScValue, ScValueAvlTreeMap, ScValueMap, ScValueNumber, ScValueString, ScValueStruct, StateReader, TypeIndex } from '@partisiablockchain/abi-client'
 import { LittleEndianByteInput } from '@secata-public/bitmanipulation-ts'
+import { IDomain, IDomainPartial, RecordClassEnum } from './interface'
 
 export function getPnsDomains(contract: ScValueStruct): ScValueAvlTreeMap {
   const pns = contract.fieldsMap.get('pns')
@@ -63,7 +63,7 @@ export function getDomainNamesByOwner(domains: ScValueAvlTreeMap, owners: ScValu
 
 export function deserializeDomain(bytes: Buffer, contractAbi: ContractAbi, domainName: string, tld: string): IDomainPartial {
   const reader = new StateReader(bytes, contractAbi)
-  const domainStructIndex = 17
+  const domainStructIndex = contractAbi.namedTypes.findIndex((t) => t.name === 'Domain')
   const struct = reader.readStateValue({ typeIndex: TypeIndex.Named, index: domainStructIndex }).structValue()
 
   return decorateDomainPartial(struct, domainName, tld)
@@ -125,12 +125,10 @@ export function extractRecords(records: ScValueMap) {
 
   for (const [scKey, scValue] of records.mapValue().map) {
     const key = scKey.enumValue().name
-    const data = scValue.structValue().fieldsMap.get('data')
+    const data = scValue.vecU8Value()
     if (!data) continue
 
-    const vectorData = convertScVectorToBuffer(data.vecValue())
-
-    extractedRecords[key] = vectorData.toString()
+    extractedRecords[key] = data.toString()
   }
 
   return extractedRecords
@@ -211,11 +209,6 @@ export function deserializeDomainsAvl(owners: Record<string, string>[], abi: Con
   }
 
   return domainsList
-}
-
-
-function convertScVectorToBuffer(vector: ScValueVector): Buffer {
-  return Buffer.from(vector.values().map((v) => v.asNumber()))
 }
 
 export function getDecimalsMultiplier(decimals: number): BN {
