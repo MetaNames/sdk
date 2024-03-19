@@ -16,8 +16,8 @@ import { FetchError } from "node-fetch"
 export class MetaNamesContractRepository extends ContractRepository implements IMetaNamesContractRepository {
   private proxyAddress: string
 
-  constructor(contractAddress: string, rpc: IPartisiaRpcConfig, environment: Enviroment, secrets: SecretsProvider, ttl: number) {
-    super(rpc, environment, secrets, ttl)
+  constructor(contractAddress: string, rpc: IPartisiaRpcConfig, environment: Enviroment, secrets: SecretsProvider, ttl: number, hasProxyContract: boolean) {
+    super(rpc, environment, secrets, ttl, hasProxyContract)
     this.proxyAddress = contractAddress
   }
 
@@ -87,6 +87,8 @@ export class MetaNamesContractRepository extends ContractRepository implements I
   }
 
   async getContractAddress() {
+    if (!this.hasProxyContract) return this.proxyAddress
+
     const contract = await super.getState({ contractAddress: this.proxyAddress, partial: true })
     const metaNamesAddress = getAddressFromProxyContractState(contract)
 

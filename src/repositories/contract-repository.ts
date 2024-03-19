@@ -19,7 +19,7 @@ export class ContractRepository implements IContractRepository {
   private hostUrl: string
   protected avlClient: AvlClient
 
-  constructor(rpc: IPartisiaRpcConfig, private environment: Enviroment, private secrets: SecretsProvider, private ttl: number) {
+  constructor(rpc: IPartisiaRpcConfig, private environment: Enviroment, private secrets: SecretsProvider, private ttl: number, protected hasProxyContract: boolean) {
     this.contractRegistry = new Map()
     this.rpc = PartisiaAccount(rpc)
     this.hostUrl = rpc.urlBaseGlobal.url

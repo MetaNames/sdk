@@ -5,6 +5,7 @@ export const testNetConfig: Config = {
   tld: 'mpc',
   tlds: ['mpc', 'meta'],
   contractAddress: '0255a408adef31f24a892c96fddeb31da79d243043',
+  hasProxyContract: true,
   rpcConfig: {
     urlBaseGlobal: { url: 'https://node1.testnet.partisiablockchain.com', shard_id: 99 },
     urlBaseShards: [
