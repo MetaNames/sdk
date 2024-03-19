@@ -4,7 +4,7 @@ import { actionApproveMintFeesPayload, actionDomainMintBatchPayload, actionDomai
 import { Address, IActionDomainMint, IActionDomainRenewal, IActionDomainTransfer, IContractRepository, IDomainAnalyzed, IMetaNamesContractRepository, MetaNamesAvlTrees } from "../interface"
 import { Domain } from "../models"
 import { getParentName } from "../models/helpers/domain"
-import { deserializeDomain, deserializeDomainsAvl, deserializeOwnersAvl, getDecimalsMultiplier, getDomainCount, getMintFees } from "../partisia-name-system"
+import { decorateDomain, deserializeDomain, deserializeDomainsAvl, deserializeOwnersAvl, getDecimalsMultiplier, getDomainCount, getMintFees, getNftOwners, getPnsDomains } from "../partisia-name-system"
 import { BYOCSymbol, Config } from "../providers"
 import { DomainValidator } from "../validators"
 import { getFeesLabel } from "./helpers/contract"
@@ -233,21 +233,13 @@ export class DomainRepository {
    * @returns Domain[]
    */
   async getAll() {
-    const domainsAvl = await this.metaNamesContract.getStateAvlTree(MetaNamesAvlTrees.domains)
-    if (!domainsAvl) throw new Error('Domains not found')
-
-    const abi = await this.metaNamesContract.getAbi()
-    const domainsList = deserializeDomainsAvl(domainsAvl, abi.contract, this.config.tld)
-
-    const onwersAvl = await this.metaNamesContract.getStateAvlTree(MetaNamesAvlTrees.owners)
-    if (!onwersAvl) throw new Error('Owners not found')
-    const nftOwners = deserializeOwnersAvl(onwersAvl)
+    const state = await this.metaNamesContract.getState()
+    const domainsList = getPnsDomains(state)
+    const nftOwners = getNftOwners(state)
 
     const domains: Domain[] = []
-    domainsList.forEach((domainObj) => {
-      const owner = nftOwners.get(domainObj.tokenId)
-      if (!owner) throw new Error('Owner not found')
-      const domain = { ...domainObj, owner }
+    domainsList.map?.forEach((domainObj, name) => {
+      const domain = decorateDomain(domainObj.structValue(), nftOwners, name.stringValue(), this.config.tld)
       domains.push(new Domain(domain))
     })
 

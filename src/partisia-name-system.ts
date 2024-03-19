@@ -24,7 +24,7 @@ export function getDomainCount(contract: ScValueStruct): number {
   return nftCount.asBN().toNumber()
 }
 
-export function getNftOwners(contract: ScValueStruct): ScValueMap {
+export function getNftOwners(contract: ScValueStruct): ScValueAvlTreeMap {
   const nfts = contract.fieldsMap.get('nft')
   if (!nfts) throw new Error('Nft key not found')
 
@@ -32,13 +32,15 @@ export function getNftOwners(contract: ScValueStruct): ScValueMap {
   const owners = nftStruct.fieldsMap.get('owners')
   if (!owners) throw new Error('Owners key not found')
 
-  return owners.mapValue()
+  return owners.avlTreeMapValue()
 }
 
-export function getOwnerAddressOf(owners: ScValueMap, tokenId: number) {
+export function getOwnerAddressOf(owners: ScValueAvlTreeMap, tokenId: number) {
   const tokenIdBN = new BN(tokenId)
   const nftId = new ScValueNumber(TypeIndex.u128, tokenIdBN)
-  return owners.get(nftId)?.addressValue().value.toString('hex')
+  const map = owners.map
+  if (!map) throw new Error('Owners map not found')
+  return map.get(nftId)?.addressValue().value.toString('hex')
 }
 
 export function getDomainNamesByOwner(domains: ScValueAvlTreeMap, owners: ScValueMap, ownerAddress: Buffer): string[] {
@@ -69,7 +71,7 @@ export function deserializeDomain(bytes: Buffer, contractAbi: ContractAbi, domai
   return decorateDomainPartial(struct, domainName, tld)
 }
 
-export function lookUpDomain(domains: ScValueAvlTreeMap, owners: ScValueMap, domainName: string, tld: string): IDomain | undefined {
+export function lookUpDomain(domains: ScValueAvlTreeMap, owners: ScValueAvlTreeMap, domainName: string, tld: string): IDomain | undefined {
   if (!domains.map) return
 
   const scNameString = new ScValueString(domainName)
@@ -102,7 +104,7 @@ export function decorateDomainPartial(domain: ScValueStruct, domainName: string,
   }
 }
 
-export function decorateDomain(domain: ScValueStruct, owners: ScValueMap, domainName: string, tld: string): IDomain {
+export function decorateDomain(domain: ScValueStruct, owners: ScValueAvlTreeMap, domainName: string, tld: string): IDomain {
   const partial = decorateDomainPartial(domain, domainName, tld)
 
   const owner = getOwnerAddressOf(owners, partial.tokenId)
