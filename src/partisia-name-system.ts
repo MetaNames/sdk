@@ -43,9 +43,12 @@ export function getOwnerAddressOf(owners: ScValueAvlTreeMap, tokenId: number) {
   return map.get(nftId)?.addressValue().value.toString('hex')
 }
 
-export function getDomainNamesByOwner(domains: ScValueAvlTreeMap, owners: ScValueMap, ownerAddress: Buffer): string[] {
+export function getDomainNamesByOwner(domains: ScValueAvlTreeMap, owners: ScValueAvlTreeMap, ownerAddress: Buffer): string[] {
   const nftIds: number[] = []
-  owners.map.forEach((address, nftId) => {
+  const map = owners.map
+  if (!map) throw new Error('Owners map not found')
+
+  map.forEach((address, nftId) => {
     if (address.addressValue().value.equals(ownerAddress)) nftIds.push(nftId.asBN().toNumber())
   })
   if (!nftIds.length) return []

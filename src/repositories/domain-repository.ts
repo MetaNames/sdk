@@ -4,7 +4,7 @@ import { actionApproveMintFeesPayload, actionDomainMintBatchPayload, actionDomai
 import { Address, IActionDomainMint, IActionDomainRenewal, IActionDomainTransfer, IContractRepository, IDomainAnalyzed, IMetaNamesContractRepository, MetaNamesAvlTrees } from "../interface"
 import { Domain } from "../models"
 import { getParentName } from "../models/helpers/domain"
-import { decorateDomain, deserializeDomain, deserializeDomainsAvl, deserializeOwnersAvl, getDecimalsMultiplier, getDomainCount, getMintFees, getNftOwners, getPnsDomains } from "../partisia-name-system"
+import { decorateDomain, deserializeDomain, getDecimalsMultiplier, getDomainCount, getDomainNamesByOwner, getMintFees, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { BYOCSymbol, Config } from "../providers"
 import { DomainValidator } from "../validators"
 import { getFeesLabel } from "./helpers/contract"
@@ -261,29 +261,18 @@ export class DomainRepository {
    * @param ownerAddress Owner address
    */
   async findByOwner(ownerAddress: Address): Promise<Domain[]> {
-    const domainsAvl = await this.metaNamesContract.getStateAvlTree(MetaNamesAvlTrees.domains)
-    if (!domainsAvl) throw new Error('Domains not found')
-    const abi = await this.metaNamesContract.getAbi()
-    const domainsList = deserializeDomainsAvl(domainsAvl, abi.contract, this.config.tld)
-
-    const onwersAvl = await this.metaNamesContract.getStateAvlTree(MetaNamesAvlTrees.owners)
-    if (!onwersAvl) throw new Error('Owners not found')
-    const nftOwners = deserializeOwnersAvl(onwersAvl)
+    const struct = await this.metaNamesContract.getState()
+    const domainsTreeMap = getPnsDomains(struct)
+    const nftOwners = getNftOwners(struct)
 
     const address = Buffer.isBuffer(ownerAddress) ? ownerAddress : Buffer.from(ownerAddress, 'hex')
+    const domainNames = getDomainNamesByOwner(domainsTreeMap, nftOwners, address)
 
-    const tokenIds: number[] = []
-    nftOwners.forEach((address, tokenId) => {
-      if (address === ownerAddress) tokenIds.push(tokenId)
-    })
+    const domains = domainNames.map((domainName) => {
+      const domainObj = lookUpDomain(domainsTreeMap, nftOwners, domainName, this.config.tld)
+      if (!domainObj) throw new Error('Domain not found')
 
-    const ownerString = address.toString('hex')
-    const domains: Domain[] = []
-    domainsList.forEach((domainObj) => {
-      if (tokenIds.includes(domainObj.tokenId)) {
-        const domain = { ...domainObj, owner: ownerString }
-        domains.push(new Domain(domain))
-      }
+      return new Domain(domainObj)
     })
 
     return domains
@@ -294,12 +283,13 @@ export class DomainRepository {
    * @returns string[]
    */
   async getOwners() {
-    const onwersAvl = await this.metaNamesContract.getStateAvlTree(MetaNamesAvlTrees.owners)
-    if (!onwersAvl) throw new Error('Owners not found')
-    const nftOwners = deserializeOwnersAvl(onwersAvl)
+    const struct = await this.metaNamesContract.getState()
+    const nftOwners = getNftOwners(struct).map
+    if (!nftOwners) throw new Error('Owners map not found')
 
     const owners: string[] = []
-    nftOwners.forEach((address) => {
+    nftOwners.forEach((addressSc) => {
+      const address = addressSc.addressValue().value.toString('hex')
       if (!owners.includes(address)) owners.push(address)
     })
 
