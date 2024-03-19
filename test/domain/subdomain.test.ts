@@ -1,4 +1,4 @@
-import { config, generateRandomString, mintDomain } from '../helpers'
+import { config, generateRandomString, mintDomain, verifyTransactionResult } from '../helpers'
 
 const domainName = 'name.mpc'
 
@@ -18,10 +18,7 @@ test('mint domain with parent', async () => {
   })
   const result = await fetchResult
 
-  expect(transactionHash).toBeDefined()
-  expect(transactionHash).toBe(result.transactionHash)
-  expect(result).toBeDefined()
-  expect(result.hasError).toBeFalsy()
+  verifyTransactionResult(transactionHash, result)
 
   const expectedDomain = [randomName, domainName].join('.')
   const subDomain = await config.sdk.domainRepository.find(expectedDomain)
@@ -44,11 +41,7 @@ test('mint subdomain without parent', async () => {
   })
   const result = await fetchResult
 
-  expect(transactionHash).toBeDefined()
-  expect(transactionHash).toBe(result.transactionHash)
-  expect(result).toBeDefined()
-  expect(result.hasError).toBeFalsy()
-  expect(result.eventTrace.length).toBeGreaterThan(0)
+  verifyTransactionResult(transactionHash, result)
 
   const expectedDomain = subdomain
   const subDomain = await config.sdk.domainRepository.find(expectedDomain)
