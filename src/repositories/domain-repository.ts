@@ -202,17 +202,13 @@ export class DomainRepository {
    * Finds a domain by name
    * @param domainName Domain name
    */
-  async find(domainName: string, options?: { cache?: boolean }) {
+  async find(domainName: string) {
     const normalizedDomain = this.domainValidator.normalize(domainName, { reverse: true })
     const domainBufferBuilder = new LittleEndianByteOutput()
     domainBufferBuilder.writeString(normalizedDomain)
 
     const domainBuffer = await this.metaNamesContract.getStateAvlValue(MetaNamesAvlTrees.domains, domainBufferBuilder.toBuffer())
     if (!domainBuffer) return null
-
-    const { cache } = { cache: true, ...options }
-    const struct = await this.metaNamesContract.getState({ force: !cache, partial: true })
-    const nftOwners = getNftOwners(struct)
 
     const abi = await this.metaNamesContract.getAbi()
     const domainPartial = deserializeDomain(domainBuffer, abi.contract, normalizedDomain, this.config.tld)
