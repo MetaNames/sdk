@@ -14,6 +14,7 @@ export interface Config {
   cache_ttl: number,
   tld: string,
   tlds: string[],
+  hasProxyContract: boolean,
   contractAddress: string,
   rpcConfig: {
     urlBaseGlobal: { url: string, shard_id: number },

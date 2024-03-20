@@ -22,8 +22,8 @@ export class MetaNamesSdk {
     this.config = overrideConfig ? { ...config, ...overrideConfig } : config
     this.secrets = new SecretsProvider()
 
-    this.contractRepository = new ContractRepository(this.config.rpcConfig, environment, this.secrets, this.config.cache_ttl)
-    this.contract = new MetaNamesContractRepository(this.config.contractAddress, this.config.rpcConfig, environment, this.secrets, this.config.cache_ttl)
+    this.contractRepository = new ContractRepository(this.config.rpcConfig, environment, this.secrets, this.config.cache_ttl, this.config.hasProxyContract)
+    this.contract = new MetaNamesContractRepository(this.config.contractAddress, this.config.rpcConfig, environment, this.secrets, this.config.cache_ttl, this.config.hasProxyContract)
 
     this.domainRepository = new DomainRepository(this.contractRepository, this.contract, this.config)
   }

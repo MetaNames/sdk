@@ -170,7 +170,6 @@ const broadcastTransactionPoller = async (
       }
     } catch (error) {
       if (error instanceof Error && !error.message.includes('404')) console.error(error.message)
-      else console.error(error)
     } finally {
       const sleep = (ms: number) => {
         return new Promise((resolve) => setTimeout(resolve, ms))

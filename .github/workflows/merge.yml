@@ -1,12 +1,7 @@
-name: Main workflow
+name: Merge queue workflow
 
 on:
-  push:
-    branches:
-      - main
-
-permissions:
-  contents: write
+  merge_group:
 
 jobs:
   eslint:
@@ -37,7 +32,3 @@ jobs:
         run: yarn test --coverage
         env:
           TEST_PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
-
-  docs:
-    needs: test
-    uses: ./.github/workflows/docs.yml

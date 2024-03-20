@@ -1,5 +1,5 @@
 import { IActionDomainMint, IActionDomainRenewal, IActionDomainTransfer } from '../../src/interface'
-import { config, generateRandomString } from '../helpers'
+import { config, generateRandomString, verifyTransactionResult } from '../helpers'
 
 const domainName = `${generateRandomString(15)}.mpc`
 
@@ -12,11 +12,24 @@ test('run action mint', async () => {
   const { transactionHash, fetchResult } = await config.sdk.domainRepository.register(randomActionMint)
   const result = await fetchResult
 
-  expect(transactionHash).toBeDefined()
-  expect(transactionHash.length).toBe(64)
-  expect(transactionHash).toBe(result.transactionHash)
-  expect(result.hasError).toBe(false)
-  expect(result.eventTrace.length).toBeGreaterThan(0)
+  verifyTransactionResult(transactionHash, result)
+}, 15_000)
+
+test('run action mint batch', async () => {
+  const randomActionMint: IActionDomainMint = {
+    domain: `${generateRandomString(15)}.mpc`,
+    to: config.address,
+    byocSymbol: 'TEST_COIN'
+  }
+  const randomActionMint2: IActionDomainMint = {
+    domain: `${generateRandomString(15)}.mpc`,
+    to: config.address,
+    byocSymbol: 'TEST_COIN'
+  }
+  const { transactionHash, fetchResult } = await config.sdk.domainRepository.registerBatch([randomActionMint, randomActionMint2])
+  const result = await fetchResult
+
+  verifyTransactionResult(transactionHash, result)
 }, 15_000)
 
 test('run action renew', async () => {
@@ -29,11 +42,7 @@ test('run action renew', async () => {
   const { transactionHash, fetchResult } = await config.sdk.domainRepository.renew(randomActionRenew)
   const result = await fetchResult
 
-  expect(transactionHash).toBeDefined()
-  expect(transactionHash.length).toBe(64)
-  expect(transactionHash).toBe(result.transactionHash)
-  expect(result.hasError).toBe(false)
-  expect(result.eventTrace.length).toBeGreaterThan(0)
+  verifyTransactionResult(transactionHash, result)
 }, 15_000)
 
 test('run action transfer', async () => {
@@ -45,9 +54,5 @@ test('run action transfer', async () => {
   const { transactionHash, fetchResult } = await config.sdk.domainRepository.transfer(transferParams)
   const result = await fetchResult
 
-  expect(transactionHash).toBeDefined()
-  expect(transactionHash.length).toBe(64)
-  expect(transactionHash).toBe(result.transactionHash)
-  expect(result.hasError).toBe(false)
-  expect(result.eventTrace.length).toBeGreaterThan(0)
+  verifyTransactionResult(transactionHash, result)
 }, 15_000)

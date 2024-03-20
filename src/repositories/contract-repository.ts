@@ -5,9 +5,9 @@ import { createTransactionFromMetaMaskClient, createTransactionFromPartisiaClien
 import { ByocCoin, Contract, ContractData, ContractEntry, ContractParams, GasCost, IContractRepository, ITransactionIntent, RawContractData, TransactionParams } from '../interface'
 import { Enviroment } from '../providers'
 import { SecretsProvider } from '../providers/secrets'
-import { convertAvlTree, promiseRetry } from './helpers/contract'
+import { convertAvlTree as convertAvlTrees } from './helpers/contract'
 import { AvlClient } from './helpers/avl-client'
-import { getRequest } from './helpers/client'
+import { getRequest, promiseRetry } from './helpers/client'
 
 
 /**
@@ -19,7 +19,7 @@ export class ContractRepository implements IContractRepository {
   private hostUrl: string
   protected avlClient: AvlClient
 
-  constructor(rpc: IPartisiaRpcConfig, private environment: Enviroment, private secrets: SecretsProvider, private ttl: number) {
+  constructor(rpc: IPartisiaRpcConfig, private environment: Enviroment, private secrets: SecretsProvider, private ttl: number, protected hasProxyContract: boolean) {
     this.contractRegistry = new Map()
     this.rpc = PartisiaAccount(rpc)
     this.hostUrl = rpc.urlBaseGlobal.url
@@ -47,7 +47,7 @@ export class ContractRepository implements IContractRepository {
     if (!('state' in serializedContract)) throw new Error('Contract state not found')
 
     const contractAbi = contract.abi
-    const reader = new StateReader(Buffer.from(serializedContract.state.data, 'base64'), contractAbi, serializedContract.avlTree)
+    const reader = new StateReader(Buffer.from(serializedContract.state.data, 'base64'), contractAbi, serializedContract.avlTrees)
     const struct = reader.readStruct(contractAbi.getStateStruct())
 
     return struct
@@ -92,12 +92,14 @@ export class ContractRepository implements IContractRepository {
 
     const isMainnet = this.environment === Enviroment.mainnet
     const gasTable: Record<GasCost, number> = {
-      'low': 15000,
-      'medium': 40000,
-      'high': 50000,
+      'low': 8_000,
+      'medium': 40_000,
+      'high': 50_000,
+      'extra-high': 100_000,
     }
 
-    const gas = gasCost ? gasTable[gasCost] : gasTable.low
+    let gas = gasTable.low
+    if (gasCost) gas = typeof gasCost === 'number' ? gasCost : gasTable[gasCost]
 
     // Remove contract cache as the state will change
     this.cleanCache(contractAddress)
@@ -122,11 +124,13 @@ export class ContractRepository implements IContractRepository {
   }
 
   private async getContractFromRegistry({ contractAddress, force, withState, partial }: ContractParams): Promise<Contract | undefined> {
+    if (!contractAddress) throw new Error('Contract address not specified')
+
     let contractEntry = this.contractRegistry.get(contractAddress)
 
     const serializedContract = contractEntry?.contract.data.serializedContract
     const hasPartialState = serializedContract?.state !== undefined
-    const hasFullState = hasPartialState && serializedContract?.avlTree !== undefined
+    const hasFullState = hasPartialState && serializedContract?.avlTrees !== undefined
 
     if (contractEntry && !force &&
       ((partial && hasPartialState) ||
@@ -171,15 +175,15 @@ export class ContractRepository implements IContractRepository {
 
         const serializedContract = contract.serializedContract
 
-        let avlTree
+        let avlTrees
         if (serializedContract?.avlTrees)
-          avlTree = convertAvlTree(serializedContract.avlTrees)
+          avlTrees = convertAvlTrees(serializedContract.avlTrees)
 
         return {
           abi: contract.abi,
           serializedContract: {
             state: serializedContract?.state,
-            avlTree,
+            avlTrees,
           }
         }
       })

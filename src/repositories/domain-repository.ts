@@ -1,13 +1,13 @@
 import { BN } from "@partisiablockchain/abi-client"
-import { actionApproveMintFeesPayload, actionDomainMintPayload, actionDomainRenewalPayload, actionDomainTransferPayload } from "../actions"
-import { Address, IActionDomainMint, IActionDomainRenewal, IActionDomainTransfer, IContractRepository, IDomainAnalyzed, IMetaNamesContractRepository } from "../interface"
+import { LittleEndianByteOutput } from "@secata-public/bitmanipulation-ts"
+import { actionApproveMintFeesPayload, actionDomainMintBatchPayload, actionDomainMintPayload, actionDomainRenewalPayload, actionDomainTransferFromPayload } from "../actions"
+import { Address, IActionDomainMint, IActionDomainRenewal, IActionDomainTransfer, IContractRepository, IDomainAnalyzed, IMetaNamesContractRepository, MetaNamesAvlTrees } from "../interface"
 import { Domain } from "../models"
 import { getParentName } from "../models/helpers/domain"
 import { decorateDomain, deserializeDomain, getDecimalsMultiplier, getDomainCount, getDomainNamesByOwner, getMintFees, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
 import { BYOCSymbol, Config } from "../providers"
 import { DomainValidator } from "../validators"
 import { getFeesLabel } from "./helpers/contract"
-import { LittleEndianByteOutput } from "@secata-public/bitmanipulation-ts"
 
 /**
  * Repository to interact with domains on the Meta Names contract
@@ -56,7 +56,7 @@ export class DomainRepository {
     const normalizedDomain = this.domainValidator.normalize(domainName)
     const { fees, address: byocAddress } = await this.calculateMintFees(normalizedDomain, byocSymbol)
     const totalAmount = fees.mul(new BN(subscriptionYears))
-    const contract = await this.contractRepository.getContract({ contractAddress: byocAddress })
+    const contract = await this.contractRepository.getContract({ contractAddress: byocAddress, partial: true })
     const metanamesContractAddress = await this.metaNamesContract.getContractAddress()
     const payload = actionApproveMintFeesPayload(contract.abi, { address: metanamesContractAddress, amount: totalAmount })
 
@@ -90,10 +90,44 @@ export class DomainRepository {
     if (!byoc) throw new Error(`BYOC ${params.byocSymbol} not found`)
 
     domain = this.domainValidator.normalize(domain, { reverse: true })
-    const contract = await this.metaNamesContract.getContract()
-    const payload = actionDomainMintPayload(contract.abi, { ...params, domain, parentDomain: normalizedParentDomain, byocTokenId: byoc.id, subscriptionYears })
+    const abi = await this.metaNamesContract.getAbi()
+    const payload = actionDomainMintPayload(abi.contract, { ...params, domain, parentDomain: normalizedParentDomain, byocTokenId: byoc.id, subscriptionYears })
 
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
+  }
+
+  async registerBatch(params: IActionDomainMint[]) {
+    const normalizedParams = params.map((mint) => {
+      if (!this.domainValidator.validate(mint.domain)) throw new Error(`Domain validation failed for ${mint.domain}`)
+
+      let domain = mint.domain
+      let parentDomain = mint.parentDomain
+
+      if (!parentDomain) parentDomain = getParentName(domain)
+
+      let subscriptionYears: number | undefined
+      let normalizedParentDomain: string | undefined
+      if (parentDomain) {
+        if (!this.domainValidator.validate(parentDomain)) throw new Error(`Parent domain validation failed for ${parentDomain}`)
+
+        normalizedParentDomain = this.domainValidator.normalize(parentDomain, { reverse: true })
+        if (!domain.endsWith(parentDomain)) domain = `${domain}.${parentDomain}`
+      } else {
+        subscriptionYears = mint.subscriptionYears ?? 1
+      }
+
+      const byoc = this.config.byoc.find((byoc) => byoc.symbol === mint.byocSymbol)
+      if (!byoc) throw new Error(`BYOC ${mint.byocSymbol} not found`)
+
+      domain = this.domainValidator.normalize(domain, { reverse: true })
+
+      return { ...mint, domain, parentDomain: normalizedParentDomain, byocTokenId: byoc.id, subscriptionYears }
+    })
+
+    const abi = await this.metaNamesContract.getAbi()
+    const payload = actionDomainMintBatchPayload(abi.contract, normalizedParams)
+
+    return this.metaNamesContract.createTransaction({ payload, gasCost: 'extra-high' })
   }
 
   /**
@@ -112,8 +146,8 @@ export class DomainRepository {
     if (!byoc) throw new Error(`BYOC ${params.byocSymbol} not found`)
 
     const domain = this.domainValidator.normalize(domainName, { reverse: true })
-    const contract = await this.metaNamesContract.getContract()
-    const payload = actionDomainRenewalPayload(contract.abi, { ...params, domain, subscriptionYears, byocTokenId: byoc.id })
+    const abi = await this.metaNamesContract.getAbi()
+    const payload = actionDomainRenewalPayload(abi.contract, { ...params, domain, subscriptionYears, byocTokenId: byoc.id })
 
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }
@@ -122,11 +156,15 @@ export class DomainRepository {
     const { domain, from, to } = params
     if (!this.domainValidator.validate(domain)) throw new Error('Domain validation failed')
 
-    const normalizedDomain = this.domainValidator.normalize(domain, { reverse: true })
-    const contract = await this.metaNamesContract.getContract()
-    const payload = actionDomainTransferPayload(contract.abi, { domain: normalizedDomain, from, to })
+    const abi = await this.metaNamesContract.getAbi()
+    const domainObject = await this.find(domain)
+    if (!domainObject) throw new Error('Domain not found')
+    if (domainObject.tokenId === undefined) throw new Error('Token id not found')
 
-    return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
+    const tokenId = domainObject.tokenId
+    const payload = actionDomainTransferFromPayload(abi.contract, { tokenId, from, to })
+
+    return this.metaNamesContract.createTransaction({ payload, gasCost: 'extra-high' })
   }
 
 
@@ -164,22 +202,26 @@ export class DomainRepository {
    * Finds a domain by name
    * @param domainName Domain name
    */
-  async find(domainName: string, options?: { cache?: boolean }) {
+  async find(domainName: string) {
     const normalizedDomain = this.domainValidator.normalize(domainName, { reverse: true })
     const domainBufferBuilder = new LittleEndianByteOutput()
     domainBufferBuilder.writeString(normalizedDomain)
 
-    const domainBuffer = await this.metaNamesContract.getStateAvlValue(0, domainBufferBuilder.toBuffer())
+    const domainBuffer = await this.metaNamesContract.getStateAvlValue(MetaNamesAvlTrees.domains, domainBufferBuilder.toBuffer())
     if (!domainBuffer) return null
 
-    const { cache } = { cache: true, ...options }
-    const struct = await this.metaNamesContract.getState({ force: !cache, partial: true })
-    const nftOwners = getNftOwners(struct)
-
     const abi = await this.metaNamesContract.getAbi()
-    const domain = deserializeDomain(domainBuffer, abi.contract, nftOwners, normalizedDomain, this.config.tld)
+    const domainPartial = deserializeDomain(domainBuffer, abi.contract, normalizedDomain, this.config.tld)
 
-    return new Domain(domain)
+    const ownerBufferBuilder = new LittleEndianByteOutput()
+    ownerBufferBuilder.writeUnsignedBigInteger(new BN(domainPartial.tokenId), 16)
+
+    const ownerBuffer = await this.metaNamesContract.getStateAvlValue(MetaNamesAvlTrees.owners, ownerBufferBuilder.toBuffer())
+    if (!ownerBuffer) throw new Error('Owner not found')
+
+    const owner = ownerBuffer.toString('hex')
+
+    return new Domain({ ...domainPartial, owner })
   }
 
   /**
@@ -187,22 +229,14 @@ export class DomainRepository {
    * @returns Domain[]
    */
   async getAll() {
-    const struct = await this.metaNamesContract.getState()
-    const domainsStruct = getPnsDomains(struct)
-    const nftOwners = getNftOwners(struct)
-
-    if (!domainsStruct.map) return []
+    const state = await this.metaNamesContract.getState()
+    const domainsList = getPnsDomains(state)
+    const nftOwners = getNftOwners(state)
 
     const domains: Domain[] = []
-    domainsStruct.map.forEach((domainStruct, domainName) => {
-      const domainNameStr = domainName.stringValue()
-      const domainValue = domainStruct.structValue()
-
-      const domainObj = decorateDomain(domainValue, nftOwners, domainNameStr, this.config.tld)
-      if (!domainObj) return
-
-      const domain = new Domain(domainObj)
-      domains.push(domain)
+    domainsList.map?.forEach((domainObj, name) => {
+      const domain = decorateDomain(domainObj.structValue(), nftOwners, name.stringValue(), this.config.tld)
+      domains.push(new Domain(domain))
     })
 
     return domains
@@ -213,7 +247,7 @@ export class DomainRepository {
    * @returns number
    */
   async count() {
-    const struct = await this.metaNamesContract.getState()
+    const struct = await this.metaNamesContract.getState({ partial: true })
 
     return getDomainCount(struct)
   }
@@ -246,11 +280,12 @@ export class DomainRepository {
    */
   async getOwners() {
     const struct = await this.metaNamesContract.getState()
-    const nftOwners = getNftOwners(struct)
+    const nftOwners = getNftOwners(struct).map
+    if (!nftOwners) throw new Error('Owners map not found')
 
     const owners: string[] = []
-    nftOwners.map.forEach((addressValue) => {
-      const address = addressValue.addressValue().value.toString('hex')
+    nftOwners.forEach((addressSc) => {
+      const address = addressSc.addressValue().value.toString('hex')
       if (!owners.includes(address)) owners.push(address)
     })
 

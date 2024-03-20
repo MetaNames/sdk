@@ -7,7 +7,7 @@ import type { BYOCSymbol } from "./providers"
 
 // TODO: Reorganize this file
 
-export type GasCost = 'low' | 'medium' | 'high'
+export type GasCost = 'low' | 'medium' | 'high' | 'extra-high'
 
 export type SigningStrategyType = 'privateKey' | 'partisiaSdk' | 'MetaMask'
 export type SigningClassType = string | PartisiaSdk | MetaMaskSdk
@@ -24,6 +24,10 @@ export interface MetaMaskSdk {
 }
 
 export type Records = Record<string, string | Buffer>
+
+export interface IDomainPartial extends Omit<IDomain, 'owner'> {
+  owner?: string
+}
 
 export interface IDomain {
   name: string
@@ -117,6 +121,10 @@ export interface IActionDomainTransfer {
   domain: string
 }
 
+export interface IActionDomainTransferPayload extends Omit<IActionDomainTransfer, 'domain'> {
+  tokenId: number
+}
+
 export interface ByocCoin {
   conversionRate: {
     unit_value: number
@@ -153,11 +161,11 @@ export interface ITransactionIntent {
 export type MetaNamesState = ScValueStruct
 
 export type RawContractData = Pick<IContractInfo, 'abi' | 'serializedContract'> & { serializedContract: { avlTrees: AvlTree[] } }
-export type ContractData = Pick<IContractInfo, 'abi' | 'serializedContract'> & { serializedContract: { avlTree?: Map<number, [Buffer, Buffer][]> } };
+export type ContractData = Pick<IContractInfo, 'abi' | 'serializedContract'> & { serializedContract: { avlTrees?: Map<number, [Buffer, Buffer][]> } };
 
 
 export interface ContractParams {
-  contractAddress: string
+  contractAddress?: string
   force?: boolean
   withState?: boolean
   partial?: boolean
@@ -171,7 +179,7 @@ export interface Contract {
 export interface TransactionParams {
   contractAddress?: string
   payload: Buffer
-  gasCost?: GasCost
+  gasCost?: GasCost | number
 }
 
 export interface IContractRepository {
@@ -187,10 +195,16 @@ export interface GetStateParams {
   partial?: boolean
 }
 
+export enum MetaNamesAvlTrees {
+  domains = 0,
+  owners = 2
+}
+
 export interface IMetaNamesContractRepository extends IContractRepository {
   getState(options?: GetStateParams): Promise<MetaNamesState>
   getContractAddress(): Promise<string>
-  getStateAvlValue(treeId: number, key: Buffer): Promise<Buffer | undefined>
+  getStateAvlValue(treeId: MetaNamesAvlTrees, key: Buffer): Promise<Buffer | undefined>
+  getStateAvlTree(treeId: MetaNamesAvlTrees): Promise<Array<Record<string, string>> | undefined>
 }
 
 export interface IValidatorOptions {

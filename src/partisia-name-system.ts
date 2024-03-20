@@ -1,5 +1,6 @@
-import { BN, ContractAbi, ScValue, ScValueAvlTreeMap, ScValueMap, ScValueNumber, ScValueString, ScValueStruct, ScValueVector, StateReader, TypeIndex } from '@partisiablockchain/abi-client'
-import { IDomain, RecordClassEnum } from './interface'
+import { BN, ContractAbi, ScValue, ScValueAvlTreeMap, ScValueMap, ScValueNumber, ScValueString, ScValueStruct, StateReader, TypeIndex } from '@partisiablockchain/abi-client'
+import { LittleEndianByteInput } from '@secata-public/bitmanipulation-ts'
+import { IDomain, IDomainPartial, RecordClassEnum } from './interface'
 
 export function getPnsDomains(contract: ScValueStruct): ScValueAvlTreeMap {
   const pns = contract.fieldsMap.get('pns')
@@ -23,7 +24,7 @@ export function getDomainCount(contract: ScValueStruct): number {
   return nftCount.asBN().toNumber()
 }
 
-export function getNftOwners(contract: ScValueStruct): ScValueMap {
+export function getNftOwners(contract: ScValueStruct): ScValueAvlTreeMap {
   const nfts = contract.fieldsMap.get('nft')
   if (!nfts) throw new Error('Nft key not found')
 
@@ -31,18 +32,23 @@ export function getNftOwners(contract: ScValueStruct): ScValueMap {
   const owners = nftStruct.fieldsMap.get('owners')
   if (!owners) throw new Error('Owners key not found')
 
-  return owners.mapValue()
+  return owners.avlTreeMapValue()
 }
 
-export function getOwnerAddressOf(owners: ScValueMap, tokenId: number) {
+export function getOwnerAddressOf(owners: ScValueAvlTreeMap, tokenId: number) {
   const tokenIdBN = new BN(tokenId)
   const nftId = new ScValueNumber(TypeIndex.u128, tokenIdBN)
-  return owners.get(nftId)?.addressValue().value.toString('hex')
+  const map = owners.map
+  if (!map) throw new Error('Owners map not found')
+  return map.get(nftId)?.addressValue().value.toString('hex')
 }
 
-export function getDomainNamesByOwner(domains: ScValueAvlTreeMap, owners: ScValueMap, ownerAddress: Buffer): string[] {
+export function getDomainNamesByOwner(domains: ScValueAvlTreeMap, owners: ScValueAvlTreeMap, ownerAddress: Buffer): string[] {
   const nftIds: number[] = []
-  owners.map.forEach((address, nftId) => {
+  const map = owners.map
+  if (!map) throw new Error('Owners map not found')
+
+  map.forEach((address, nftId) => {
     if (address.addressValue().value.equals(ownerAddress)) nftIds.push(nftId.asBN().toNumber())
   })
   if (!nftIds.length) return []
@@ -60,15 +66,15 @@ export function getDomainNamesByOwner(domains: ScValueAvlTreeMap, owners: ScValu
   return domainNames
 }
 
-export function deserializeDomain(bytes: Buffer, contractAbi: ContractAbi, owners: ScValueMap, domainName: string, tld: string): IDomain {
+export function deserializeDomain(bytes: Buffer, contractAbi: ContractAbi, domainName: string, tld: string): IDomainPartial {
   const reader = new StateReader(bytes, contractAbi)
-  const domainStructIndex = 16
+  const domainStructIndex = contractAbi.namedTypes.findIndex((t) => t.name === 'Domain')
   const struct = reader.readStateValue({ typeIndex: TypeIndex.Named, index: domainStructIndex }).structValue()
 
-  return decorateDomain(struct, owners, domainName, tld)
+  return decorateDomainPartial(struct, domainName, tld)
 }
 
-export function lookUpDomain(domains: ScValueAvlTreeMap, owners: ScValueMap, domainName: string, tld: string): IDomain | undefined {
+export function lookUpDomain(domains: ScValueAvlTreeMap, owners: ScValueAvlTreeMap, domainName: string, tld: string): IDomain | undefined {
   if (!domains.map) return
 
   const scNameString = new ScValueString(domainName)
@@ -78,7 +84,7 @@ export function lookUpDomain(domains: ScValueAvlTreeMap, owners: ScValueMap, dom
   return decorateDomain(domain, owners, domainName, tld)
 }
 
-export function decorateDomain(domain: ScValueStruct, owners: ScValueMap, domainName: string, tld: string): IDomain {
+export function decorateDomainPartial(domain: ScValueStruct, domainName: string, tld: string): IDomainPartial {
   const fieldsMap = domain.fieldsMap
   const created = (fieldsMap.get('minted_at') as ScValue).asBN().toNumber()
   const createdAt = new Date(created)
@@ -89,18 +95,27 @@ export function decorateDomain(domain: ScValueStruct, owners: ScValueMap, domain
   const scRecords = fieldsMap.get('records')?.mapValue().map
 
   const tokenId = (fieldsMap.get('token_id') as ScValue).asBN().toNumber()
-  const owner = getOwnerAddressOf(owners, tokenId)
-  if (!owner) throw new Error('Owner not found')
 
   return {
     name: domainName,
     tld,
     createdAt,
     expiresAt,
-    owner,
     tokenId,
     parentId: fieldsMap.get('parent_id')?.optionValue().innerValue?.stringValue(),
     records: scRecords ? extractRecords(new ScValueMap(scRecords)) : {},
+  }
+}
+
+export function decorateDomain(domain: ScValueStruct, owners: ScValueAvlTreeMap, domainName: string, tld: string): IDomain {
+  const partial = decorateDomainPartial(domain, domainName, tld)
+
+  const owner = getOwnerAddressOf(owners, partial.tokenId)
+  if (!owner) throw new Error('Owner not found')
+
+  return {
+    ...partial,
+    owner
   }
 }
 
@@ -115,12 +130,10 @@ export function extractRecords(records: ScValueMap) {
 
   for (const [scKey, scValue] of records.mapValue().map) {
     const key = scKey.enumValue().name
-    const data = scValue.structValue().fieldsMap.get('data')
+    const data = scValue.vecU8Value()
     if (!data) continue
 
-    const vectorData = convertScVectorToBuffer(data.vecValue())
-
-    extractedRecords[key] = vectorData.toString()
+    extractedRecords[key] = data.toString()
   }
 
   return extractedRecords
@@ -149,7 +162,7 @@ export function getMintFees(contract: ScValueStruct, domain: string, tokenId: nu
   try {
     domainLength = [...new Intl.Segmenter().segment(domain)].length
   } catch (e) {
-    console.log(e)
+    console.error(e)
   }
 
   const defaultFee = feesStruct.fieldsMap.get('default_fee') as ScValue
@@ -167,8 +180,40 @@ export function getMintFees(contract: ScValueStruct, domain: string, tokenId: nu
   return feeBN
 }
 
-function convertScVectorToBuffer(vector: ScValueVector): Buffer {
-  return Buffer.from(vector.values().map((v) => v.asNumber()))
+export function deserializeOwnersAvl(owners: Record<string, string>[]): Map<number, string> {
+  const ownersMap = new Map<number, string>()
+
+  for (const tuple of owners) {
+    const [tokenIdBuffer] = Object.keys(tuple)
+    const [ownerBuffer] = Object.values(tuple)
+    if (!tokenIdBuffer || !ownerBuffer) continue
+
+    const reader = new LittleEndianByteInput(Buffer.from(tokenIdBuffer, 'base64'))
+    const tokenId = reader.readUnsignedBigInteger(16).toNumber()
+    const owner = Buffer.from(ownerBuffer, 'base64').toString('hex')
+
+    ownersMap.set(tokenId, owner)
+  }
+
+  return ownersMap
+}
+
+export function deserializeDomainsAvl(owners: Record<string, string>[], abi: ContractAbi, tld: string): IDomainPartial[] {
+  const domainsList = []
+
+  for (const tuple of owners) {
+    const [domainNameBuffer] = Object.keys(tuple)
+    const [domainStructBuffer] = Object.values(tuple)
+    if (!domainNameBuffer || !domainStructBuffer) continue
+
+    const reader = new LittleEndianByteInput(Buffer.from(domainNameBuffer, 'base64'))
+    const domainName = reader.readString()
+    const domain = deserializeDomain(Buffer.from(domainStructBuffer, 'base64'), abi, domainName, tld)
+
+    domainsList.push(domain)
+  }
+
+  return domainsList
 }
 
 export function getDecimalsMultiplier(decimals: number): BN {

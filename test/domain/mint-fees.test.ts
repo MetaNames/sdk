@@ -1,15 +1,11 @@
-import { config } from "../helpers"
+import { config, verifyTransactionResult } from "../helpers"
 
 test('mint fees transaction for TEST_COINT', async () => {
   const domainName = 'verycheapfees.mpc'
   const { transactionHash, fetchResult } = await config.sdk.domainRepository.approveMintFees(domainName, 'TEST_COIN')
   const result = await fetchResult
 
-  expect(transactionHash).toBeDefined()
-  expect(transactionHash).toBe(result.transactionHash)
-  expect(result).toBeDefined()
-  expect(result.hasError).toBeFalsy()
-  expect(result.eventTrace.length).toBeGreaterThan(0)
+  verifyTransactionResult(transactionHash, result)
 }, 20_000)
 
 test('mint fees transaction for ETH', async () => {
@@ -17,11 +13,7 @@ test('mint fees transaction for ETH', async () => {
   const { transactionHash, fetchResult } = await config.sdk.domainRepository.approveMintFees(domainName, 'ETH_GOERLI')
   const result = await fetchResult
 
-  expect(transactionHash).toBeDefined()
-  expect(transactionHash).toBe(result.transactionHash)
-  expect(result).toBeDefined()
-  expect(result.hasError).toBeFalsy()
-  expect(result.eventTrace.length).toBeGreaterThan(0)
+  verifyTransactionResult(transactionHash, result)
 }, 20_000)
 
 test('mint fees amount TEST_COIN', async () => {

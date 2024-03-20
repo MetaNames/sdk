@@ -1,4 +1,4 @@
-import { actionRecordDeletePayload, actionRecordMintPayload, actionRecordUpdatePayload } from "../actions"
+import { actionRecordDeletePayload, actionRecordMintBatchPayload, actionRecordMintPayload, actionRecordUpdatePayload } from "../actions"
 import { IDomain, IMetaNamesContractRepository, IRecord, RecordClassEnum } from "../interface"
 import { Domain } from "../models"
 import { lookUpRecord } from "../partisia-name-system"
@@ -27,6 +27,18 @@ export class RecordRepository {
 
     const contract = await this.contractRepository.getContract()
     const payload = actionRecordMintPayload(contract.abi, this.addDomainToParams(params))
+
+    return this.contractRepository.createTransaction({ payload })
+  }
+
+  async createBatch(params: IRecord[]) {
+    const normalizedParams = params.map((p) => {
+      if (!this.recordValidator.validate(p)) throw new Error('Record validation failed')
+
+      return this.addDomainToParams(p)
+    })
+    const contract = await this.contractRepository.getContract()
+    const payload = actionRecordMintBatchPayload(contract.abi, normalizedParams)
 
     return this.contractRepository.createTransaction({ payload })
   }

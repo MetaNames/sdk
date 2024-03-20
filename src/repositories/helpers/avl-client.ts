@@ -35,6 +35,31 @@ export class AvlClient {
     return data === undefined ? undefined : Buffer.from(data.data, "base64")
   }
 
+  public async getContractStateAvlTree(
+    address: string,
+    treeId: number,
+  ): Promise<Array<Record<string, string>> | undefined> {
+    let allData: Array<Record<string, string>> = []
+
+    let lastKey = undefined
+    let proceed = true
+    const pageSize = 100
+    while (proceed) {
+      const data = await this.getContractStateAvlNextN(address, treeId, lastKey, pageSize)
+      if (data === undefined) return allData
+
+      allData = allData.concat(data)
+      const lastElement = data[data.length - 1]
+      if (lastElement) {
+        const last = Object.keys(lastElement)[0]
+        if (last) lastKey = Buffer.from(last, "base64")
+      }
+      if (data.length < pageSize) proceed = false
+    }
+
+    return allData
+  }
+
   public getContractStateAvlNextN(
     address: string,
     treeId: number,
