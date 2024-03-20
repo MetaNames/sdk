@@ -9,15 +9,15 @@ permissions:
   contents: write
 
 jobs:
-  code-quality:
+  eslint:
     permissions:
       contents: read
       security-events: write
       actions: read
-    uses: ./.github/workflows/code-quality.yml
+    uses: ./.github/workflows/eslint.yml
 
   test:
-    needs: code-quality
+    needs: eslint
     runs-on: ubuntu-latest
 
     steps:

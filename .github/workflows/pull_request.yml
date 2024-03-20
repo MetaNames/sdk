@@ -4,15 +4,15 @@ on:
   pull_request:
 
 jobs:
-  code-quality:
+  eslint:
     permissions:
       contents: read
       security-events: write
       actions: read
-    uses: ./.github/workflows/code-quality.yml
+    uses: ./.github/workflows/eslint.yml
 
   test:
-    needs: code-quality
+    needs: eslint
     permissions: write-all
     runs-on: ubuntu-latest
 
