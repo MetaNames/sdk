@@ -1,0 +1,34 @@
+name: Merge queue workflow
+
+on:
+  merge_group:
+
+jobs:
+  code-quality:
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    uses: ./.github/workflows/code-quality.yml
+
+  test:
+    needs: code-quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: "yarn"
+
+      - name: Install project dependencies
+        run: yarn
+
+      - name: Run tests with coverage
+        run: yarn test --coverage
+        env:
+          TEST_PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
