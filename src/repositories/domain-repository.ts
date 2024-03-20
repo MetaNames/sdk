@@ -1,7 +1,7 @@
 import { BN } from "@partisiablockchain/abi-client"
 import { LittleEndianByteOutput } from "@secata-public/bitmanipulation-ts"
 import { actionApproveMintFeesPayload, actionDomainMintBatchPayload, actionDomainMintPayload, actionDomainRenewalPayload, actionDomainTransferFromPayload } from "../actions"
-import { Address, IActionDomainMint, IActionDomainRenewal, IActionDomainTransfer, IContractRepository, IDomainAnalyzed, IMetaNamesContractRepository, MetaNamesAvlTrees } from "../interface"
+import { Address, IActionDomainMint, IActionDomainMintPayload, IActionDomainRenewal, IActionDomainTransfer, IContractRepository, IDomainAnalyzed, IMetaNamesContractRepository, MetaNamesAvlTrees } from "../interface"
 import { Domain } from "../models"
 import { getParentName } from "../models/helpers/domain"
 import { decorateDomain, deserializeDomain, getDecimalsMultiplier, getDomainCount, getDomainNamesByOwner, getMintFees, getNftOwners, getPnsDomains, lookUpDomain } from "../partisia-name-system"
@@ -68,61 +68,17 @@ export class DomainRepository {
    * @param params Domain mint params
    */
   async register(params: IActionDomainMint) {
-    if (!this.domainValidator.validate(params.domain)) throw new Error('Domain validation failed')
-
-    let domain = params.domain
-    let parentDomain = params.parentDomain
-
-    if (!parentDomain) parentDomain = getParentName(domain)
-
-    let subscriptionYears: number | undefined
-    let normalizedParentDomain: string | undefined
-    if (parentDomain) {
-      if (!this.domainValidator.validate(parentDomain)) throw new Error('Parent domain validation failed')
-
-      normalizedParentDomain = this.domainValidator.normalize(parentDomain, { reverse: true })
-      if (!domain.endsWith(parentDomain)) domain = `${domain}.${parentDomain}`
-    } else {
-      subscriptionYears = params.subscriptionYears ?? 1
-    }
-
-    const byoc = this.config.byoc.find((byoc) => byoc.symbol === params.byocSymbol)
-    if (!byoc) throw new Error(`BYOC ${params.byocSymbol} not found`)
-
-    domain = this.domainValidator.normalize(domain, { reverse: true })
+    const mintParams = this.buildDomainMintParams(params)
     const abi = await this.metaNamesContract.getAbi()
-    const payload = actionDomainMintPayload(abi.contract, { ...params, domain, parentDomain: normalizedParentDomain, byocTokenId: byoc.id, subscriptionYears })
+    const payload = actionDomainMintPayload(abi.contract, mintParams)
 
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }
 
   async registerBatch(params: IActionDomainMint[]) {
-    const normalizedParams = params.map((mint) => {
-      if (!this.domainValidator.validate(mint.domain)) throw new Error(`Domain validation failed for ${mint.domain}`)
-
-      let domain = mint.domain
-      let parentDomain = mint.parentDomain
-
-      if (!parentDomain) parentDomain = getParentName(domain)
-
-      let subscriptionYears: number | undefined
-      let normalizedParentDomain: string | undefined
-      if (parentDomain) {
-        if (!this.domainValidator.validate(parentDomain)) throw new Error(`Parent domain validation failed for ${parentDomain}`)
-
-        normalizedParentDomain = this.domainValidator.normalize(parentDomain, { reverse: true })
-        if (!domain.endsWith(parentDomain)) domain = `${domain}.${parentDomain}`
-      } else {
-        subscriptionYears = mint.subscriptionYears ?? 1
-      }
-
-      const byoc = this.config.byoc.find((byoc) => byoc.symbol === mint.byocSymbol)
-      if (!byoc) throw new Error(`BYOC ${mint.byocSymbol} not found`)
-
-      domain = this.domainValidator.normalize(domain, { reverse: true })
-
-      return { ...mint, domain, parentDomain: normalizedParentDomain, byocTokenId: byoc.id, subscriptionYears }
-    })
+    const normalizedParams: IActionDomainMintPayload[] = params.map((mint) =>
+      this.buildDomainMintParams(mint)
+    )
 
     const abi = await this.metaNamesContract.getAbi()
     const payload = actionDomainMintBatchPayload(abi.contract, normalizedParams)
@@ -290,5 +246,35 @@ export class DomainRepository {
     })
 
     return owners
+  }
+
+  private buildDomainMintParams(params: IActionDomainMint): IActionDomainMintPayload {
+    let domain = params.domain
+    let parentDomain = params.parentDomain
+    const subscriptionYears = params.subscriptionYears ?? 1
+
+    if (!this.domainValidator.validate(domain, { raiseError: false })) throw new Error(`Validation error for ${domain}: ${this.domainValidator.errors.join(', ')}`)
+
+    if (!parentDomain) parentDomain = getParentName(domain)
+
+    let normalizedParentDomain: string | undefined
+    if (parentDomain) {
+      if (!this.domainValidator.validate(parentDomain, { raiseError: false })) throw new Error(`Validation error for ${parentDomain}: ${this.domainValidator.errors.join(', ')}`)
+
+      normalizedParentDomain = this.domainValidator.normalize(parentDomain, { reverse: true })
+      if (!domain.endsWith(parentDomain)) domain = `${domain}.${parentDomain}`
+    }
+
+    const byoc = this.config.byoc.find((byoc) => byoc.symbol === params.byocSymbol)
+    if (!byoc) throw new Error(`BYOC ${params.byocSymbol} not found`)
+
+    return {
+      ...params,
+      domain: this.domainValidator.normalize(domain, { reverse: true }),
+      tokenUri: domain,
+      parentDomain: normalizedParentDomain,
+      byocTokenId: byoc.id,
+      subscriptionYears
+    }
   }
 }
