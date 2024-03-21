@@ -268,9 +268,11 @@ export class DomainRepository {
     const byoc = this.config.byoc.find((byoc) => byoc.symbol === params.byocSymbol)
     if (!byoc) throw new Error(`BYOC ${params.byocSymbol} not found`)
 
+    domain = this.domainValidator.normalize(domain, { reverse: true })
+
     return {
       ...params,
-      domain: this.domainValidator.normalize(domain, { reverse: true }),
+      domain,
       tokenUri: domain,
       parentDomain: normalizedParentDomain,
       byocTokenId: byoc.id,
