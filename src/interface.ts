@@ -53,11 +53,12 @@ export enum RecordClassEnum {
   Uri = 3,
   Wallet = 4,
   Avatar = 5,
-  // Custom = 6,
-  // Custom2 = 7,
-  // Custom3 = 8,
-  // Custom4 = 9,
-  // Custom5 = 10,
+  Email = 6
+  // Custom = 7,
+  // Custom2 = 8,
+  // Custom3 = 9,
+  // Custom4 = 10,
+  // Custom5 = 11,
 }
 
 export type Address = Buffer | string
