@@ -6,11 +6,12 @@ import { config } from '../helpers'
 const domain = 'name.mpc'
 
 test('payload for action domain mint', async () => {
-  const expectedHex = '09000000086e616d652e6d7063000000000000000000000000000000000000000000000000000000000000000100000001'
+  const expectedHex = '09000000086e616d652e6d7063000000000000000000000000000000000000000000000000000000000001000000086e616d652e6d7063000100000001'
 
   const params: IActionDomainMintPayload = {
     domain,
     to: Buffer.alloc(21),
+    tokenUri: domain,
     subscriptionYears: 1,
     byocTokenId: 0
   }

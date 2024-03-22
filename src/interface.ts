@@ -92,11 +92,11 @@ interface ICommonDomain {
 
 interface IActionCommontDomainMint extends ICommonDomain {
   to: Address
-  tokenUri?: string
   parentDomain?: string
 }
 export interface IActionDomainMintPayload extends IActionCommontDomainMint {
   byocTokenId: number
+  tokenUri: string
 }
 
 export interface IActionDomainMint extends IActionCommontDomainMint {
