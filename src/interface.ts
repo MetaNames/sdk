@@ -173,7 +173,7 @@ export interface ContractParams {
 }
 
 export interface Contract {
-  data: ContractData
+  data?: ContractData
   abi: ContractAbi
 }
 
@@ -188,7 +188,7 @@ export interface IContractRepository {
   getContract(params?: ContractParams): Promise<Contract>
   getState(params?: ContractParams): Promise<ScValueStruct>
   getByocCoins(): Promise<ByocCoin[]>
-  getAbi(contractAddress?: string): Promise<FileAbi>
+  getAbi(contractAddress?: string): Promise<ContractAbi>
 }
 
 export interface GetStateParams {

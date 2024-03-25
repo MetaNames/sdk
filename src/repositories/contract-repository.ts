@@ -1,4 +1,4 @@
-import { AbiParser, FileAbi, StateReader } from '@partisiablockchain/abi-client'
+import { AbiParser, ContractAbi, FileAbi, StateReader } from '@partisiablockchain/abi-client'
 import { PartisiaAccount } from 'partisia-blockchain-applications-rpc'
 import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
 import { createTransactionFromMetaMaskClient, createTransactionFromPartisiaClient, createTransactionFromPrivateKey } from '../actions'
@@ -42,7 +42,7 @@ export class ContractRepository implements IContractRepository {
   async getState(params: ContractParams) {
     const contract = await this.getContract({ ...params, withState: true })
 
-    const serializedContract = contract.data.serializedContract
+    const serializedContract = contract?.data?.serializedContract
     if (!serializedContract) throw new Error('Contract state not found')
     if (!('state' in serializedContract)) throw new Error('Contract state not found')
 
@@ -53,13 +53,25 @@ export class ContractRepository implements IContractRepository {
     return struct
   }
 
-  async getAbi(contractAddress?: string): Promise<FileAbi> {
+  async getAbi(contractAddress?: string): Promise<ContractAbi> {
     if (!contractAddress) throw new Error('Contract address not found')
 
-    const contract = await this.getContract({ contractAddress, partial: true })
-    if (!contract) throw new Error('Contract not found')
+    let entry = this.contractRegistry.get(contractAddress)
+    if (entry && entry.contract.abi && (Date.now() - entry.fetchedAt) < this.ttl) return entry.contract.abi
 
-    return this.parseAbi(contract.data.abi)
+    const abi = await this.fetchContractAbi(contractAddress)
+    if (!abi) throw new Error('Contract abi not found')
+
+    entry = {
+      fetchedAt: Date.now(),
+      contract: {
+        abi: abi.contract
+      }
+    }
+
+    this.contractRegistry.set(contractAddress, entry)
+
+    return entry?.contract.abi
   }
 
   /**
@@ -128,7 +140,7 @@ export class ContractRepository implements IContractRepository {
 
     let contractEntry = this.contractRegistry.get(contractAddress)
 
-    const serializedContract = contractEntry?.contract.data.serializedContract
+    const serializedContract = contractEntry?.contract?.data?.serializedContract
     const hasPartialState = serializedContract?.state !== undefined
     const hasFullState = hasPartialState && serializedContract?.avlTrees !== undefined
 
@@ -158,6 +170,13 @@ export class ContractRepository implements IContractRepository {
 
   private parseAbi(abi: string) {
     return new AbiParser(Buffer.from(abi, 'base64')).parseAbi()
+  }
+
+  private async fetchContractAbi(contractAddress: string): Promise<FileAbi> {
+    const encodedAbi = await this.avlClient.getContractAbi(contractAddress)
+    if (!encodedAbi) throw new Error('Contract abi not found')
+
+    return this.parseAbi(encodedAbi)
   }
 
   private async fetchContract(contractAddress: string, options: { partial?: boolean, withState?: boolean } = {}): Promise<ContractData | undefined> {
