@@ -57,7 +57,7 @@ export class ContractRepository implements IContractRepository {
     if (!contractAddress) throw new Error('Contract address not found')
 
     let entry = this.contractRegistry.get(contractAddress)
-    if (entry && entry.contract.abi && (Date.now() - entry.fetchedAt) < this.ttl) return entry.contract.abi
+    if (entry && entry.contract.abi && this.validTTL(entry.fetchedAt)) return entry.contract.abi
 
     const abi = await this.fetchContractAbi(contractAddress)
     if (!abi) throw new Error('Contract abi not found')
@@ -148,7 +148,7 @@ export class ContractRepository implements IContractRepository {
       ((partial && hasPartialState) ||
         (withState && hasFullState) ||
         !withState) &&
-      ((Date.now() - contractEntry.fetchedAt) < this.ttl))
+      this.validTTL(contractEntry.fetchedAt))
       return contractEntry.contract
 
     const rawContract = await this.fetchContract(contractAddress, { partial, withState })
@@ -210,5 +210,9 @@ export class ContractRepository implements IContractRepository {
       contract = await promiseRetry(() => this.avlClient.getBinaryContractState(contractAddress))
 
     return contract
+  }
+
+  private validTTL(date: number): boolean {
+    return (Date.now() - date) < this.ttl
   }
 }
