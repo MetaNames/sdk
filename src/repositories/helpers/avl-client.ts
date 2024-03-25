@@ -11,6 +11,12 @@ export class AvlClient {
     this.shards = shards.map(s => `Shard${s}`)
   }
 
+  public getContractAbi(address: string): Promise<string | undefined> {
+    return getRequest<{ abi: string }>(this.contractStateQueryUrl(address) + "?stateOutput=none").then(data => {
+      return data === undefined ? undefined : data.abi
+    })
+  }
+
   public getBinaryContractState(address: string): Promise<ContractData | undefined> {
     return getRequest<{ serializedContract: string, abi: string }>(this.contractStateQueryUrl(address) + "?stateOutput=binary").then(data => {
       return data === undefined ? undefined : {

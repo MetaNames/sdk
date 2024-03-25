@@ -70,7 +70,7 @@ export class DomainRepository {
   async register(params: IActionDomainMint) {
     const mintParams = this.buildDomainMintParams(params)
     const abi = await this.metaNamesContract.getAbi()
-    const payload = actionDomainMintPayload(abi.contract, mintParams)
+    const payload = actionDomainMintPayload(abi, mintParams)
 
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }
@@ -81,7 +81,7 @@ export class DomainRepository {
     )
 
     const abi = await this.metaNamesContract.getAbi()
-    const payload = actionDomainMintBatchPayload(abi.contract, normalizedParams)
+    const payload = actionDomainMintBatchPayload(abi, normalizedParams)
 
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'extra-high' })
   }
@@ -103,7 +103,7 @@ export class DomainRepository {
 
     const domain = this.domainValidator.normalize(domainName, { reverse: true })
     const abi = await this.metaNamesContract.getAbi()
-    const payload = actionDomainRenewalPayload(abi.contract, { ...params, domain, subscriptionYears, byocTokenId: byoc.id })
+    const payload = actionDomainRenewalPayload(abi, { ...params, domain, subscriptionYears, byocTokenId: byoc.id })
 
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'high' })
   }
@@ -118,7 +118,7 @@ export class DomainRepository {
     if (domainObject.tokenId === undefined) throw new Error('Token id not found')
 
     const tokenId = domainObject.tokenId
-    const payload = actionDomainTransferFromPayload(abi.contract, { tokenId, from, to })
+    const payload = actionDomainTransferFromPayload(abi, { tokenId, from, to })
 
     return this.metaNamesContract.createTransaction({ payload, gasCost: 'extra-high' })
   }
@@ -167,7 +167,7 @@ export class DomainRepository {
     if (!domainBuffer) return null
 
     const abi = await this.metaNamesContract.getAbi()
-    const domainPartial = deserializeDomain(domainBuffer, abi.contract, normalizedDomain, this.config.tld)
+    const domainPartial = deserializeDomain(domainBuffer, abi, normalizedDomain, this.config.tld)
 
     const ownerBufferBuilder = new LittleEndianByteOutput()
     ownerBufferBuilder.writeUnsignedBigInteger(new BN(domainPartial.tokenId), 16)

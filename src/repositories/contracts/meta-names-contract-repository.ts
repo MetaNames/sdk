@@ -1,11 +1,11 @@
+import { ContractAbi } from "@partisiablockchain/abi-client"
+import { FetchError } from "node-fetch"
 import { IPartisiaRpcConfig } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
-import { ContractRepository } from "../contract-repository"
-import { Contract, ContractParams, IMetaNamesContractRepository, ITransactionIntent, MetaNamesState, TransactionParams, GetStateParams, MetaNamesAvlTrees } from "../../interface"
+import { Contract, ContractParams, GetStateParams, IMetaNamesContractRepository, ITransactionIntent, MetaNamesAvlTrees, MetaNamesState, TransactionParams } from "../../interface"
 import { Enviroment } from "../../providers"
 import { SecretsProvider } from "../../providers/secrets"
+import { ContractRepository } from "../contract-repository"
 import { getAddressFromProxyContractState } from "../helpers/contract"
-import { FileAbi } from "@partisiablockchain/abi-client"
-import { FetchError } from "node-fetch"
 
 
 /**
@@ -45,7 +45,7 @@ export class MetaNamesContractRepository extends ContractRepository implements I
     })
   }
 
-  async getAbi(): Promise<FileAbi> {
+  async getAbi(): Promise<ContractAbi> {
     const metaNamesContractAddress = await this.getContractAddress()
     return super.getAbi(metaNamesContractAddress)
   }
