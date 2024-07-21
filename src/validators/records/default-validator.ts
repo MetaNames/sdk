@@ -1,20 +1,7 @@
 import { IRecord, IValidatorInterface, IValidatorOptions, RecordClassEnum } from '../../interface'
+import { BaseValidator } from '../base-validator'
 
-export class DefaultRecordValidator implements IValidatorInterface<IRecord> {
-  #errors: string[] = []
-
-  hasErrors() {
-    return this.#errors.length > 0
-  }
-
-  getErrors() {
-    return this.#errors
-  }
-
-  protected addError(error: string) {
-    this.#errors.push(error)
-  }
-
+export class DefaultRecordValidator extends BaseValidator implements IValidatorInterface<IRecord> {
   get rules() {
     return {
       maxLength: 64
@@ -22,7 +9,7 @@ export class DefaultRecordValidator implements IValidatorInterface<IRecord> {
   }
 
   validate(record: IRecord, { raiseError }: IValidatorOptions = { raiseError: true }): boolean {
-    this.#errors = []
+    this.clearErrors()
 
     if (!record.data) this.addError('Record data is required')
     if (typeof record.class !== 'number') this.addError('Record class is required')
@@ -39,9 +26,5 @@ export class DefaultRecordValidator implements IValidatorInterface<IRecord> {
       record.data = record.data.trim()
 
     return record
-  }
-
-  protected raiseErrors() {
-    if (this.#errors.length > 0) throw new Error(this.getErrors().join(', '))
   }
 }
