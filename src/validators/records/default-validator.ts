@@ -11,6 +11,10 @@ export class DefaultRecordValidator implements IValidatorInterface<IRecord> {
     return this.#errors
   }
 
+  protected addError(error: string) {
+    this.#errors.push(error)
+  }
+
   get rules() {
     return {
       maxLength: 64
@@ -20,12 +24,12 @@ export class DefaultRecordValidator implements IValidatorInterface<IRecord> {
   validate(record: IRecord, { raiseError }: IValidatorOptions = { raiseError: true }): boolean {
     this.#errors = []
 
-    if (!record.data) this.#errors.push('Record data is required')
-    if (typeof record.class !== 'number') this.#errors.push('Record class is required')
-    if (record.data.length > this.rules.maxLength) this.#errors.push('Record data is too long')
-    if (!(record.class in RecordClassEnum)) this.#errors.push('Record class is invalid')
+    if (!record.data) this.addError('Record data is required')
+    if (typeof record.class !== 'number') this.addError('Record class is required')
+    if (record.data.length > this.rules.maxLength) this.addError('Record data is too long')
+    if (!(record.class in RecordClassEnum)) this.addError('Record class is invalid')
 
-    if (raiseError && this.#errors.length > 0) throw new Error(this.#errors.join(', '))
+    if (raiseError) this.raiseErrors()
 
     return !this.hasErrors()
   }
@@ -38,6 +42,6 @@ export class DefaultRecordValidator implements IValidatorInterface<IRecord> {
   }
 
   protected raiseErrors() {
-    if (this.#errors.length > 0) throw new Error(this.#errors.join(', '))
+    if (this.#errors.length > 0) throw new Error(this.getErrors().join(', '))
   }
 }
