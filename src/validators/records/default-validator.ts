@@ -1,0 +1,43 @@
+import { IRecord, IValidatorInterface, IValidatorOptions, RecordClassEnum } from '../../interface'
+
+export class DefaultRecordValidator implements IValidatorInterface<IRecord> {
+  #errors: string[] = []
+
+  hasErrors() {
+    return this.#errors.length > 0
+  }
+
+  getErrors() {
+    return this.#errors
+  }
+
+  get rules() {
+    return {
+      maxLength: 64
+    }
+  }
+
+  validate(record: IRecord, { raiseError }: IValidatorOptions = { raiseError: true }): boolean {
+    this.#errors = []
+
+    if (!record.data) this.#errors.push('Record data is required')
+    if (typeof record.class !== 'number') this.#errors.push('Record class is required')
+    if (record.data.length > this.rules.maxLength) this.#errors.push('Record data is too long')
+    if (!(record.class in RecordClassEnum)) this.#errors.push('Record class is invalid')
+
+    if (raiseError && this.#errors.length > 0) throw new Error(this.#errors.join(', '))
+
+    return !this.hasErrors()
+  }
+
+  normalize(record: IRecord): IRecord {
+    if (typeof record.data === 'string')
+      record.data = record.data.trim()
+
+    return record
+  }
+
+  protected raiseErrors() {
+    if (this.#errors.length > 0) throw new Error(this.#errors.join(', '))
+  }
+}
