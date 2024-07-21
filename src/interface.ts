@@ -53,8 +53,8 @@ export enum RecordClassEnum {
   Uri = 3,
   Wallet = 4,
   Avatar = 5,
-  Email = 6
-  // Custom = 7,
+  Email = 6,
+  Price = 7
   // Custom2 = 8,
   // Custom3 = 9,
   // Custom4 = 10,
@@ -216,7 +216,7 @@ export interface IValidatorInterface<T> {
   getErrors(): string[]
   hasErrors(): boolean
   get rules(): object
-  normalize(value: T, options?: IValidatorOptions): T
+  normalize(value: T, options?: Record<string, unknown>): T
   validate(value: T, options?: IValidatorOptions): boolean
 }
 
