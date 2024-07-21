@@ -8,11 +8,19 @@ export interface INormalizeOptions extends IValidatorOptions {
 
 
 export class DomainValidator implements IValidatorInterface<string> {
-  errors: string[] = []
+  #errors: string[] = []
   tld: string[]
 
   constructor(tld: string | string[]) {
     this.tld = Array.isArray(tld) ? tld : [tld]
+  }
+
+  hasErrors() {
+    return this.#errors.length > 0
+  }
+
+  getErrors() {
+    return this.#errors
   }
 
   get rules() {
@@ -23,21 +31,21 @@ export class DomainValidator implements IValidatorInterface<string> {
   }
 
   validate(name: string, options: IValidatorOptions = { raiseError: true }): boolean {
-    this.errors = []
+    this.#errors = []
 
-    if (!name) this.errors.push('Domain name is required')
-    if (typeof name !== 'string') this.errors.push('Domain name is required')
-    if (name.length < this.rules.minLength) this.errors.push('Domain name is too short')
-    if (name.length > this.rules.maxLength) this.errors.push('Domain name is too long')
+    if (!name) this.#errors.push('Domain name is required')
+    if (typeof name !== 'string') this.#errors.push('Domain name is required')
+    if (name.length < this.rules.minLength) this.#errors.push('Domain name is too short')
+    if (name.length > this.rules.maxLength) this.#errors.push('Domain name is too long')
 
     const normalized = this.normalize(name, { removeTLD: true })
     if (normalized === '.' ||
       name.includes('..') ||
-      this.normalize(name, { removeTLD: false }) === '') this.errors.push('Domain name contains invalid characters')
+      this.normalize(name, { removeTLD: false }) === '') this.#errors.push('Domain name contains invalid characters')
 
-    if (options.raiseError && this.errors.length > 0) throw new Error(this.errors.join(', '))
+    if (options.raiseError && this.#errors.length > 0) throw new Error(this.#errors.join(', '))
 
-    return this.errors.length === 0
+    return !this.hasErrors()
   }
 
   normalize(name: string, options: INormalizeOptions = {}): string {

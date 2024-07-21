@@ -213,11 +213,11 @@ export interface IValidatorOptions {
 }
 
 export interface IValidatorInterface<T> {
-  errors: string[]
-
+  getErrors(): string[]
+  hasErrors(): boolean
   get rules(): object
-  normalize(value: T, options: IValidatorOptions): T
-  validate(value: T, options: IValidatorOptions): boolean
+  normalize(value: T, options?: IValidatorOptions): T
+  validate(value: T, options?: IValidatorOptions): boolean
 }
 
 export interface AvlTreeItem {

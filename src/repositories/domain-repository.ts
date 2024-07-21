@@ -253,13 +253,13 @@ export class DomainRepository {
     let parentDomain = params.parentDomain
     const subscriptionYears = params.subscriptionYears ?? 1
 
-    if (!this.domainValidator.validate(domain, { raiseError: false })) throw new Error(`Validation error for ${domain}: ${this.domainValidator.errors.join(', ')}`)
+    if (!this.domainValidator.validate(domain, { raiseError: false })) throw new Error(`Validation error for ${domain}: ${this.domainValidator.getErrors().join(', ')}`)
 
     if (!parentDomain) parentDomain = getParentName(domain)
 
     let normalizedParentDomain: string | undefined
     if (parentDomain) {
-      if (!this.domainValidator.validate(parentDomain, { raiseError: false })) throw new Error(`Validation error for ${parentDomain}: ${this.domainValidator.errors.join(', ')}`)
+      if (!this.domainValidator.validate(parentDomain, { raiseError: false })) throw new Error(`Validation error for ${parentDomain}: ${this.domainValidator.getErrors().join(', ')}`)
 
       normalizedParentDomain = this.domainValidator.normalize(parentDomain, { reverse: true })
       if (!domain.endsWith(parentDomain)) domain = `${domain}.${parentDomain}`
