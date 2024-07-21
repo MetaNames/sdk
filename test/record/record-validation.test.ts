@@ -1,10 +1,10 @@
-import { RecordClassEnum, getRecordValidator, IRecord } from "../../../src"
-import { DefaultRecordValidator } from "../../../src/validators/records/default-validator"
-import { DiscordRecordValidator } from "../../../src/validators/records/discord-validator"
-import { EmailRecordValidator } from "../../../src/validators/records/email-validator"
-import { TwitterRecordValidator } from "../../../src/validators/records/twitter-validator"
-import { UriRecordValidator } from "../../../src/validators/records/uri-validator"
-import { WalletRecordValidator } from "../../../src/validators/records/wallet-validator"
+import { RecordClassEnum, getRecordValidator, IRecord } from "../../src"
+import { DefaultRecordValidator } from "../../src/validators/records/default-validator"
+import { DiscordRecordValidator } from "../../src/validators/records/discord-validator"
+import { EmailRecordValidator } from "../../src/validators/records/email-validator"
+import { TwitterRecordValidator } from "../../src/validators/records/twitter-validator"
+import { UriRecordValidator } from "../../src/validators/records/uri-validator"
+import { WalletRecordValidator } from "../../src/validators/records/wallet-validator"
 
 describe('Record Validator Factory', () => {
   test('returns DefaultRecordValidator for Bio record', () => {
