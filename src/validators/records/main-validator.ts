@@ -1,4 +1,3 @@
-import { kMaxLength } from "buffer"
 import { IRecord, IValidatorInterface, IValidatorOptions } from "../../interface"
 import { BaseValidator } from "../base-validator"
 
