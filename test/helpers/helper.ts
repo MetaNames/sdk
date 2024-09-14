@@ -11,6 +11,16 @@ export const generateRandomString = (length: number): string => {
   return result
 }
 
+export const generateWalletAddress = (): string => {
+  let address = '005'
+  const characters = '0123456789abcdef'
+  for(let i = 0; i < 39; i++) {
+    address += characters.charAt(Math.floor(Math.random() * characters.length))
+  }
+
+  return address
+}
+
 export const mintDomain = async (domain: string) => {
   const randomActionMint: IActionDomainMint = {
     domain,

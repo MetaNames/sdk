@@ -1,6 +1,6 @@
 import { IActionDomainMint, IRecord, RecordClassEnum } from '../../src/interface'
 import { Domain } from '../../src/models'
-import { config, generateRandomString, verifyTransactionResult } from '../helpers'
+import { config, generateRandomString, generateWalletAddress, verifyTransactionResult } from '../helpers'
 
 const domainName = `${generateRandomString(15)}.mpc`
 
@@ -54,7 +54,7 @@ test('action record mint batch', async () => {
   }
   const actionMintRecord2: IRecord = {
     class: RecordClassEnum.Twitter,
-    data: config.address
+    data: 'handle'
   }
   const { transactionHash, fetchResult } = await domain.getRecordRepository(config.sdk).createBatch([actionMintRecord, actionMintRecord2])
   const recordMintBatchResult = await fetchResult
@@ -105,7 +105,7 @@ test('action record update', async () => {
 
   const actionUpdateRecord: IRecord = {
     class: RecordClassEnum.Wallet,
-    data: generateRandomString(40)
+    data: generateWalletAddress()
   }
   const { transactionHash: updateTransactionHash, fetchResult: fetchUpdateResult } = await domain.getRecordRepository(config.sdk).update(actionUpdateRecord)
   const resultUpdateRecord = await fetchUpdateResult

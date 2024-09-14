@@ -1,28 +1,42 @@
 import { IRecord, IValidatorInterface, IValidatorOptions, RecordClassEnum } from '../interface'
+import { DefaultRecordValidator } from './records/default-validator'
+import { DiscordRecordValidator } from './records/discord-validator'
+import { EmailRecordValidator } from './records/email-validator'
+import { TwitterRecordValidator } from './records/twitter-validator'
+import { UriRecordValidator } from './records/uri-validator'
+import { WalletRecordValidator } from './records/wallet-validator'
 
-export class RecordValidator implements IValidatorInterface<IRecord> {
-  errors: string[] = []
+const recordValidatorFactory: { [key: number]: IValidatorInterface<IRecord> } = {}
 
-  get rules() {
-    return {
-      maxLength: 64
-    }
+export function getRecordValidator(record: IRecord): IValidatorInterface<IRecord> {
+  let cachedValidator = recordValidatorFactory[record.class]
+  if (cachedValidator) return cachedValidator
+
+  switch (record.class) {
+    case RecordClassEnum.Bio:
+    case RecordClassEnum.Avatar:
+      cachedValidator = new DefaultRecordValidator()
+      break
+    case RecordClassEnum.Discord:
+      cachedValidator = new DiscordRecordValidator()
+      break
+    case RecordClassEnum.Email:
+      cachedValidator = new EmailRecordValidator()
+      break
+    case RecordClassEnum.Twitter:
+      cachedValidator = new TwitterRecordValidator()
+      break
+    case RecordClassEnum.Uri:
+      cachedValidator = new UriRecordValidator()
+      break
+    case RecordClassEnum.Wallet:
+      cachedValidator = new WalletRecordValidator()
+      break
+    default:
+      throw new Error('Record class is invalid')
   }
 
-  validate(record: IRecord, { raiseError }: IValidatorOptions = { raiseError: true }): boolean {
-    this.errors = []
+  recordValidatorFactory[record.class] = cachedValidator
 
-    if (!record.data) this.errors.push('Record data is required')
-    if (typeof record.class !== 'number') this.errors.push('Record class is required')
-    if (record.data.length > this.rules.maxLength) this.errors.push('Record data is too long')
-    if (!(record.class in RecordClassEnum)) this.errors.push('Record class is invalid')
-
-    if (raiseError && this.errors.length > 0) throw new Error(this.errors.join(', '))
-
-    return this.errors.length === 0
-  }
-
-  normalize(record: IRecord): IRecord {
-    return record
-  }
+  return cachedValidator
 }

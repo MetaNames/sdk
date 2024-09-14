@@ -32,9 +32,9 @@ test('validation of an domain name with non valid chars', () => {
 test('validation without raiseError option populates errors array', () => {
     const name = 'not_valid'.repeat(10)
     validator.validate(name, { raiseError: false })
-    expect(validator.errors.length).toBe(2)
-    expect(validator.errors).toContain('Domain name is too long')
-    expect(validator.errors).toContain('Domain name contains invalid characters')
+    expect(validator.getErrors().length).toBe(2)
+    expect(validator.getErrors()).toContain('Domain name is too long')
+    expect(validator.getErrors()).toContain('Domain name contains invalid characters')
 })
 
 test('normalization of proper domain name', () => {

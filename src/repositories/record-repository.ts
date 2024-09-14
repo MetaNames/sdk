@@ -2,7 +2,7 @@ import { actionRecordDeletePayload, actionRecordMintBatchPayload, actionRecordMi
 import { IDomain, IMetaNamesContractRepository, IRecord, RecordClassEnum } from "../interface"
 import { Domain } from "../models"
 import { lookUpRecord } from "../partisia-name-system"
-import { RecordValidator } from "../validators"
+import { getRecordValidator } from "../validators"
 
 /**
  * Repository to interact with records of a domain on the Meta Names contract
@@ -10,12 +10,10 @@ import { RecordValidator } from "../validators"
 export class RecordRepository {
   private contractRepository: IMetaNamesContractRepository
   private domain: Domain
-  public recordValidator: RecordValidator
 
   constructor(contractRepository: IMetaNamesContractRepository, domain: IDomain) {
     this.contractRepository = contractRepository
     this.domain = new Domain(domain)
-    this.recordValidator = new RecordValidator()
   }
 
   /**
@@ -23,7 +21,7 @@ export class RecordRepository {
    * @param params Record params
    */
   async create(params: IRecord) {
-    if (!this.recordValidator.validate(params)) throw new Error('Record validation failed')
+    if (!this.getValidator(params).validate(params)) throw new Error('Record validation failed')
 
     const contract = await this.contractRepository.getContract()
     const payload = actionRecordMintPayload(contract.abi, this.addDomainToParams(params))
@@ -33,7 +31,7 @@ export class RecordRepository {
 
   async createBatch(params: IRecord[]) {
     const normalizedParams = params.map((p) => {
-      if (!this.recordValidator.validate(p)) throw new Error('Record validation failed')
+      if (!this.getValidator(p).validate(p)) throw new Error('Record validation failed')
 
       return this.addDomainToParams(p)
     })
@@ -59,7 +57,7 @@ export class RecordRepository {
    * @param params Record params
    */
   async update(params: IRecord) {
-    if (!this.recordValidator.validate(params)) throw new Error('Record validation failed')
+    if (!this.getValidator(params).validate(params)) throw new Error('Record validation failed')
 
     const contract = await this.contractRepository.getContract()
     const payload = actionRecordUpdatePayload(contract.abi, this.addDomainToParams(params))
@@ -83,5 +81,9 @@ export class RecordRepository {
       domain: this.domain.nameWithoutTLD,
       ...params
     }
+  }
+
+  private getValidator(record: IRecord) {
+    return getRecordValidator(record)
   }
 }

@@ -1,5 +1,6 @@
 import { toUnicode } from 'tr46'
 import { IValidatorInterface, IValidatorOptions } from '../interface'
+import { BaseValidator } from './base-validator'
 
 export interface INormalizeOptions extends IValidatorOptions {
   removeTLD?: boolean
@@ -7,11 +8,11 @@ export interface INormalizeOptions extends IValidatorOptions {
 }
 
 
-export class DomainValidator implements IValidatorInterface<string> {
-  errors: string[] = []
+export class DomainValidator extends BaseValidator implements IValidatorInterface<string> {
   tld: string[]
 
   constructor(tld: string | string[]) {
+    super()
     this.tld = Array.isArray(tld) ? tld : [tld]
   }
 
@@ -23,21 +24,21 @@ export class DomainValidator implements IValidatorInterface<string> {
   }
 
   validate(name: string, options: IValidatorOptions = { raiseError: true }): boolean {
-    this.errors = []
+    this.clearErrors()
 
-    if (!name) this.errors.push('Domain name is required')
-    if (typeof name !== 'string') this.errors.push('Domain name is required')
-    if (name.length < this.rules.minLength) this.errors.push('Domain name is too short')
-    if (name.length > this.rules.maxLength) this.errors.push('Domain name is too long')
+    if (!name) this.addError('Domain name is required')
+    if (typeof name !== 'string') this.addError('Domain name is required')
+    if (name.length < this.rules.minLength) this.addError('Domain name is too short')
+    if (name.length > this.rules.maxLength) this.addError('Domain name is too long')
 
     const normalized = this.normalize(name, { removeTLD: true })
     if (normalized === '.' ||
       name.includes('..') ||
-      this.normalize(name, { removeTLD: false }) === '') this.errors.push('Domain name contains invalid characters')
+      this.normalize(name, { removeTLD: false }) === '') this.addError('Domain name contains invalid characters')
 
-    if (options.raiseError && this.errors.length > 0) throw new Error(this.errors.join(', '))
+    if (options.raiseError) this.raiseErrors()
 
-    return this.errors.length === 0
+    return !this.hasErrors()
   }
 
   normalize(name: string, options: INormalizeOptions = {}): string {
