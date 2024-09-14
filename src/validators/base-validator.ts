@@ -24,6 +24,6 @@ export abstract class BaseValidator {
   }
 
   abstract get rules(): Record<string, unknown>
-  abstract validate(record: unknown, options: IValidatorOptions): boolean
-  abstract normalize(record: unknown, options: IValidatorOptions): unknown
+  abstract validate(record: unknown, options?: IValidatorOptions): boolean
+  abstract normalize(record: unknown, options?: IValidatorOptions): unknown
 }

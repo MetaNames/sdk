@@ -2,6 +2,7 @@ import { IRecord, IValidatorInterface, IValidatorOptions, RecordClassEnum } from
 import { DefaultRecordValidator } from './records/default-validator'
 import { DiscordRecordValidator } from './records/discord-validator'
 import { EmailRecordValidator } from './records/email-validator'
+import { PriceRecordValidator } from './records/price-validator'
 import { TwitterRecordValidator } from './records/twitter-validator'
 import { UriRecordValidator } from './records/uri-validator'
 import { WalletRecordValidator } from './records/wallet-validator'
@@ -31,6 +32,9 @@ export function getRecordValidator(record: IRecord): IValidatorInterface<IRecord
       break
     case RecordClassEnum.Wallet:
       cachedValidator = new WalletRecordValidator()
+      break
+    case RecordClassEnum.Price:
+      cachedValidator = new PriceRecordValidator()
       break
     default:
       throw new Error('Record class is invalid')

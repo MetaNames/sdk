@@ -1,6 +1,6 @@
 import { BN, ContractAbi, ScValue, ScValueAvlTreeMap, ScValueMap, ScValueNumber, ScValueString, ScValueStruct, StateReader, TypeIndex } from '@partisiablockchain/abi-client'
 import { LittleEndianByteInput } from '@secata-public/bitmanipulation-ts'
-import { IDomain, IDomainPartial, RecordClassEnum } from './interface'
+import { IDomain, IDomainPartial, RecordClassCustomEnum, RecordClassEnum } from './interface'
 
 export function getPnsDomains(contract: ScValueStruct): ScValueAvlTreeMap {
   const pns = contract.fieldsMap.get('pns')
@@ -129,7 +129,12 @@ export function extractRecords(records: ScValueMap) {
   const extractedRecords: Record<string, string> = {}
 
   for (const [scKey, scValue] of records.mapValue().map) {
-    const key = scKey.enumValue().name
+    let key = scKey.enumValue().name
+
+    // Convert custom keys if mapped
+    if (key.startsWith('Custom') && key in RecordClassCustomEnum)
+      key = RecordClassCustomEnum[key as keyof typeof RecordClassCustomEnum]
+
     const data = scValue.vecU8Value()
     if (!data) continue
 
