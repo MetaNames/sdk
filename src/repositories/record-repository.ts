@@ -84,6 +84,6 @@ export class RecordRepository {
   }
 
   private getValidator(record: IRecord) {
-    return getRecordValidator(record)
+    return getRecordValidator(record.class)
   }
 }
