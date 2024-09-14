@@ -8,7 +8,8 @@ export class PriceRecordValidator extends BaseValidator implements IValidatorInt
       maxPrice: 1_000_000_000
     }
   }
-  validate(record: IRecord, options?: IValidatorOptions): boolean {
+
+  validation(record: IRecord, options?: IValidatorOptions): boolean {
     const data = record.data.toString().trim()
     if (!data) this.addError('Price is required')
 

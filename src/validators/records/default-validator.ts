@@ -8,9 +8,7 @@ export class DefaultRecordValidator extends BaseValidator implements IValidatorI
     }
   }
 
-  validate(record: IRecord, { raiseError }: IValidatorOptions = { raiseError: true }): boolean {
-    this.clearErrors()
-
+  validation(record: IRecord, { raiseError }: IValidatorOptions = { raiseError: true }): boolean {
     if (!record.data) this.addError('Record data is required')
     if (typeof record.class !== 'number') this.addError('Record class is required')
     if (record.data.length > this.rules.maxLength) this.addError('Record data is too long')

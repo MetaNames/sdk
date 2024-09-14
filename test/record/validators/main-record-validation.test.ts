@@ -1,3 +1,4 @@
+import { kMaxLength } from "buffer"
 import { IRecord, RecordClassEnum } from "../../../src"
 import { MainRecordValidator } from "../../../src/validators/records/main-validator"
 
@@ -65,8 +66,8 @@ describe('MainRecordValidator', () => {
 
   // Rules Test
   describe('rules', () => {
-    test('has an empty rules object', () => {
-      expect(validator.rules).toEqual({})
+    test('has rules object', () => {
+      expect(validator.rules).toEqual({ maxLength: 1})
     })
   })
 })

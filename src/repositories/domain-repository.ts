@@ -31,7 +31,7 @@ export class DomainRepository {
    * @param domainName
    */
   analyze(domainName: string): IDomainAnalyzed {
-    if (!this.domainValidator.validate(domainName)) throw new Error('Domain validation failed')
+    if (!this.domainValidator.validation(domainName)) throw new Error('Domain validation failed')
 
     const domainWithoutTld = this.domainValidator.normalize(domainName, { reverse: false, removeTLD: true })
     const fullName = `${domainWithoutTld}.${this.config.tld}`
@@ -50,7 +50,7 @@ export class DomainRepository {
    * @param domainName A valid domain name
    */
   async approveMintFees(domainName: string, byocSymbol: BYOCSymbol, subscriptionYears = 1) {
-    if (!this.domainValidator.validate(domainName)) throw new Error('Domain validation failed')
+    if (!this.domainValidator.validation(domainName)) throw new Error('Domain validation failed')
     if (subscriptionYears < 1) throw new Error('Subscription years must be greater than 0')
 
     const normalizedDomain = this.domainValidator.normalize(domainName)
@@ -95,7 +95,7 @@ export class DomainRepository {
     const domainName = params.domain
     const subscriptionYears = params.subscriptionYears ?? 1
 
-    if (!this.domainValidator.validate(params.domain)) throw new Error('Domain validation failed')
+    if (!this.domainValidator.validation(params.domain)) throw new Error('Domain validation failed')
     if (subscriptionYears < 1) throw new Error('Subscription years must be greater than 0')
 
     const byoc = this.config.byoc.find((byoc) => byoc.symbol === params.byocSymbol)
@@ -110,7 +110,7 @@ export class DomainRepository {
 
   async transfer(params: IActionDomainTransfer) {
     const { domain, from, to } = params
-    if (!this.domainValidator.validate(domain)) throw new Error('Domain validation failed')
+    if (!this.domainValidator.validation(domain)) throw new Error('Domain validation failed')
 
     const abi = await this.metaNamesContract.getAbi()
     const domainObject = await this.find(domain)
@@ -130,7 +130,7 @@ export class DomainRepository {
    * @param domainName A valid domain name
    */
   async calculateMintFees(domainName: string, tokenSymbol: BYOCSymbol) {
-    if (!this.domainValidator.validate(domainName)) throw new Error('Invalid domain name')
+    if (!this.domainValidator.validation(domainName)) throw new Error('Invalid domain name')
 
     const [struct, availableCoins] = await Promise.all([
       this.metaNamesContract.getState({ partial: true }),
@@ -253,13 +253,13 @@ export class DomainRepository {
     let parentDomain = params.parentDomain
     const subscriptionYears = params.subscriptionYears ?? 1
 
-    if (!this.domainValidator.validate(domain, { raiseError: false })) throw new Error(`Validation error for ${domain}: ${this.domainValidator.getErrors().join(', ')}`)
+    if (!this.domainValidator.validation(domain, { raiseError: false })) throw new Error(`Validation error for ${domain}: ${this.domainValidator.getErrors().join(', ')}`)
 
     if (!parentDomain) parentDomain = getParentName(domain)
 
     let normalizedParentDomain: string | undefined
     if (parentDomain) {
-      if (!this.domainValidator.validate(parentDomain, { raiseError: false })) throw new Error(`Validation error for ${parentDomain}: ${this.domainValidator.getErrors().join(', ')}`)
+      if (!this.domainValidator.validation(parentDomain, { raiseError: false })) throw new Error(`Validation error for ${parentDomain}: ${this.domainValidator.getErrors().join(', ')}`)
 
       normalizedParentDomain = this.domainValidator.normalize(parentDomain, { reverse: true })
       if (!domain.endsWith(parentDomain)) domain = `${domain}.${parentDomain}`
