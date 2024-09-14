@@ -31,6 +31,7 @@ const recordsTestArray: { recordClass: RecordClassEnum, initialValue: any, updat
   { recordClass: RecordClassEnum.Uri, initialValue: 'https://app.metanames.app', updatedValue: 'https://metanam.es' },
   { recordClass: RecordClassEnum.Avatar, initialValue: 'avatar', updatedValue: 'avatar 2' },
   { recordClass: RecordClassEnum.Email, initialValue: 'metanames@proton.me', updatedValue: 'metanames2@proton.me' },
+  { recordClass: RecordClassEnum.Main, initialValue: '1', updatedValue: '0' },
 ]
 
 describe('lookup domain records', () => {
