@@ -10,11 +10,11 @@ import { WalletRecordValidator } from './records/wallet-validator'
 
 const recordValidatorFactory: { [key: number]: IValidatorInterface<IRecord> } = {}
 
-export function getRecordValidator(record: IRecord): IValidatorInterface<IRecord> {
-  let cachedValidator = recordValidatorFactory[record.class]
+export function getRecordValidator(klass: RecordClassEnum): IValidatorInterface<IRecord> {
+  let cachedValidator = recordValidatorFactory[klass]
   if (cachedValidator) return cachedValidator
 
-  switch (record.class) {
+  switch (klass) {
     case RecordClassEnum.Bio:
     case RecordClassEnum.Avatar:
       cachedValidator = new DefaultRecordValidator()
@@ -44,7 +44,7 @@ export function getRecordValidator(record: IRecord): IValidatorInterface<IRecord
       throw new Error('Record class is invalid')
   }
 
-  recordValidatorFactory[record.class] = cachedValidator
+  recordValidatorFactory[klass] = cachedValidator
 
   return cachedValidator
 }

@@ -3,9 +3,11 @@ import { BaseValidator } from "../base-validator"
 
 export class MainRecordValidator extends BaseValidator implements IValidatorInterface<IRecord> {
   get rules() {
-    return {}
+    return {
+      maxLength: 1
+    }
   }
-  validate(record: IRecord, options?: IValidatorOptions): boolean {
+  validation(record: IRecord, options?: IValidatorOptions): boolean {
     const data = record.data.toString()
     if (!data) this.addError('Value is required')
 

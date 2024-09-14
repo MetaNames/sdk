@@ -9,8 +9,8 @@ export abstract class RegexRecordValidator extends DefaultRecordValidator {
     }
   }
 
-  validate(record: IRecord, options: IValidatorOptions = { raiseError: true }): boolean {
-    if (!super.validate(record, options)) return false
+  validation(record: IRecord, options: IValidatorOptions = { raiseError: true }): boolean {
+    if (!super.validation(record, options)) return false
 
     const data = record.data.toString()
     if (!this.rules.pattern.test(data)) this.getErrors().push(this.getRegexError())

@@ -23,7 +23,7 @@ export class DomainValidator extends BaseValidator implements IValidatorInterfac
     }
   }
 
-  validate(name: string, options: IValidatorOptions = { raiseError: true }): boolean {
+  validation(name: string, options: IValidatorOptions = { raiseError: true }): boolean {
     this.clearErrors()
 
     if (!name) this.addError('Domain name is required')
