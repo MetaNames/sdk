@@ -1,4 +1,5 @@
 import { IRecord, IValidatorInterface, IValidatorOptions, RecordClassEnum } from '../interface'
+import { MainRecordValidator } from './records/main-validator'
 import { DefaultRecordValidator } from './records/default-validator'
 import { DiscordRecordValidator } from './records/discord-validator'
 import { EmailRecordValidator } from './records/email-validator'
@@ -35,6 +36,9 @@ export function getRecordValidator(record: IRecord): IValidatorInterface<IRecord
       break
     case RecordClassEnum.Price:
       cachedValidator = new PriceRecordValidator()
+      break
+    case RecordClassEnum.Main:
+      cachedValidator = new MainRecordValidator()
       break
     default:
       throw new Error('Record class is invalid')
