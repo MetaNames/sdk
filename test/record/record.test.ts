@@ -3,8 +3,8 @@ import { Domain } from '../../src/models'
 import { config, mintDomain, mintRecord } from '../helpers'
 
 const domainName = 'name.mpc'
-const recordClass = RecordClassEnum.Wallet
-const recordValue = '00373c68dfed999aec39063194e2d3e0870f9899fa'
+const recordClass = RecordClassEnum.Price
+const recordValue = '1000'
 let domain: Domain
 
 beforeAll(async () => {

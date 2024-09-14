@@ -61,6 +61,10 @@ export enum RecordClassEnum {
   // Custom5 = 11,
 }
 
+export enum RecordClassCustomEnum {
+  Custom = 'Price'
+}
+
 export type Address = Buffer | string
 
 export interface IActionRecordMint extends IRecord {
