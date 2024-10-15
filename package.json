@@ -11,11 +11,12 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "yarn tsc",
     "docs": "typedoc --out docs src",
     "format": "eslint --fix src",
     "test": "jest -i",
-    "prepublishOnly": "yarn build"
+    "prepublishOnly": "yarn build",
+    "postinstall": "./node_modules/.bin/tsc"
   },
   "dependencies": {
     "@ledgerhq/hw-transport": "^6.31.4",
