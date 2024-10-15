@@ -8,6 +8,7 @@ import type PartisiaSdk from 'partisia-blockchain-applications-sdk'
 import { BigEndianByteOutput } from '@secata-public/bitmanipulation-ts'
 import { deriveDigest, getTransactionPayloadData, getTrxHash, serializedTransaction } from 'partisia-blockchain-applications-crypto/lib/main/transaction'
 import { privateKeyToAccountAddress, signTransaction } from 'partisia-blockchain-applications-crypto/lib/main/wallet'
+import { getChainId } from '../transactions/helper'
 
 export const builderToBytesBe = (rpc: FnRpcBuilder) => {
   const bitOutput = new BigEndianByteOutput()
@@ -34,7 +35,7 @@ export const createTransactionFromMetaMaskClient = async (
   const url = rpc.getShardUrl(shardId)
 
   const serializedTransaction = await serializeTransaction(rpc, walletAddress, contractAddress, payload, cost)
-  const chainId = `Partisia Blockchain${isMainnet ? '' : ' Testnet'}`
+  const chainId = getChainId(isMainnet)
   const digest = deriveDigest(
     chainId,
     serializedTransaction

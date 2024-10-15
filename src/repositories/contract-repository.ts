@@ -8,6 +8,7 @@ import { SecretsProvider } from '../providers/secrets'
 import { convertAvlTree as convertAvlTrees } from './helpers/contract'
 import { AvlClient } from './helpers/avl-client'
 import { getRequest, promiseRetry } from './helpers/client'
+import { createTransactionFromLedgerClient, PartisiaLedgerClient } from '../transactions/ledger'
 
 
 /**
@@ -125,6 +126,9 @@ export class ContractRepository implements IContractRepository {
 
       case 'MetaMask':
         return createTransactionFromMetaMaskClient(this.rpc, this.secrets.metaMask, contractAddress, payload, isMainnet, gas)
+
+      case 'Ledger':
+        return createTransactionFromLedgerClient(this.rpc, this.secrets.ledger, contractAddress, payload, isMainnet, gas)
 
       default:
         throw new Error('Signing strategy not found')

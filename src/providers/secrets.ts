@@ -1,4 +1,5 @@
 import type PartisiaSdk from "partisia-blockchain-applications-sdk"
+import type LedgerTransport from "@ledgerhq/hw-transport";
 import { MetaMaskSdk, SigningClassType, SigningStrategyType } from "../interface"
 
 export class SecretsProvider {
@@ -20,10 +21,8 @@ export class SecretsProvider {
         this.setSecret(value)
         break
       case 'partisiaSdk':
-        this.setSecret(value)
-        break
-
       case 'MetaMask':
+      case 'Ledger':
         this.setSecret(value)
         break
 
@@ -57,6 +56,12 @@ export class SecretsProvider {
     if (this.strategy !== 'MetaMask') throw new Error('Invalid signing strategy')
 
     return this.secret as MetaMaskSdk
+  }
+
+  get ledger(): LedgerTransport {
+    if (this.strategy !== 'Ledger') throw new Error('Invalid signing strategy')
+
+    return this.secret as LedgerTransport
   }
 
   private setSecret(secret?: SigningClassType) {
