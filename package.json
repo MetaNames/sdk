@@ -15,8 +15,7 @@
     "docs": "typedoc --out docs src",
     "format": "eslint --fix src",
     "test": "jest -i",
-    "prepublishOnly": "yarn build",
-    "postinstall": "./node_modules/.bin/tsc"
+    "prepublishOnly": "yarn build"
   },
   "dependencies": {
     "@ledgerhq/hw-transport": "^6.31.4",
