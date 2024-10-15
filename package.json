@@ -18,8 +18,10 @@
     "prepublishOnly": "yarn build"
   },
   "dependencies": {
+    "@ledgerhq/hw-transport": "^6.31.4",
     "@partisiablockchain/abi-client": "^3.30.0",
     "@secata-public/bitmanipulation-ts": "^3.0.6",
+    "bip32-path": "^0.4.2",
     "node-fetch": "2",
     "partisia-blockchain-applications-crypto": "^1.0.22",
     "partisia-blockchain-applications-rpc": "^1.0.12",
