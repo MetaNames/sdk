@@ -129,7 +129,7 @@ export class PartisiaLedgerClient {
   /**
    * Asks the Ledger hardware wallet about the address that it will sign for.
    */
-  public getAddress(keyPath: string, confirmOnScreen = false): Promise<string> {
+  public getAddress(keyPath: string = DEFAULT_KEYPATH, confirmOnScreen = false): Promise<string> {
     return this.ledgerTransport
       .send(
         CLA,
@@ -148,9 +148,9 @@ export class PartisiaLedgerClient {
    * Returns a signature as a promised buffer.
    */
   public async signTransaction(
-    keyPath: string,
     serializedTransaction: Buffer,
-    chainId: string
+    chainId: string,
+    keyPath: string = DEFAULT_KEYPATH,
   ): Promise<Signature> {
     const chainIdBuffer = Buffer.from(chainId, "utf8");
 
@@ -203,7 +203,7 @@ export const createTransactionFromLedgerClient = async (
   cost: number | string = 10490
 ): Promise<ITransactionIntent> => {
   const client = new PartisiaLedgerClient(transport)
-  const walletAddress: string = await client.getAddress(DEFAULT_KEYPATH)
+  const walletAddress: string = await client.getAddress()
   const shardId = rpc.deriveShardId(walletAddress)
   const url = rpc.getShardUrl(shardId)
 
@@ -211,7 +211,7 @@ export const createTransactionFromLedgerClient = async (
   const chainId = getChainId(isMainnet)
   const digest = deriveDigest( chainId, serializedTransaction)
 
-  const signature = await client.signTransaction(DEFAULT_KEYPATH, serializedTransaction, chainId);
+  const signature = await client.signTransaction(serializedTransaction, chainId);
 
   const signatureBuffer = signatureToBuffer(signature)
 
