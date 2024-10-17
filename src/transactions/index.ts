@@ -1,21 +1,43 @@
-import assert from 'assert'
-import { PartisiaRpc } from 'partisia-blockchain-applications-rpc'
-import type { PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
-import type { PartisiaRpcClass } from 'partisia-blockchain-applications-rpc/lib/main/rpc'
-import type { ITransactionIntent, MetaMaskSdk } from '../interface'
-import { AbiOutputBytes, FnRpcBuilder, } from '@partisiablockchain/abi-client'
-import type PartisiaSdk from 'partisia-blockchain-applications-sdk'
-import { BigEndianByteOutput } from '@secata-public/bitmanipulation-ts'
-import { deriveDigest, getTransactionPayloadData, getTrxHash, serializedTransaction } from 'partisia-blockchain-applications-crypto/lib/main/transaction'
-import { privateKeyToAccountAddress, signTransaction } from 'partisia-blockchain-applications-crypto/lib/main/wallet'
-import { getChainId } from '../transactions/helper'
+import { PartisiaAccountClass } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
+import type LedgerTransport from "@ledgerhq/hw-transport";
+import { ITransactionIntent, MetaMaskSdk } from "../interface";
+import { PartisiaLedgerClient, signatureToBuffer } from "./ledger";
+import { buildTransactionResult, getChainId, serializeTransaction } from "./helper";
+import { deriveDigest, getTransactionPayloadData, getTrxHash } from "partisia-blockchain-applications-crypto/lib/main/transaction";
+import { PartisiaRpc } from "partisia-blockchain-applications-rpc";
+import assert from "assert";
+import PartisiaSdk from "partisia-blockchain-applications-sdk";
+import { privateKeyToAccountAddress, signTransaction } from "partisia-blockchain-applications-crypto/lib/main/wallet";
 
-export const builderToBytesBe = (rpc: FnRpcBuilder) => {
-  const bitOutput = new BigEndianByteOutput()
-  const abiOutputBits = new AbiOutputBytes(bitOutput)
-  rpc.write(abiOutputBits)
+export const createTransactionFromLedgerClient = async (
+  rpc: PartisiaAccountClass,
+  transport: LedgerTransport,
+  contractAddress: string,
+  payload: Buffer,
+  isMainnet = false,
+  cost: number | string = 10490
+): Promise<ITransactionIntent> => {
+  const client = new PartisiaLedgerClient(transport)
+  const walletAddress: string = await client.getAddress()
+  const shardId = rpc.deriveShardId(walletAddress)
+  const url = rpc.getShardUrl(shardId)
 
-  return bitOutput.toBuffer()
+  const serializedTransaction = await serializeTransaction(rpc, walletAddress, contractAddress, payload, cost)
+  const chainId = getChainId(isMainnet)
+  const digest = deriveDigest( chainId, serializedTransaction)
+
+  const signature = await client.signTransaction(serializedTransaction, chainId);
+
+  const signatureBuffer = signatureToBuffer(signature)
+
+  const transactionPayload = Buffer.concat([signatureBuffer, serializedTransaction]).toString('base64')
+
+  const rpcShard = PartisiaRpc({ baseURL: url })
+  const transactionHash = getTrxHash(digest, signatureBuffer)
+  const isValid = await rpcShard.broadcastTransaction(transactionPayload)
+  assert(isValid, 'Unknown Error')
+
+  return buildTransactionResult(rpc, rpcShard, transactionHash)
 }
 
 export const createTransactionFromMetaMaskClient = async (
@@ -120,83 +142,4 @@ export const createTransactionFromPrivateKey = async (
   assert(isValid, 'Unknown Error')
 
   return buildTransactionResult(rpc, rpcShard, transactionHash)
-}
-
-const buildTransactionResult = (rpc: PartisiaAccountClass,
-  rpcShard: PartisiaRpcClass,
-  transactionHash: string) => {
-  return {
-    transactionHash,
-    fetchResult: transactionResult(rpc, rpcShard, transactionHash)
-  }
-}
-
-
-const transactionResult = async (
-  rpc: PartisiaAccountClass,
-  rpcShard: PartisiaRpcClass,
-  transactionHash: string
-) => {
-  const isFinalOnChain = await broadcastTransactionPoller(transactionHash, rpcShard)
-
-  let transactionResult
-  if (isFinalOnChain) {
-    transactionResult = await rpc.getTransactionEventTrace(transactionHash)
-  } else {
-    transactionResult = {
-      hasError: true,
-      errorMessage: 'unable to broadcast to chain',
-      eventTrace: [],
-    }
-  }
-
-  return {
-    transactionHash,
-    ...transactionResult,
-  }
-}
-
-const broadcastTransactionPoller = async (
-  trxHash: string,
-  rpc: PartisiaRpcClass,
-  num_iter = 10,
-  interval_sleep = 2000
-) => {
-  let intCounter = 0
-  while (++intCounter < num_iter) {
-    try {
-      const resTx = await rpc.getTransaction(trxHash)
-      if (resTx.finalized) {
-        break
-      }
-    } catch (error) {
-      if (error instanceof Error && !error.message.includes('404')) console.error(error.message)
-    } finally {
-      const sleep = (ms: number) => {
-        return new Promise((resolve) => setTimeout(resolve, ms))
-      }
-      await sleep(interval_sleep)
-    }
-  }
-  return intCounter < num_iter
-}
-
-const serializeTransaction = async (
-  rpc: PartisiaAccountClass,
-  walletAddress: string,
-  contractAddress: string,
-  payload: Buffer,
-  cost: number | string
-) => {
-  const shardId = rpc.deriveShardId(walletAddress)
-  const nonce = await rpc.getNonce(walletAddress, shardId)
-  // Set validTo to 2 minute from now
-  // Need to pass a number otherwise the internal library will throw an error
-  const validTo = (new Date().getTime() + 120_000) as unknown as string
-
-  return serializedTransaction(
-    { nonce, cost, validTo },
-    { contract: contractAddress },
-    payload
-  )
 }

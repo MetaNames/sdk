@@ -1,7 +1,6 @@
 import { BN, ContractAbi, FnRpcBuilder } from '@partisiablockchain/abi-client'
-import { builderToBytesBe } from '../actions'
 import { IActionApproveMintFees, IActionDomainMintPayload, IActionDomainTransferPayload, IActionRenewDomainPayload } from '../interface'
-
+import { builderToBytesBe } from '../transactions/helper'
 
 export const actionDomainMintPayload = (contractAbi: ContractAbi, params: IActionDomainMintPayload): Buffer => {
   if (!contractAbi.getFunctionByName('mint')) throw new Error('Function mint not found in contract abi')

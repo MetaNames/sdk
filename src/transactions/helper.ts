@@ -1,6 +1,16 @@
+import { AbiOutputBytes, FnRpcBuilder } from "@partisiablockchain/abi-client"
+import { BigEndianByteOutput } from "@secata-public/bitmanipulation-ts"
 import { serializedTransaction } from "partisia-blockchain-applications-crypto/lib/main/transaction"
 import { PartisiaAccountClass } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
 import { PartisiaRpcClass } from "partisia-blockchain-applications-rpc/lib/main/rpc"
+
+export const builderToBytesBe = (rpc: FnRpcBuilder) => {
+  const bitOutput = new BigEndianByteOutput()
+  const abiOutputBits = new AbiOutputBytes(bitOutput)
+  rpc.write(abiOutputBits)
+
+  return bitOutput.toBuffer()
+}
 
 export const getChainId = (isMainnet: boolean): string => `Partisia Blockchain${isMainnet ? '' : ' Testnet'}`
 

@@ -8,7 +8,6 @@ import { buildTransactionResult, getChainId, serializeTransaction } from "./help
 import assert from "assert";
 import { PartisiaRpc } from "partisia-blockchain-applications-rpc";
 import { deriveDigest, getTrxHash } from "partisia-blockchain-applications-crypto/lib/main/transaction";
-import type LedgerTransport from "@ledgerhq/hw-transport";
 
 // Mainly extracted from https://gitlab.com/partisiablockchain/language/example-web-client/-/blob/main/src/main/pbc-ledger-client/PbcLedgerClient.ts
 
@@ -87,7 +86,7 @@ enum P2 {
 /**
  * Splits the given buffer into chunks of at most chunkSize.
  */
-function chunkifyBuffer(buffer: Buffer, chunkSize: number): Buffer[] {
+export function chunkifyBuffer(buffer: Buffer, chunkSize: number): Buffer[] {
   const chunks: Buffer[] = [];
   for (let i = 0; i < buffer.length; i += chunkSize) {
     chunks.push(buffer.slice(i, Math.min(buffer.length, i + chunkSize)));
@@ -101,7 +100,7 @@ function chunkifyBuffer(buffer: Buffer, chunkSize: number): Buffer[] {
  * @param signature the signature.
  * @return the bytes.
  */
-function signatureToBuffer(signature: Signature): Buffer {
+export function signatureToBuffer(signature: Signature): Buffer {
   if (signature.recoveryParam == null) {
     throw new Error("Recovery parameter is null");
   }
@@ -194,35 +193,4 @@ export class PartisiaLedgerClient {
   }
 }
 
-export const createTransactionFromLedgerClient = async (
-  rpc: PartisiaAccountClass,
-  transport: LedgerTransport,
-  contractAddress: string,
-  payload: Buffer,
-  isMainnet = false,
-  cost: number | string = 10490
-): Promise<ITransactionIntent> => {
-  const client = new PartisiaLedgerClient(transport)
-  const walletAddress: string = await client.getAddress()
-  const shardId = rpc.deriveShardId(walletAddress)
-  const url = rpc.getShardUrl(shardId)
-
-  const serializedTransaction = await serializeTransaction(rpc, walletAddress, contractAddress, payload, cost)
-  const chainId = getChainId(isMainnet)
-  const digest = deriveDigest( chainId, serializedTransaction)
-
-  const signature = await client.signTransaction(serializedTransaction, chainId);
-
-  const signatureBuffer = signatureToBuffer(signature)
-
-  const transactionPayload = Buffer.concat([signatureBuffer, serializedTransaction]).toString('base64')
-
-
-  const rpcShard = PartisiaRpc({ baseURL: url })
-  const transactionHash = getTrxHash(digest, signatureBuffer)
-  const isValid = await rpcShard.broadcastTransaction(transactionPayload)
-  assert(isValid, 'Unknown Error')
-
-  return buildTransactionResult(rpc, rpcShard, transactionHash)
-}
 

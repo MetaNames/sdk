@@ -1,6 +1,6 @@
 import { AbstractBuilder, ContractAbi, FnRpcBuilder } from '@partisiablockchain/abi-client'
 import { IActionRecordDelete, IActionRecordMint, IActionRecordUpdate } from '../interface'
-import { builderToBytesBe } from './helper'
+import { builderToBytesBe } from '../transactions/helper'
 
 export const actionRecordMintPayload = (contractAbi: ContractAbi, params: IActionRecordMint): Buffer => {
   if (!contractAbi.getFunctionByName('mint_record')) throw new Error('Function mint_record not found in contract abi')
