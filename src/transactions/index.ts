@@ -1,13 +1,13 @@
 import { PartisiaAccountClass } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
-import type LedgerTransport from "@ledgerhq/hw-transport";
-import { ITransactionIntent, MetaMaskSdk } from "../interface";
-import { PartisiaLedgerClient, signatureToBuffer } from "./ledger";
-import { buildTransactionResult, getChainId, serializeTransaction } from "./helper";
-import { deriveDigest, getTransactionPayloadData, getTrxHash } from "partisia-blockchain-applications-crypto/lib/main/transaction";
-import { PartisiaRpc } from "partisia-blockchain-applications-rpc";
-import assert from "assert";
-import PartisiaSdk from "partisia-blockchain-applications-sdk";
-import { privateKeyToAccountAddress, signTransaction } from "partisia-blockchain-applications-crypto/lib/main/wallet";
+import type LedgerTransport from "@ledgerhq/hw-transport"
+import { ITransactionIntent, MetaMaskSdk } from "../interface"
+import { PartisiaLedgerClient, signatureToBuffer } from "./ledger"
+import { buildTransactionResult, getChainId, serializeTransaction } from "./helper"
+import { deriveDigest, getTransactionPayloadData, getTrxHash } from "partisia-blockchain-applications-crypto/lib/main/transaction"
+import { PartisiaRpc } from "partisia-blockchain-applications-rpc"
+import assert from "assert"
+import PartisiaSdk from "partisia-blockchain-applications-sdk"
+import { privateKeyToAccountAddress, signTransaction } from "partisia-blockchain-applications-crypto/lib/main/wallet"
 
 export const createTransactionFromLedgerClient = async (
   rpc: PartisiaAccountClass,
@@ -26,7 +26,7 @@ export const createTransactionFromLedgerClient = async (
   const chainId = getChainId(isMainnet)
   const digest = deriveDigest( chainId, serializedTransaction)
 
-  const signature = await client.signTransaction(serializedTransaction, chainId);
+  const signature = await client.signTransaction(serializedTransaction, chainId)
 
   const signatureBuffer = signatureToBuffer(signature)
 

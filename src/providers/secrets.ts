@@ -1,5 +1,5 @@
 import type PartisiaSdk from "partisia-blockchain-applications-sdk"
-import type LedgerTransport from "@ledgerhq/hw-transport";
+import type LedgerTransport from "@ledgerhq/hw-transport"
 import { MetaMaskSdk, SigningClassType, SigningStrategyType } from "../interface"
 
 export class SecretsProvider {

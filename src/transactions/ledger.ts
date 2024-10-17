@@ -1,13 +1,7 @@
-import { BN } from "@secata-public/bitmanipulation-ts";
-import BIPPath from "bip32-path";
-import type Transport from "@ledgerhq/hw-transport";
-import { Signature } from "./types";
-import { ITransactionIntent } from "../interface";
-import { PartisiaAccountClass } from "partisia-blockchain-applications-rpc/lib/main/accountInfo";
-import { buildTransactionResult, getChainId, serializeTransaction } from "./helper";
-import assert from "assert";
-import { PartisiaRpc } from "partisia-blockchain-applications-rpc";
-import { deriveDigest, getTrxHash } from "partisia-blockchain-applications-crypto/lib/main/transaction";
+import { BN } from "@secata-public/bitmanipulation-ts"
+import BIPPath from "bip32-path"
+import type Transport from "@ledgerhq/hw-transport"
+import { Signature } from "./types"
 
 // Mainly extracted from https://gitlab.com/partisiablockchain/language/example-web-client/-/blob/main/src/main/pbc-ledger-client/PbcLedgerClient.ts
 
@@ -17,22 +11,22 @@ import { deriveDigest, getTrxHash } from "partisia-blockchain-applications-crypt
 export function bip32Buffer(path: string): Buffer {
   // Bip format to numbers
 
-  const pathElements: number[] = BIPPath.fromString(path).toPathArray();
-  const buffer = Buffer.alloc(1 + pathElements.length * 4);
-  buffer[0] = pathElements.length;
+  const pathElements: number[] = BIPPath.fromString(path).toPathArray()
+  const buffer = Buffer.alloc(1 + pathElements.length * 4)
+  buffer[0] = pathElements.length
   pathElements.forEach((pathElement, pathIdx) => {
-    buffer.writeUInt32BE(pathElement, 1 + 4 * pathIdx);
-  });
-  return buffer;
+    buffer.writeUInt32BE(pathElement, 1 + 4 * pathIdx)
+  })
+  return buffer
 }
 
 /**
  * Serializes a number as an unsigned 32-bit integer as a buffer.
  */
 function uint32BeBuffer(v: number): Buffer {
-  const buffer = Buffer.alloc(4);
-  buffer.writeUInt32BE(v, 0);
-  return buffer;
+  const buffer = Buffer.alloc(4)
+  buffer.writeUInt32BE(v, 0)
+  return buffer
 }
 
 /**
@@ -40,14 +34,14 @@ function uint32BeBuffer(v: number): Buffer {
  *
  * @see https://en.wikipedia.org/wiki/Smart_card_application_protocol_data_unit
  */
-const MAX_APDU_DATA_LENGTH = 255;
+const MAX_APDU_DATA_LENGTH = 255
 
 /**
  * Instruction class for the PBC App.
  *
  * @see https://en.wikipedia.org/wiki/Smart_card_application_protocol_data_unit
  */
-const CLA = 0xe0;
+const CLA = 0xe0
 
 /**
  * Instructions for the PBC App.
@@ -71,7 +65,7 @@ enum P1 {
   P1_NOT_FIRST_CHUNK = 0x01,
 }
 
-const P1_CONFIRM_ADDRESS_ON_SCREEN = 0x01;
+const P1_CONFIRM_ADDRESS_ON_SCREEN = 0x01
 
 /**
  * Second parameters for the PBC App.
@@ -87,11 +81,11 @@ enum P2 {
  * Splits the given buffer into chunks of at most chunkSize.
  */
 export function chunkifyBuffer(buffer: Buffer, chunkSize: number): Buffer[] {
-  const chunks: Buffer[] = [];
+  const chunks: Buffer[] = []
   for (let i = 0; i < buffer.length; i += chunkSize) {
-    chunks.push(buffer.slice(i, Math.min(buffer.length, i + chunkSize)));
+    chunks.push(buffer.slice(i, Math.min(buffer.length, i + chunkSize)))
   }
-  return chunks;
+  return chunks
 }
 
 /**
@@ -102,27 +96,27 @@ export function chunkifyBuffer(buffer: Buffer, chunkSize: number): Buffer[] {
  */
 export function signatureToBuffer(signature: Signature): Buffer {
   if (signature.recoveryParam == null) {
-    throw new Error("Recovery parameter is null");
+    throw new Error("Recovery parameter is null")
   }
   return Buffer.concat([
     Buffer.from([signature.recoveryParam]),
     signature.r.toArrayLike(Buffer, "be", 32),
     signature.s.toArrayLike(Buffer, "be", 32),
-  ]);
+  ])
 }
 
 
-export const DEFAULT_KEYPATH = "44'/3757'/0'/0/0";
+export const DEFAULT_KEYPATH = "44'/3757'/0'/0/0"
 
 /**
  * Wrapper class capable of interacting with the Ledger hardware wallet through
  * APDU calls.
  */
 export class PartisiaLedgerClient {
-  private readonly ledgerTransport: Transport;
+  private readonly ledgerTransport: Transport
 
   constructor(ledgerTransport: Transport) {
-    this.ledgerTransport = ledgerTransport;
+    this.ledgerTransport = ledgerTransport
   }
 
   /**
@@ -137,7 +131,7 @@ export class PartisiaLedgerClient {
         P2.P2_LAST_CHUNK,
         bip32Buffer(keyPath)
       )
-      .then((result) => result.slice(0, 21).toString("hex"));
+      .then((result) => result.slice(0, 21).toString("hex"))
   }
 
   /**
@@ -151,16 +145,16 @@ export class PartisiaLedgerClient {
     chainId: string,
     keyPath: string = DEFAULT_KEYPATH,
   ): Promise<Signature> {
-    const chainIdBuffer = Buffer.from(chainId, "utf8");
+    const chainIdBuffer = Buffer.from(chainId, "utf8")
 
     // Setup data to send
     const initialChunkData = Buffer.concat([
       bip32Buffer(keyPath),
       uint32BeBuffer(chainIdBuffer.length),
       chainIdBuffer,
-    ]);
+    ])
 
-    const subsequentChunkData = chunkifyBuffer(serializedTransaction, MAX_APDU_DATA_LENGTH);
+    const subsequentChunkData = chunkifyBuffer(serializedTransaction, MAX_APDU_DATA_LENGTH)
 
     // Setup promise flow
     let result = await this.ledgerTransport.send(
@@ -169,19 +163,19 @@ export class PartisiaLedgerClient {
       P1.P1_FIRST_CHUNK,
       P2.P2_NOT_LAST_CHUNK,
       initialChunkData
-    );
+    )
 
     // Iterate blocks
     for (let chunkIdx = 0; chunkIdx < subsequentChunkData.length; chunkIdx++) {
-      const chunk = subsequentChunkData[chunkIdx];
-      const isLastChunk = chunkIdx == subsequentChunkData.length - 1;
+      const chunk = subsequentChunkData[chunkIdx]
+      const isLastChunk = chunkIdx == subsequentChunkData.length - 1
       result = await this.ledgerTransport.send(
         CLA,
         INS.SIGN_TRANSACTION,
         P1.P1_NOT_FIRST_CHUNK,
         isLastChunk ? P2.P2_LAST_CHUNK : P2.P2_NOT_LAST_CHUNK,
         chunk
-      );
+      )
     }
 
     // Deserialize signature from the transfer format
@@ -189,7 +183,7 @@ export class PartisiaLedgerClient {
       recoveryParam: result[0],
       r: new BN(result.subarray(1, 32 + 1)),
       s: new BN(result.subarray(32 + 1, 32 + 32 + 1)),
-    };
+    }
   }
 }
 
