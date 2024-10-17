@@ -1,4 +1,4 @@
-import { IRecord, IValidatorInterface, IValidatorOptions, RecordClassEnum } from '../interface'
+import { IRecord, IValidatorInterface, RecordClassEnum } from '../interface'
 import { MainRecordValidator } from './records/main-validator'
 import { DefaultRecordValidator } from './records/default-validator'
 import { DiscordRecordValidator } from './records/discord-validator'

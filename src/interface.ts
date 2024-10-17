@@ -1,16 +1,17 @@
 /* eslint-disable no-unused-vars */
 
-import type { BN, ContractAbi, FileAbi, ScValueStruct } from "@partisiablockchain/abi-client"
+import type { BN, ContractAbi, ScValueStruct } from "@partisiablockchain/abi-client"
 import type { IContractInfo } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
 import type PartisiaSdk from "partisia-blockchain-applications-sdk"
+import type LedgerTransport from "@ledgerhq/hw-transport"
 import type { BYOCSymbol } from "./providers"
 
 // TODO: Reorganize this file
 
 export type GasCost = 'low' | 'medium' | 'high' | 'extra-high'
 
-export type SigningStrategyType = 'privateKey' | 'partisiaSdk' | 'MetaMask'
-export type SigningClassType = string | PartisiaSdk | MetaMaskSdk
+export type SigningStrategyType = 'privateKey' | 'partisiaSdk' | 'MetaMask' | 'Ledger'
+export type SigningClassType = string | PartisiaSdk | MetaMaskSdk | LedgerTransport
 
 export interface MetamaskRequestArguments {
   /** The RPC method to request. */
