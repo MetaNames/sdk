@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@ledgerhq/hw-transport": "^6.31.4",
-    "@partisiablockchain/abi-client": "^3.30.0",
+    "@partisiablockchain/abi-client": "^5.48.0",
     "@secata-public/bitmanipulation-ts": "^3.2.0",
     "bip32-path": "^0.4.2",
     "node-fetch": "2",

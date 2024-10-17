@@ -782,33 +782,45 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@partisiablockchain/abi-client@^3.30.0":
-  version "3.30.0"
-  resolved "https://registry.yarnpkg.com/@partisiablockchain/abi-client/-/abi-client-3.30.0.tgz#2ae760c27c93e56cf1a102b7c4ae1eccc8693207"
-  integrity sha512-26On5MhI6ppNRvPqM6R44ybIKupPfEAfRC5uROiaS9H8cHeUbQTkQ/Nl51PVcGVsDJctpAuNnFBWw7EeOMEoSw==
+"@partisiablockchain/abi-client@^5.48.0":
+  version "5.48.0"
+  resolved "https://registry.yarnpkg.com/@partisiablockchain/abi-client/-/abi-client-5.48.0.tgz#4cb4f67423f5127e458b1dd6fafa7f81d260cce1"
+  integrity sha512-5mX2f7IJqXPJt3INsQ5GHRRLiQ/VBGAGt6ItHxd2LsQzgplmqe7m1HzANMegk8dX0Av8DXLAHt51KMdsDVrdig==
   dependencies:
-    "@secata-public/bitmanipulation-ts" "3.0.6"
-    "@types/bn.js" "^5.1.0"
-    "@types/elliptic" "^6.4.14"
-    bn.js "^5.2.0"
+    "@partisiablockchain/blockchain-api-transaction-client" "5.38.0"
+    "@secata-public/bitmanipulation-ts" "3.1.0"
+    "@types/bn.js" "^5.1.6"
+    "@types/elliptic" "^6.4.18"
+    bn.js "^5.2.1"
     hash.js "^1.1.7"
-    prettier "^2.6.2"
+    prettier "^3.3.3"
+
+"@partisiablockchain/blockchain-api-transaction-client@5.38.0":
+  version "5.38.0"
+  resolved "https://registry.yarnpkg.com/@partisiablockchain/blockchain-api-transaction-client/-/blockchain-api-transaction-client-5.38.0.tgz#1cee9019339f0c83941dd771fdc46aa3630f49c4"
+  integrity sha512-APSl+Q5KyY/35BKpKBsTx954DOPLv8E9NSQ1U+gHLQV4KT2nJGLi41lkv8dicgv7kI2Z3IR/k3+cMzdTOwnstA==
+  dependencies:
+    "@secata-public/bitmanipulation-ts" "^3.1.0"
+    "@types/elliptic" "^6.4.15"
+    bn.js "^5.2.1"
+    elliptic "^6.5.5"
+    hash.js "^1.1.7"
 
 "@rtsao/scc@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@rtsao/scc/-/scc-1.1.0.tgz#927dd2fae9bc3361403ac2c7a00c32ddce9ad7e8"
   integrity sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==
 
-"@secata-public/bitmanipulation-ts@3.0.6":
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/@secata-public/bitmanipulation-ts/-/bitmanipulation-ts-3.0.6.tgz#d8efb554beb23d061a74c15190c52a76ecee71cb"
-  integrity sha512-hg4sGiGjhvl1/XMw4P4lsyh5DuSnw8ISQGyub7QjGnzvaY32o52Q7ZVU32fGsKTyyefpFs6wc62CpzhVeHm+Qg==
+"@secata-public/bitmanipulation-ts@3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@secata-public/bitmanipulation-ts/-/bitmanipulation-ts-3.1.0.tgz#41e6d1e0e59565dacb36d1c6b883e28ff0f89ed9"
+  integrity sha512-uIE3gENNUZJnrfvqJUl1FgGqQhG64+Y3CDWCB8Cnrum4h5qBi9tx8TA5NzL7IotoIXMaEAwobGBYf2jWLaadRA==
   dependencies:
-    "@types/bn.js" "^5.1.0"
-    bn.js "^5.2.0"
-    prettier "^2.6.2"
+    "@types/bn.js" "^5.1.5"
+    bn.js "^5.2.1"
+    prettier "^3.2.5"
 
-"@secata-public/bitmanipulation-ts@^3.2.0":
+"@secata-public/bitmanipulation-ts@^3.1.0", "@secata-public/bitmanipulation-ts@^3.2.0":
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/@secata-public/bitmanipulation-ts/-/bitmanipulation-ts-3.2.0.tgz#9c850f02c0be2f8240420b31f3e37104d9e8a902"
   integrity sha512-rVWdIoQXjKzv5rP5se+bSGSxVrZykifmdflH4sHhNyoAc6UfpzgnQxrQjdPSICX3JvynlDtL45bTVDFcaz7JhQ==
@@ -910,17 +922,17 @@
   dependencies:
     "@types/node" "*"
 
-"@types/bn.js@^5.1.6":
+"@types/bn.js@^5.1.5", "@types/bn.js@^5.1.6":
   version "5.1.6"
   resolved "https://registry.yarnpkg.com/@types/bn.js/-/bn.js-5.1.6.tgz#9ba818eec0c85e4d3c679518428afdf611d03203"
   integrity sha512-Xh8vSwUeMKeYYrj3cX4lGQgFSF/N03r+tv4AiLl1SucqV+uTQpxRcnM8AkXKHwYP9ZPXOYXRr2KPXpVlIvqh9w==
   dependencies:
     "@types/node" "*"
 
-"@types/elliptic@^6.4.14":
-  version "6.4.14"
-  resolved "https://registry.yarnpkg.com/@types/elliptic/-/elliptic-6.4.14.tgz#7bbaad60567a588c1f08b10893453e6b9b4de48e"
-  integrity sha512-z4OBcDAU0GVwDTuwJzQCiL6188QvZMkvoERgcVjq0/mPM8jCfdwZ3x5zQEVoL9WCAru3aG5wl3Z5Ww5wBWn7ZQ==
+"@types/elliptic@^6.4.15", "@types/elliptic@^6.4.18":
+  version "6.4.18"
+  resolved "https://registry.yarnpkg.com/@types/elliptic/-/elliptic-6.4.18.tgz#bc96e26e1ccccbabe8b6f0e409c85898635482e1"
+  integrity sha512-UseG6H5vjRiNpQvrhy4VF/JXdA3V/Fp5amvveaL+fs28BZ6xIKJBPnUPRlEaZpysD9MbpfaLi8lbl7PGUAkpWw==
   dependencies:
     "@types/bn.js" "*"
 
@@ -2056,7 +2068,7 @@ electron-to-chromium@^1.4.284:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.377.tgz#7f326a0b2c1b96eca6bb65907addc505d0d15989"
   integrity sha512-H3BYG6DW5Z+l0xcfXaicJGxrpA4kMlCxnN71+iNX+dBLkRMOdVJqFJiAmbNZZKA1zISpRg17JR03qGifXNsJtw==
 
-elliptic@^6.4.0, elliptic@^6.5.4:
+elliptic@^6.4.0, elliptic@^6.5.4, elliptic@^6.5.5:
   version "6.5.7"
   resolved "https://registry.yarnpkg.com/elliptic/-/elliptic-6.5.7.tgz#8ec4da2cb2939926a1b9a73619d768207e647c8b"
   integrity sha512-ESVCtTwiA+XhY3wyh24QqRGBoP3rEdDUl3EDUUo9tft074fi19IrdpH7hLCMMP3CIj7jb3W96rn8lt/BqIlt5Q==
@@ -4392,10 +4404,10 @@ prelude-ls@~1.1.2:
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
   integrity sha512-ESF23V4SKG6lVSGZgYNpbsiaAkdab6ZgOxe52p7+Kid3W3u3bxR4Vfd/o21dmN7jSt0IwgZ4v5MUd26FEtXE9w==
 
-prettier@^2.6.2:
-  version "2.8.7"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.7.tgz#bb79fc8729308549d28fe3a98fce73d2c0656450"
-  integrity sha512-yPngTo3aXUUmyuTjeTUT75txrf+aMh9FiD7q9ZE/i6r0bPb22g4FsE6Y338PQX1bmfy08i9QQCB7/rcUAVntfw==
+prettier@^3.2.5, prettier@^3.3.3:
+  version "3.3.3"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.3.3.tgz#30c54fe0be0d8d12e6ae61dbb10109ea00d53105"
+  integrity sha512-i2tDNA0O5IrMO757lfrdQZCc2jPNDVntV0m/+4whiDfWaTKfMNgR7Qz0NAeGz/nRqF4m5/6CLzbP4/liHt12Ew==
 
 pretty-format@^29.0.0, pretty-format@^29.5.0:
   version "29.5.0"
