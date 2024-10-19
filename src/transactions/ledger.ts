@@ -2,7 +2,7 @@ import { BN } from "@secata-public/bitmanipulation-ts"
 // @ts-ignore - no types available when importing in external proj
 import BIPPath from 'bip32-path'
 import type Transport from "@ledgerhq/hw-transport"
-import { Signature } from "./types"
+import type { Signature } from "./types"
 
 // Mainly extracted from https://gitlab.com/partisiablockchain/language/example-web-client/-/blob/main/src/main/pbc-ledger-client/PbcLedgerClient.ts
 
