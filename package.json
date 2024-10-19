@@ -26,13 +26,13 @@
     "partisia-blockchain-applications-crypto": "^1.0.34",
     "partisia-blockchain-applications-rpc": "^1.0.13",
     "partisia-blockchain-applications-sdk": "^0.1.4",
-    "tr46": "^4.1.1"
+    "tr46": "^5.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.13",
     "@types/node": "^18.19.56",
     "@types/node-fetch": "^2.6.11",
-    "@types/tr46": "^3.0.3",
+    "@types/tr46": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "dotenv": "^16.4.5",
