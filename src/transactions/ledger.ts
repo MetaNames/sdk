@@ -1,5 +1,6 @@
 import { BN } from "@secata-public/bitmanipulation-ts"
-import BIPPath from "bip32-path"
+// @ts-ignore - no types available
+import BIPPath from 'bip32-path'
 import type Transport from "@ledgerhq/hw-transport"
 import { Signature } from "./types"
 
