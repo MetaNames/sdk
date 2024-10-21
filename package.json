@@ -22,7 +22,7 @@
     "@partisiablockchain/abi-client": "^5.48.0",
     "@secata-public/bitmanipulation-ts": "^3.2.0",
     "bip32-path": "^0.4.2",
-    "node-fetch": "2",
+    "node-fetch": "3",
     "partisia-blockchain-applications-crypto": "^1.0.34",
     "partisia-blockchain-applications-rpc": "^1.0.13",
     "partisia-blockchain-applications-sdk": "^0.1.4",
