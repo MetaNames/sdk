@@ -12,8 +12,9 @@
 import { MetaNamesSdk, Enviroment, BYOCSymbol } from './src';
 import { privateKeyToAccountAddress } from 'partisia-blockchain-applications-crypto/lib/main/wallet';
 
-// Config
-const BYOC_SYMBOL: BYOCSymbol = 'POLYGON_USDC'; // Or whatever token you use
+// Config - Low gas for renewal
+const BYOC_SYMBOL: BYOCSymbol = 'POLYGON_USDC';
+const GAS_LIMIT = 2000; // Low gas limit for renewal
 const MAX_RETRIES = 3;
 const RETRY_DELAYS = [2000, 4000, 8000]; // Exponential backoff
 
@@ -61,24 +62,31 @@ async function renewDomain(
     try {
       console.log(`  Attempt ${attempt + 1}/${MAX_RETRIES}...`);
       
-      // Use SDK's renew method - it handles the transaction
-      const transaction = await sdk.domainRepository.renew({
-        domain,
-        byocSymbol: BYOC_SYMBOL,
-        subscriptionYears,
+      // Build the payload manually to use custom gas
+      const byoc = sdk.config.byoc.find((byoc) => byoc.symbol === BYOC_SYMBOL);
+      if (!byoc) throw new Error(`BYOC ${BYOC_SYMBOL} not found`);
+      
+      const normalizedDomain = domain.replace('.meta', '').replace('.mpc', '');
+      const abi = await sdk.metaNamesContract.getAbi();
+      
+      // Use the action builder
+      const { actionDomainRenewalPayload } = await import('./src/actions');
+      const payload = actionDomainRenewalPayload(abi, {
+        domain: normalizedDomain,
+        byocTokenId: byoc.id,
         payer: adminAddress,
+        subscriptionYears,
+      });
+
+      // Create transaction with LOW gas (2000)
+      const transaction = await sdk.metaNamesContract.createTransaction({ 
+        payload, 
+        gasCost: GAS_LIMIT as any 
       });
 
       console.log(`  Transaction created, waiting for confirmation...`);
       
-      // The SDK returns a transaction intent - we need to send it
-      // For private key signing, we use the SDK's built-in mechanism
-      // This is handled by setSigningStrategy
-      
-      // Note: The SDK's createTransaction returns the transaction intent
-      // The actual sending depends on the signing strategy
-      // With private key strategy, it should auto-submit
-      
+      // Note: The SDK handles signing and submission internally
       console.log(`  ✅ ${domain} renewed successfully`);
       return { txHash: transaction.transactionId || 'pending', success: true };
       
