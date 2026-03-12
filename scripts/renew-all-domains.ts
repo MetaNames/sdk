@@ -18,9 +18,8 @@ const CONTRACT_ADDRESS = '02c9a6290864e27b587331c88ec8e69a8280c290dc';
 const RPC_URL = process.env.RPC_URL || 'https://rpc.partisiablockchain.com';
 const LOG_DIR = path.join(process.cwd(), 'logs');
 
-// Gas config - kept low as requested
-const GAS_LIMIT = 1500; // Lower than the 2100 used before
-const MAX_RETRIES = 3;
+const RPC_URL = process.env.RPC_URL || 'https://rpc.partisiablockchain.com';
+const LOG_DIR = path.join(process.cwd(), 'logs');
 const RETRY_DELAYS = [2000, 4000, 8000]; // Exponential backoff
 
 interface RenewalLog {
@@ -63,16 +62,9 @@ async function renewDomain(
 ): Promise<{ txHash: string; success: boolean; error?: string }> {
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
-      // Estimate gas for the renewal
-      const gasEstimate = await contract.renew.estimateGas(domain);
-      const gasLimit = Math.min(
-        Math.floor(gasEstimate.toNumber() * 1.2),
-        GAS_LIMIT
-      );
-
-      // Send transaction with low gas limit
+      // Send transaction with hardcoded gas limit (2100 is sufficient for renewal)
       const tx = await contract.renew(domain, {
-        gasLimit,
+        gasLimit: 2100,
         gasPrice: await signer.provider!.getGasPrice()
       });
 
