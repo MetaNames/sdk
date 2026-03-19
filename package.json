@@ -37,7 +37,7 @@
     "@typescript-eslint/parser": "^6.21.0",
     "dotenv": "^16.6.1",
     "eslint": "^8.57.1",
-    "eslint-config-standard-with-typescript": "^34.0.1",
+    "eslint-config-standard-with-typescript": "^39.0.0",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-n": "^15.0.0",
     "eslint-plugin-promise": "^6.6.0",
@@ -46,7 +46,7 @@
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
     "typedoc": "^0.24.8",
-    "typescript": "5.0.4"
+    "typescript": "^5.4.0"
   },
   "publishConfig": {
     "directory": "dist"
