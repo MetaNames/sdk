@@ -782,23 +782,23 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@partisiablockchain/abi-client@^5.48.0":
-  version "5.48.0"
-  resolved "https://registry.yarnpkg.com/@partisiablockchain/abi-client/-/abi-client-5.48.0.tgz#4cb4f67423f5127e458b1dd6fafa7f81d260cce1"
-  integrity sha512-5mX2f7IJqXPJt3INsQ5GHRRLiQ/VBGAGt6ItHxd2LsQzgplmqe7m1HzANMegk8dX0Av8DXLAHt51KMdsDVrdig==
+"@partisiablockchain/abi-client@^6.0.0":
+  version "6.139.0"
+  resolved "https://registry.yarnpkg.com/@partisiablockchain/abi-client/-/abi-client-6.139.0.tgz#bbc32af115315b9dc329dab1ab6c144d8ce5fcc9"
+  integrity sha512-ZZGDJsd6puzh4Azni7RN+rtG4m/5nacxabvUwdKJnwYOufOl0H5KEB+1GBf/5w07YL2lblmPSGzZCh/tSrgoiA==
   dependencies:
-    "@partisiablockchain/blockchain-api-transaction-client" "5.38.0"
-    "@secata-public/bitmanipulation-ts" "3.1.0"
+    "@partisiablockchain/blockchain-api-transaction-client" "6.104.0"
+    "@partisiablockchain/sections" "6.30.0"
+    "@secata-public/bitmanipulation-ts" "3.4.0"
     "@types/bn.js" "^5.1.6"
     "@types/elliptic" "^6.4.18"
     bn.js "^5.2.1"
     hash.js "^1.1.7"
-    prettier "^3.3.3"
 
-"@partisiablockchain/blockchain-api-transaction-client@5.38.0":
-  version "5.38.0"
-  resolved "https://registry.yarnpkg.com/@partisiablockchain/blockchain-api-transaction-client/-/blockchain-api-transaction-client-5.38.0.tgz#1cee9019339f0c83941dd771fdc46aa3630f49c4"
-  integrity sha512-APSl+Q5KyY/35BKpKBsTx954DOPLv8E9NSQ1U+gHLQV4KT2nJGLi41lkv8dicgv7kI2Z3IR/k3+cMzdTOwnstA==
+"@partisiablockchain/blockchain-api-transaction-client@6.104.0":
+  version "6.104.0"
+  resolved "https://registry.yarnpkg.com/@partisiablockchain/blockchain-api-transaction-client/-/blockchain-api-transaction-client-6.104.0.tgz#15ea9725e53f8206c7cd777f9abb95bee48611c4"
+  integrity sha512-AcfkmKcTl5e7w41/E1k7zJOlZJSCQsGrRd6cK6JsRdg1I/0MB/2ybsfOKCxyGtB6Lg4WAw62LBlo8ycVKqSjMA==
   dependencies:
     "@secata-public/bitmanipulation-ts" "^3.1.0"
     "@types/elliptic" "^6.4.15"
@@ -806,19 +806,25 @@
     elliptic "^6.5.5"
     hash.js "^1.1.7"
 
+"@partisiablockchain/sections@6.30.0":
+  version "6.30.0"
+  resolved "https://registry.yarnpkg.com/@partisiablockchain/sections/-/sections-6.30.0.tgz#b9f4b870b61d00061233d03b8c23531ea83fbcec"
+  integrity sha512-jBXeE2F8hIVHTE1FBfYZ0HvyCI3E4hr3Xp2c/Cl9dBVOTr4JRLLhZ8CJU1Cx8jhuXJo3YNfMU2gB7cr1HYETjA==
+  dependencies:
+    "@secata-public/bitmanipulation-ts" "^3.3.0"
+
 "@rtsao/scc@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@rtsao/scc/-/scc-1.1.0.tgz#927dd2fae9bc3361403ac2c7a00c32ddce9ad7e8"
   integrity sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==
 
-"@secata-public/bitmanipulation-ts@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@secata-public/bitmanipulation-ts/-/bitmanipulation-ts-3.1.0.tgz#41e6d1e0e59565dacb36d1c6b883e28ff0f89ed9"
-  integrity sha512-uIE3gENNUZJnrfvqJUl1FgGqQhG64+Y3CDWCB8Cnrum4h5qBi9tx8TA5NzL7IotoIXMaEAwobGBYf2jWLaadRA==
+"@secata-public/bitmanipulation-ts@3.4.0", "@secata-public/bitmanipulation-ts@^3.3.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@secata-public/bitmanipulation-ts/-/bitmanipulation-ts-3.4.0.tgz#054886a0aeb07e6dad9ac8b9199cd8be8ab064d0"
+  integrity sha512-xFRzo6dfmmG8laQ1lehNWrtH/FzjNFDaiWprfmSKrAScyrjXx0UXnCU5BnBcxHYeIB3SNKGj4jcGUfSyG1/9dA==
   dependencies:
-    "@types/bn.js" "^5.1.5"
+    "@types/bn.js" "^5.1.6"
     bn.js "^5.2.1"
-    prettier "^3.2.5"
 
 "@secata-public/bitmanipulation-ts@^3.1.0", "@secata-public/bitmanipulation-ts@^3.2.0":
   version "3.2.0"
@@ -922,7 +928,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/bn.js@^5.1.5", "@types/bn.js@^5.1.6":
+"@types/bn.js@^5.1.6":
   version "5.1.6"
   resolved "https://registry.yarnpkg.com/@types/bn.js/-/bn.js-5.1.6.tgz#9ba818eec0c85e4d3c679518428afdf611d03203"
   integrity sha512-Xh8vSwUeMKeYYrj3cX4lGQgFSF/N03r+tv4AiLl1SucqV+uTQpxRcnM8AkXKHwYP9ZPXOYXRr2KPXpVlIvqh9w==
@@ -4403,11 +4409,6 @@ prelude-ls@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
   integrity sha512-ESF23V4SKG6lVSGZgYNpbsiaAkdab6ZgOxe52p7+Kid3W3u3bxR4Vfd/o21dmN7jSt0IwgZ4v5MUd26FEtXE9w==
-
-prettier@^3.2.5, prettier@^3.3.3:
-  version "3.3.3"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.3.3.tgz#30c54fe0be0d8d12e6ae61dbb10109ea00d53105"
-  integrity sha512-i2tDNA0O5IrMO757lfrdQZCc2jPNDVntV0m/+4whiDfWaTKfMNgR7Qz0NAeGz/nRqF4m5/6CLzbP4/liHt12Ew==
 
 pretty-format@^29.0.0, pretty-format@^29.5.0:
   version "29.5.0"
