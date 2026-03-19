@@ -1,5 +1,4 @@
-import { AbiByteOutput, RpcContractBuilder } from "@partisiablockchain/abi-client"
-import { BigEndianByteOutput } from "@secata-public/bitmanipulation-ts"
+import { RpcContractBuilder } from "@partisiablockchain/abi-client"
 import { serializedTransaction } from "partisia-blockchain-applications-crypto/lib/main/transaction"
 import { PartisiaAccountClass } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
 import { PartisiaRpcClass } from "partisia-blockchain-applications-rpc/lib/main/rpc"
