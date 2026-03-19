@@ -67,7 +67,7 @@ export function getDomainNamesByOwner(domains: ScValueAvlTreeMap, owners: ScValu
 }
 
 export function deserializeDomain(bytes: Buffer, contractAbi: ContractAbi, domainName: string, tld: string): IDomainPartial {
-  const reader = new StateReader(bytes, contractAbi)
+  const reader = StateReader.create(bytes, contractAbi)
   const domainStructIndex = contractAbi.namedTypes.findIndex((t) => t.name === 'Domain')
   const struct = reader.readStateValue({ typeIndex: TypeIndex.Named, index: domainStructIndex }).structValue()
 

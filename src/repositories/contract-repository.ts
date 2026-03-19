@@ -47,7 +47,7 @@ export class ContractRepository implements IContractRepository {
     if (!('state' in serializedContract)) throw new Error('Contract state not found')
 
     const contractAbi = contract.abi
-    const reader = new StateReader(Buffer.from(serializedContract.state.data, 'base64'), contractAbi, serializedContract.avlTrees)
+    const reader = StateReader.create(Buffer.from(serializedContract.state.data, 'base64'), contractAbi, serializedContract.avlTrees as unknown as Buffer | undefined)
     const struct = reader.readStruct(contractAbi.getStateStruct())
 
     return struct
@@ -65,7 +65,7 @@ export class ContractRepository implements IContractRepository {
     entry = {
       fetchedAt: Date.now(),
       contract: {
-        abi: abi.contract
+        abi: abi.contract()
       }
     }
 
@@ -141,7 +141,7 @@ export class ContractRepository implements IContractRepository {
   private async getContractFromRegistry({ contractAddress, force, withState, partial }: ContractParams): Promise<Contract | undefined> {
     if (!contractAddress) throw new Error('Contract address not specified')
 
-    let contractEntry = this.contractRegistry.get(contractAddress)
+    const contractEntry = this.contractRegistry.get(contractAddress)
 
     const serializedContract = contractEntry?.contract?.data?.serializedContract
     const hasPartialState = serializedContract?.state !== undefined
@@ -158,17 +158,17 @@ export class ContractRepository implements IContractRepository {
     if (!rawContract) return
 
     const fileAbi = this.parseAbi(rawContract.abi)
-    contractEntry = {
+    const newContractEntry: ContractEntry = {
       fetchedAt: Date.now(),
       contract: {
         data: rawContract,
-        abi: fileAbi.contract
+        abi: fileAbi.contract()
       }
     }
 
-    this.contractRegistry.set(contractAddress, contractEntry)
+    this.contractRegistry.set(contractAddress, newContractEntry)
 
-    return contractEntry.contract
+    return newContractEntry.contract
   }
 
   private parseAbi(abi: string) {

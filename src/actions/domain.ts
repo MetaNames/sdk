@@ -1,11 +1,9 @@
-import { BN, ContractAbi, FnRpcBuilder } from '@partisiablockchain/abi-client'
+import { BN, ContractAbi, RpcContractBuilder } from '@partisiablockchain/abi-client'
 import { IActionApproveMintFees, IActionDomainMintPayload, IActionDomainTransferPayload, IActionRenewDomainPayload } from '../interface'
 import { builderToBytesBe } from '../transactions/helper'
 
 export const actionDomainMintPayload = (contractAbi: ContractAbi, params: IActionDomainMintPayload): Buffer => {
-  if (!contractAbi.getFunctionByName('mint')) throw new Error('Function mint not found in contract abi')
-
-  const rpc = new FnRpcBuilder('mint', contractAbi)
+  const rpc = new RpcContractBuilder(contractAbi, 'mint')
   rpc.addString(params.domain)
 
   const address = typeof params.to === 'string' ? Buffer.from(params.to, 'hex') : params.to
@@ -26,7 +24,7 @@ export const actionDomainMintPayload = (contractAbi: ContractAbi, params: IActio
 }
 
 export const actionDomainMintBatchPayload = (contractAbi: ContractAbi, params: IActionDomainMintPayload[]): Buffer => {
-  const rpc = new FnRpcBuilder('mint_batch', contractAbi)
+  const rpc = new RpcContractBuilder(contractAbi, 'mint_batch')
 
   const vecBuilder = rpc.addVec()
   params.forEach((param) => {
@@ -53,7 +51,7 @@ export const actionDomainMintBatchPayload = (contractAbi: ContractAbi, params: I
 }
 
 export const actionApproveMintFeesPayload = (contractAbi: ContractAbi, params: IActionApproveMintFees): Buffer => {
-  const rpc = new FnRpcBuilder('approve', contractAbi)
+  const rpc = new RpcContractBuilder(contractAbi, 'approve')
 
   const spender = typeof params.address === 'string' ? Buffer.from(params.address, 'hex') : params.address
   rpc.addAddress(spender)
@@ -65,7 +63,7 @@ export const actionApproveMintFeesPayload = (contractAbi: ContractAbi, params: I
 }
 
 export const actionDomainRenewalPayload = (contractAbi: ContractAbi, params: IActionRenewDomainPayload): Buffer => {
-  const rpc = new FnRpcBuilder('renew_subscription', contractAbi)
+  const rpc = new RpcContractBuilder(contractAbi, 'renew_subscription')
 
   rpc.addString(params.domain)
   rpc.addU64(params.byocTokenId)
@@ -79,7 +77,7 @@ export const actionDomainRenewalPayload = (contractAbi: ContractAbi, params: IAc
 }
 
 export const actionDomainTransferFromPayload = (contractAbi: ContractAbi, params: IActionDomainTransferPayload): Buffer => {
-  const rpc = new FnRpcBuilder('transfer_from', contractAbi)
+  const rpc = new RpcContractBuilder(contractAbi, 'transfer_from')
 
   const { from, to, tokenId } = params
 
