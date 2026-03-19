@@ -47,7 +47,7 @@ export class ContractRepository implements IContractRepository {
     if (!('state' in serializedContract)) throw new Error('Contract state not found')
 
     const contractAbi = contract.abi
-    const reader = StateReader.create(Buffer.from(serializedContract.state.data, 'base64'), contractAbi)
+    const reader = StateReader.create(Buffer.from(serializedContract.state.data, 'base64'), contractAbi, serializedContract.avlTrees as unknown as Buffer | undefined)
     const struct = reader.readStruct(contractAbi.getStateStruct())
 
     return struct
@@ -141,7 +141,7 @@ export class ContractRepository implements IContractRepository {
   private async getContractFromRegistry({ contractAddress, force, withState, partial }: ContractParams): Promise<Contract | undefined> {
     if (!contractAddress) throw new Error('Contract address not specified')
 
-    let contractEntry = this.contractRegistry.get(contractAddress)
+    const contractEntry = this.contractRegistry.get(contractAddress)
 
     const serializedContract = contractEntry?.contract?.data?.serializedContract
     const hasPartialState = serializedContract?.state !== undefined
