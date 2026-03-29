@@ -1,4 +1,4 @@
-import type PartisiaSdk from "partisia-blockchain-applications-sdk"
+import type PartisiaSdk from "../types/partisia-sdk"
 import type LedgerTransport from "@ledgerhq/hw-transport"
 import { MetaMaskSdk, SigningClassType, SigningStrategyType } from "../interface"
 

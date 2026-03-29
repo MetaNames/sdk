@@ -61,6 +61,9 @@ export default {
   // A path to a module which exports an async function that is triggered once before all test suites
   // globalSetup: undefined,
 
+  // A path to a module which runs some code to configure or set up the testing environment before each test
+  setupFiles: ['<rootDir>/test/setup-fetch.ts'],
+
   // A path to a module which exports an async function that is triggered once after all test suites
   // globalTeardown: undefined,
 

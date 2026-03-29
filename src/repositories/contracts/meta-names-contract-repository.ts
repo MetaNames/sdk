@@ -1,6 +1,6 @@
 import { ContractAbi } from "@partisiablockchain/abi-client"
 import { FetchError } from "node-fetch"
-import { IPartisiaRpcConfig } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
+import type { IPartisiaRpcConfig } from "../../rpc/types"
 import { Contract, ContractParams, GetStateParams, IMetaNamesContractRepository, ITransactionIntent, MetaNamesAvlTrees, MetaNamesState, TransactionParams } from "../../interface"
 import { Enviroment } from "../../providers"
 import { SecretsProvider } from "../../providers/secrets"

@@ -1,33 +1,11 @@
 import { RpcContractBuilder } from "@partisiablockchain/abi-client"
-import { serializedTransaction } from "partisia-blockchain-applications-crypto/lib/main/transaction"
-import { PartisiaAccountClass } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
-import { PartisiaRpcClass } from "partisia-blockchain-applications-rpc/lib/main/rpc"
+import type { PartisiaAccountClass, PartisiaRpcClass } from "../rpc/types"
 
 export const builderToBytesBe = (rpc: RpcContractBuilder) => {
   return rpc.getBytes()
 }
 
 export const getChainId = (isMainnet: boolean): string => `Partisia Blockchain${isMainnet ? '' : ' Testnet'}`
-
-export const serializeTransaction = async (
-  rpc: PartisiaAccountClass,
-  walletAddress: string,
-  contractAddress: string,
-  payload: Buffer,
-  cost: number | string,
-  validityInMillis: number = 120_000
-) => {
-  const shardId = rpc.deriveShardId(walletAddress)
-  const nonce = await rpc.getNonce(walletAddress, shardId)
-  // Need to pass a number otherwise the internal library will throw an error
-  const validTo = (new Date().getTime() + validityInMillis) as unknown as string
-
-  return serializedTransaction(
-    { nonce, cost, validTo },
-    { contract: contractAddress },
-    payload
-  )
-}
 
 export const buildTransactionResult = (rpc: PartisiaAccountClass,
   rpcShard: PartisiaRpcClass,

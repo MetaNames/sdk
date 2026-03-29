@@ -1,6 +1,6 @@
 import { AbiParser, ContractAbi, FileAbi, StateReader } from '@partisiablockchain/abi-client'
-import { PartisiaAccount } from 'partisia-blockchain-applications-rpc'
-import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
+import { PartisiaAccount } from '../rpc/partisia-account'
+import type { IPartisiaRpcConfig, PartisiaAccountClass } from '../rpc/types'
 import { ByocCoin, Contract, ContractData, ContractEntry, ContractParams, GasCost, IContractRepository, ITransactionIntent, RawContractData, TransactionParams } from '../interface'
 import { Enviroment } from '../providers'
 import { SecretsProvider } from '../providers/secrets'
@@ -47,7 +47,7 @@ export class ContractRepository implements IContractRepository {
     if (!('state' in serializedContract)) throw new Error('Contract state not found')
 
     const contractAbi = contract.abi
-    const reader = StateReader.create(Buffer.from(serializedContract.state.data, 'base64'), contractAbi, serializedContract.avlTrees as unknown as Buffer | undefined)
+    const reader = StateReader.create(Buffer.from(serializedContract.state!.data, 'base64'), contractAbi, serializedContract.avlTrees as unknown as Buffer | undefined)
     const struct = reader.readStruct(contractAbi.getStateStruct())
 
     return struct
@@ -192,7 +192,7 @@ export class ContractRepository implements IContractRepository {
     let contract
     if (!normalizedOptions.partial)
       contract = await promiseRetry(async () => {
-        const contract = await getRequest<RawContractData>(`${this.hostUrl}/shards/Shard${this.rpc.deriveShardId(contractAddress)}/blockchain/contracts/${contractAddress}?requireContractState=${normalizedOptions.withState}`)
+        const contract = await getRequest<RawContractData>(`${this.hostUrl}/shards/${this.rpc.deriveShardId(contractAddress)}/blockchain/contracts/${contractAddress}?requireContractState=${normalizedOptions.withState}`)
         if (!contract) return
 
         const serializedContract = contract.serializedContract
