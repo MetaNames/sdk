@@ -30,15 +30,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: "yarn"
+          cache: "npm"
 
       - name: Install ESLint
         run: |
-          yarn add -D eslint@8.56.0
-          yarn add -D @microsoft/eslint-formatter-sarif@3.0.0
+          npm install -D eslint@8.56.0
+          npm install -D @microsoft/eslint-formatter-sarif@3.0.0
 
       - name: Run ESLint
-        run: yarn run eslint .
+        run: npm run format .
           --config .eslintrc.js
           --ext .js,.jsx,.ts,.tsx
           --format @microsoft/eslint-formatter-sarif

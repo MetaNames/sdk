@@ -23,12 +23,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: "yarn"
+          cache: "npm"
 
       - name: Install project dependencies
-        run: yarn
+        run: npm ci
 
       - name: Run tests with coverage
-        run: yarn test --coverage
+        run: npm test --coverage
         env:
           TEST_PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
