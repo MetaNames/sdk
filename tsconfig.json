@@ -1,5 +1,5 @@
 {
-  "exclude": ["test", "jest.config.ts", "node_modules", "coverage", "dist", "docs"] /* Exclude files and folders from the program. */,
+  "exclude": ["test", "jest.config.ts", "node_modules", "coverage", "dist", "docs", "scripts"] /* Exclude files and folders from the program. */,
   "compilerOptions": {
     "esModuleInterop": true,
     "skipLibCheck": true,
