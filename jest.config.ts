@@ -150,7 +150,12 @@ export default {
   // rather than repeated per test.
   testTimeout: 30_000,
 
-  testEnvironment: 'jsdom',
+  // The suite exercises the SDK the way a Node consumer does and talks to the
+  // testnet over HTTP. Under jsdom, axios picks its XMLHttpRequest adapter,
+  // whose requests intermittently died with "read ETIMEDOUT"; a hung request
+  // times the test out mid-broadcast and the next transaction then reuses a
+  // spent nonce, which the reader node rejects with 400 Bad Request.
+  testEnvironment: 'node',
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},
