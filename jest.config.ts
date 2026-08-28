@@ -143,18 +143,18 @@ export default {
   // A list of paths to snapshot serializer modules Jest should use for snapshot testing
   // snapshotSerializers: [],
 
-  // The test environment that will be used for testing
   // Every test in this suite drives the live Partisia testnet: each action
   // waits for a transaction to be broadcast, executed and finalized. CI runners
   // are slower than a local machine, so the timeout is generous and global
   // rather than repeated per test.
   testTimeout: 30_000,
 
+  // The test environment that will be used for testing.
   // The suite exercises the SDK the way a Node consumer does and talks to the
-  // testnet over HTTP. Under jsdom, axios picks its XMLHttpRequest adapter,
-  // whose requests intermittently died with "read ETIMEDOUT"; a hung request
-  // times the test out mid-broadcast and the next transaction then reuses a
-  // spent nonce, which the reader node rejects with 400 Bad Request.
+  // testnet over HTTP. jsdom implements neither fetch nor a reliable HTTP
+  // stack: it made axios fall back to its XMLHttpRequest adapter, whose
+  // requests intermittently died with "read ETIMEDOUT", and it has no global
+  // fetch for the client to call at all.
   testEnvironment: 'node',
 
   // Options that will be passed to the testEnvironment

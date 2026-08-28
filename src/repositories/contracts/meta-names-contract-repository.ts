@@ -1,5 +1,4 @@
 import { ContractAbi } from "@partisiablockchain/abi-client"
-import { FetchError } from "node-fetch"
 import { IPartisiaRpcConfig } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
 import { Contract, ContractParams, GetStateParams, IMetaNamesContractRepository, ITransactionIntent, MetaNamesAvlTrees, MetaNamesState, TransactionParams } from "../../interface"
 import { Enviroment } from "../../providers"
@@ -73,10 +72,15 @@ export class MetaNamesContractRepository extends ContractRepository implements I
     const metaNamesContractAddress = await this.getContractAddress()
 
     try {
-      return this.avlClient.getContractStateAvlValue(metaNamesContractAddress, treeId, key)
+      // Must be awaited: returning the promise unawaited let rejections escape
+      // this try/catch entirely, making the handler below unreachable.
+      return await this.avlClient.getContractStateAvlValue(metaNamesContractAddress, treeId, key)
     } catch (e) {
-      if (e instanceof FetchError && e.code === '404') return
-      else console.log(e)
+      // A missing AVL value is already surfaced as `undefined` by `getRequest`,
+      // which only resolves a body on HTTP 200. Anything reaching here is a
+      // transport-level failure.
+      console.error(e)
+      return
     }
   }
 
