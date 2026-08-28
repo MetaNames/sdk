@@ -107,7 +107,7 @@ export class ContractRepository implements IContractRepository {
       'low': 8_000,
       'medium': 40_000,
       'high': 50_000,
-      'extra-high': 100_000,
+      'extra-high': 200_000,
     }
 
     let gas = gasTable.low

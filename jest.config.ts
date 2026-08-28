@@ -144,6 +144,12 @@ export default {
   // snapshotSerializers: [],
 
   // The test environment that will be used for testing
+  // Every test in this suite drives the live Partisia testnet: each action
+  // waits for a transaction to be broadcast, executed and finalized. CI runners
+  // are slower than a local machine, so the timeout is generous and global
+  // rather than repeated per test.
+  testTimeout: 30_000,
+
   testEnvironment: 'jsdom',
 
   // Options that will be passed to the testEnvironment

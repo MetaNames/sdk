@@ -19,7 +19,7 @@ beforeAll(async () => {
   verifyTransactionResult(transactionHash, resultMint)
 
   domain = await config.sdk.domainRepository.find(domainName) as Domain
-}, 15_000)
+})
 
 afterEach(async () => {
   const domainToInteract = subDomain || domain
@@ -32,7 +32,7 @@ afterEach(async () => {
 
     subDomain = undefined
   }
-}, 15_000)
+})
 
 
 test('action record mint', async () => {
@@ -45,7 +45,7 @@ test('action record mint', async () => {
 
   expect(resultMintRecord).toBeDefined()
   if (resultMintRecord) verifyTransactionResult(transactionHash, resultMintRecord)
-}, 15_000)
+})
 
 test('action record mint batch', async () => {
   const actionMintRecord: IRecord = {
@@ -61,7 +61,7 @@ test('action record mint batch', async () => {
 
   expect(recordMintBatchResult).toBeDefined()
   if (recordMintBatchResult) verifyTransactionResult(transactionHash, recordMintBatchResult)
-}, 15_000)
+})
 
 test('action record mint with parent', async () => {
   const subdomain = generateRandomString(15)
@@ -90,7 +90,7 @@ test('action record mint with parent', async () => {
 
   expect(resultMintRecord).toBeDefined()
   if (resultMintRecord) verifyTransactionResult(transactionHash, resultMintRecord)
-}, 20_000)
+})
 
 test('action record update', async () => {
   const actionMintRecord: IRecord = {
@@ -112,4 +112,4 @@ test('action record update', async () => {
 
   expect(resultUpdateRecord).toBeDefined()
   if (resultUpdateRecord) verifyTransactionResult(updateTransactionHash, resultUpdateRecord)
-}, 15_000)
+})

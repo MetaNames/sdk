@@ -13,7 +13,7 @@ test('run action mint', async () => {
   const result = await fetchResult
 
   verifyTransactionResult(transactionHash, result)
-}, 15_000)
+})
 
 test('run action mint batch', async () => {
   const randomActionMint: IActionDomainMint = {
@@ -30,7 +30,7 @@ test('run action mint batch', async () => {
   const result = await fetchResult
 
   verifyTransactionResult(transactionHash, result)
-}, 15_000)
+})
 
 test('run action renew', async () => {
   const randomActionRenew: IActionDomainRenewal = {
@@ -43,7 +43,7 @@ test('run action renew', async () => {
   const result = await fetchResult
 
   verifyTransactionResult(transactionHash, result)
-}, 15_000)
+})
 
 test('run action transfer', async () => {
   const transferParams: IActionDomainTransfer = {
@@ -55,4 +55,4 @@ test('run action transfer', async () => {
   const result = await fetchResult
 
   verifyTransactionResult(transactionHash, result)
-}, 15_000)
+})

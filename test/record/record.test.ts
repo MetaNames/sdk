@@ -16,7 +16,7 @@ beforeAll(async () => {
     const existingRecord = await domain.getRecordRepository(config.sdk).find(record.recordClass)
     if (!existingRecord) await domain.getRecordRepository(config.sdk).create({ class: record.recordClass, data: record.initialValue })
   }
-}, 15_000)
+})
 
 // Ensure all RecordClassEnum values are present
 const allRecordClasses = Object.values(RecordClassEnum)
@@ -59,6 +59,6 @@ describe('update domain records', () => {
       domain = await config.sdk.domainRepository.find(domainName) as Domain
       const updatedData = await domain.getRecordRepository(config.sdk).find(record.recordClass)
       expect(updatedData).toEqual(valueToUpdate)
-    }, 10_000)
+    })
   }
 })

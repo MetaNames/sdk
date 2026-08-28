@@ -5,7 +5,7 @@ const domainName = 'name.mpc'
 beforeAll(async () => {
   const domain = await config.sdk.domainRepository.find(domainName)
   if (!domain) await mintDomain(domainName)
-}, 15_000)
+})
 
 test('mint domain with parent', async () => {
   const randomName = generateRandomString(10)
@@ -27,7 +27,7 @@ test('mint domain with parent', async () => {
   expect(subDomain).toHaveProperty('name')
   expect(subDomain!.name).toEqual(expectedDomain)
   expect(subDomain!.parentId).toEqual('name.mpc')
-}, 10_000)
+})
 
 test('mint subdomain without parent', async () => {
   const randomName = generateRandomString(10)
@@ -50,4 +50,4 @@ test('mint subdomain without parent', async () => {
   expect(subDomain).toHaveProperty('name')
   expect(subDomain!.name).toEqual(expectedDomain)
   expect(subDomain!.parentId).toEqual('name.mpc')
-}, 10_000)
+})

@@ -6,7 +6,7 @@ test('mint fees transaction for TEST_COINT', async () => {
   const result = await fetchResult
 
   verifyTransactionResult(transactionHash, result)
-}, 20_000)
+})
 
 test('mint fees transaction for ETH', async () => {
   const domainName = 'verycheapfees.mpc'
@@ -14,7 +14,7 @@ test('mint fees transaction for ETH', async () => {
   const result = await fetchResult
 
   verifyTransactionResult(transactionHash, result)
-}, 20_000)
+})
 
 test('mint fees amount TEST_COIN', async () => {
   const domainName = 'verycheap.mpc'
