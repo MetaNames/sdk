@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    /* ES2022 modules so bundlers can tree-shake the barrel exports. */
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "outDir": "./dist/esm",
+    /* The CJS build is the one that emits .d.ts; duplicating them here would
+       only make the two copies drift. */
+    "declaration": false,
+    "declarationMap": false
+  }
+}

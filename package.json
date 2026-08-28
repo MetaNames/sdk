@@ -3,7 +3,54 @@
   "version": "6.3.1",
   "description": "Meta Names SDK",
   "main": "dist/index.js",
+  "module": "dist/esm/index.js",
   "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./models/domain": {
+      "types": "./dist/models/domain.d.ts",
+      "import": "./dist/esm/models/domain.js",
+      "require": "./dist/models/domain.js",
+      "default": "./dist/models/domain.js"
+    },
+    "./providers/config": {
+      "types": "./dist/providers/config.d.ts",
+      "import": "./dist/esm/providers/config.js",
+      "require": "./dist/providers/config.js",
+      "default": "./dist/providers/config.js"
+    },
+    "./interface": {
+      "types": "./dist/interface.d.ts",
+      "import": "./dist/esm/interface.js",
+      "require": "./dist/interface.js",
+      "default": "./dist/interface.js"
+    },
+    "./transactions/ledger": {
+      "types": "./dist/transactions/ledger.d.ts",
+      "import": "./dist/esm/transactions/ledger.js",
+      "require": "./dist/transactions/ledger.js",
+      "default": "./dist/transactions/ledger.js"
+    },
+    "./dist/*.js": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/esm/*.js",
+      "require": "./dist/*.js",
+      "default": "./dist/*.js"
+    },
+    "./dist/*": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/esm/*.js",
+      "require": "./dist/*.js",
+      "default": "./dist/*.js"
+    },
+    "./package.json": "./package.json"
+  },
   "repository": "https://github.com/MetaNames/sdk.git",
   "author": "Yeboster <marco@yeboster.com>",
   "license": "MIT",
@@ -14,12 +61,14 @@
     "dist"
   ],
   "scripts": {
-    "build": "yarn tsc",
+    "build": "yarn build:cjs && yarn build:esm",
     "docs": "typedoc --out docs src",
     "format": "eslint --fix src",
     "test": "jest -i",
     "prepublishOnly": "yarn build",
-    "audit-ci": "bash scripts/audit-ci.sh"
+    "audit-ci": "bash scripts/audit-ci.sh",
+    "build:cjs": "tsc",
+    "build:esm": "tsc -p tsconfig.esm.json && node scripts/finalize-esm.js"
   },
   "dependencies": {
     "@ledgerhq/hw-transport": "^6.34.0",
