@@ -1,8 +1,13 @@
-const getHeaders = {
+const jsonHeaders = {
   Accept: "application/json, text/plain, */*",
 }
 
-export type RequestType = "GET"
+const jsonBodyHeaders = {
+  ...jsonHeaders,
+  "Content-Type": "application/json",
+}
+
+export type RequestType = "GET" | "POST" | "PUT"
 
 /**
  * Requests that never settle would otherwise pin a retry chain open forever,
@@ -10,22 +15,37 @@ export type RequestType = "GET"
  */
 export const DEFAULT_TIMEOUT_MS = 30_000
 
-function buildOptions(method: RequestType, headers: Record<string, string>, signal: AbortSignal) {
-  const result = { method, headers, signal }
+function buildOptions(method: RequestType, headers: Record<string, string>, signal: AbortSignal, body?: unknown) {
+  const result: { method: RequestType, headers: Record<string, string>, signal: AbortSignal, body?: string } = { method, headers, signal }
+  if (body !== undefined) result.body = JSON.stringify(body)
 
   return result
 }
 
 export function getRequest<R>(url: string, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<R | undefined> {
-  return handleFetch(promiseRetry(() => fetchWithTimeout(url, timeoutMs)))
+  return handleFetch(promiseRetry(() => fetchWithTimeout(url, "GET", jsonHeaders, undefined, timeoutMs)))
 }
 
-async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
+export function postRequest<R>(url: string, body: unknown, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<R | undefined> {
+  return handleFetch(promiseRetry(() => fetchWithTimeout(url, "POST", jsonBodyHeaders, body, timeoutMs)))
+}
+
+/**
+ * Sends a request without retrying. Used where a retry would resubmit a
+ * side effect, such as broadcasting a transaction.
+ */
+export async function putRequestOnce(url: string, body: unknown, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<boolean> {
+  const response = await fetchWithTimeout(url, "PUT", jsonBodyHeaders, body, timeoutMs)
+
+  return response.ok
+}
+
+async function fetchWithTimeout(url: string, method: RequestType, headers: Record<string, string>, body: unknown, timeoutMs: number): Promise<Response> {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), timeoutMs)
 
   try {
-    return await fetch(url, buildOptions("GET", getHeaders, controller.signal))
+    return await fetch(url, buildOptions(method, headers, controller.signal, body))
   } finally {
     clearTimeout(timer)
   }

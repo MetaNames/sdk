@@ -1,6 +1,6 @@
 import type { RpcContractBuilder } from "@partisiablockchain/abi-client"
-import type { PartisiaAccountClass } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
-import type { PartisiaRpcClass } from "partisia-blockchain-applications-rpc/lib/main/rpc"
+import type { ITransactionResult } from "../interface"
+import type { ShardedClient } from "../repositories/helpers/sharded-client"
 
 export const builderToBytesBe = (rpc: RpcContractBuilder) => {
   return rpc.getBytes()
@@ -9,7 +9,7 @@ export const builderToBytesBe = (rpc: RpcContractBuilder) => {
 export const getChainId = (isMainnet: boolean): string => `Partisia Blockchain${isMainnet ? '' : ' Testnet'}`
 
 export const serializeTransaction = async (
-  rpc: PartisiaAccountClass,
+  client: ShardedClient,
   walletAddress: string,
   contractAddress: string,
   payload: Buffer,
@@ -21,8 +21,8 @@ export const serializeTransaction = async (
   // reading state never loads it.
   const { serializedTransaction } = await import("partisia-blockchain-applications-crypto/lib/main/transaction")
 
-  const shardId = rpc.deriveShardId(walletAddress)
-  const nonce = await rpc.getNonce(walletAddress, shardId)
+  const shardId = client.deriveShardId(walletAddress)
+  const nonce = await client.getNonce(walletAddress, shardId)
   // Need to pass a number otherwise the internal library will throw an error
   const validTo = (new Date().getTime() + validityInMillis) as unknown as string
 
@@ -33,32 +33,31 @@ export const serializeTransaction = async (
   )
 }
 
-export const buildTransactionResult = (rpc: PartisiaAccountClass,
-  rpcShard: PartisiaRpcClass,
-  transactionHash: string) => {
+export const buildTransactionResult = (
+  client: ShardedClient,
+  shardId: number,
+  transactionHash: string
+) => {
   return {
     transactionHash,
-    fetchResult: transactionResult(rpc, rpcShard, transactionHash)
+    fetchResult: transactionResult(client, shardId, transactionHash)
   }
 }
 
 const transactionResult = async (
-  rpc: PartisiaAccountClass,
-  rpcShard: PartisiaRpcClass,
+  client: ShardedClient,
+  shardId: number,
   transactionHash: string
-) => {
-  const isFinalOnChain = await broadcastTransactionPoller(transactionHash, rpcShard)
+): Promise<ITransactionResult> => {
+  const isFinalOnChain = await broadcastTransactionPoller(client, shardId, transactionHash)
 
-  let transactionResult
-  if (isFinalOnChain) {
-    transactionResult = await rpc.getTransactionEventTrace(transactionHash)
-  } else {
-    transactionResult = {
+  const transactionResult = isFinalOnChain
+    ? await client.getTransactionEventTrace(transactionHash, shardId)
+    : {
       hasError: true,
       errorMessage: 'unable to broadcast to chain',
       eventTrace: [],
     }
-  }
 
   return {
     transactionHash,
@@ -67,26 +66,23 @@ const transactionResult = async (
 }
 
 const broadcastTransactionPoller = async (
-  trxHash: string,
-  rpc: PartisiaRpcClass,
-  num_iter = 10,
-  interval_sleep = 2000
+  client: ShardedClient,
+  shardId: number,
+  transactionHash: string,
+  attempts = 10,
+  intervalInMillis = 2000
 ) => {
-  let intCounter = 0
-  while (++intCounter < num_iter) {
+  let attempt = 0
+  while (++attempt < attempts) {
     try {
-      const resTx = await rpc.getTransaction(trxHash)
-      if (resTx.finalized) {
-        break
-      }
+      const transaction = await client.getTransaction(transactionHash, shardId)
+      if (transaction?.finalized) break
     } catch (error) {
       if (error instanceof Error && !error.message.includes('404')) console.error(error.message)
     } finally {
-      const sleep = (ms: number) => {
-        return new Promise((resolve) => setTimeout(resolve, ms))
-      }
-      await sleep(interval_sleep)
+      await new Promise((resolve) => setTimeout(resolve, intervalInMillis))
     }
   }
-  return intCounter < num_iter
+
+  return attempt < attempts
 }

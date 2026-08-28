@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 
 import type { BN, ContractAbi, ScValueStruct } from "@partisiablockchain/abi-client"
-import type { IContractInfo } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
 import type PartisiaSdk from "partisia-blockchain-applications-sdk"
 import type LedgerTransport from "@ledgerhq/hw-transport"
 import type { BYOCSymbol } from "./providers"
@@ -167,8 +166,21 @@ export interface ITransactionIntent {
 
 export type MetaNamesState = ScValueStruct
 
-export type RawContractData = Pick<IContractInfo, 'abi' | 'serializedContract'> & { serializedContract: { avlTrees: AvlTree[] } }
-export type ContractData = Pick<IContractInfo, 'abi' | 'serializedContract'> & { serializedContract: { avlTrees?: Map<number, [Buffer, Buffer][]> } };
+/**
+ * A contract as returned by the reader node. Previously `IContractInfo` from
+ * `partisia-blockchain-applications-rpc`; only these two fields were ever read.
+ */
+export interface ContractInfo {
+  abi: string
+  serializedContract?: {
+    state: {
+      data: string
+    }
+  }
+}
+
+export type RawContractData = Pick<ContractInfo, 'abi' | 'serializedContract'> & { serializedContract: { avlTrees: AvlTree[] } }
+export type ContractData = Pick<ContractInfo, 'abi' | 'serializedContract'> & { serializedContract: { avlTrees?: Map<number, [Buffer, Buffer][]> } };
 
 
 export interface ContractParams {

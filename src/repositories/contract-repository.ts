@@ -1,26 +1,25 @@
 import { AbiParser, ContractAbi, FileAbi, StateReader } from '@partisiablockchain/abi-client'
-import { PartisiaAccount } from 'partisia-blockchain-applications-rpc'
-import { IPartisiaRpcConfig, PartisiaAccountClass } from 'partisia-blockchain-applications-rpc/lib/main/accountInfo'
 import { ByocCoin, Contract, ContractData, ContractEntry, ContractParams, GasCost, IContractRepository, ITransactionIntent, RawContractData, TransactionParams } from '../interface'
 import { Enviroment } from '../providers'
 import { SecretsProvider } from '../providers/secrets'
 import { convertAvlTree as convertAvlTrees } from './helpers/contract'
 import { AvlClient } from './helpers/avl-client'
 import { getRequest, promiseRetry } from './helpers/client'
+import { ShardedClient, ShardedClientConfig } from './helpers/sharded-client'
 
 
 /**
  * Contract repository to interact with smart contracts on Partisia
  */
 export class ContractRepository implements IContractRepository {
-  private rpc: PartisiaAccountClass
+  private rpc: ShardedClient
   private contractRegistry: Map<string, ContractEntry>
   private hostUrl: string
   protected avlClient: AvlClient
 
-  constructor(rpc: IPartisiaRpcConfig, private environment: Enviroment, private secrets: SecretsProvider, private ttl: number, protected hasProxyContract: boolean) {
+  constructor(rpc: ShardedClientConfig, private environment: Enviroment, private secrets: SecretsProvider, private ttl: number, protected hasProxyContract: boolean) {
     this.contractRegistry = new Map()
-    this.rpc = PartisiaAccount(rpc)
+    this.rpc = new ShardedClient(rpc)
     this.hostUrl = rpc.urlBaseGlobal.url
     this.avlClient = new AvlClient(this.hostUrl, rpc.urlBaseShards.map((shard) => shard.shard_id))
   }

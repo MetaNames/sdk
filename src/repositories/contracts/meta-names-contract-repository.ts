@@ -1,10 +1,10 @@
 import { ContractAbi } from "@partisiablockchain/abi-client"
-import { IPartisiaRpcConfig } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
 import { Contract, ContractParams, GetStateParams, IMetaNamesContractRepository, ITransactionIntent, MetaNamesAvlTrees, MetaNamesState, TransactionParams } from "../../interface"
 import { Enviroment } from "../../providers"
 import { SecretsProvider } from "../../providers/secrets"
 import { ContractRepository } from "../contract-repository"
 import { getAddressFromProxyContractState } from "../helpers/contract"
+import { ShardedClientConfig } from "../helpers/sharded-client"
 
 
 /**
@@ -15,7 +15,7 @@ import { getAddressFromProxyContractState } from "../helpers/contract"
 export class MetaNamesContractRepository extends ContractRepository implements IMetaNamesContractRepository {
   private proxyAddress: string
 
-  constructor(contractAddress: string, rpc: IPartisiaRpcConfig, environment: Enviroment, secrets: SecretsProvider, ttl: number, hasProxyContract: boolean) {
+  constructor(contractAddress: string, rpc: ShardedClientConfig, environment: Enviroment, secrets: SecretsProvider, ttl: number, hasProxyContract: boolean) {
     super(rpc, environment, secrets, ttl, hasProxyContract)
     this.proxyAddress = contractAddress
   }
