@@ -1,21 +1,34 @@
-import fetch, { Response } from 'node-fetch'
-
 const getHeaders = {
   Accept: "application/json, text/plain, */*",
 }
 
 export type RequestType = "GET"
 
-function buildOptions(method: RequestType, headers: Record<string, string>) {
-  const result = { method, headers }
+/**
+ * Requests that never settle would otherwise pin a retry chain open forever,
+ * since `promiseRetry` only advances when the underlying promise settles.
+ */
+export const DEFAULT_TIMEOUT_MS = 30_000
+
+function buildOptions(method: RequestType, headers: Record<string, string>, signal: AbortSignal) {
+  const result = { method, headers, signal }
 
   return result
 }
 
-export function getRequest<R>(url: string): Promise<R | undefined> {
-  const options = buildOptions("GET", getHeaders)
+export function getRequest<R>(url: string, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<R | undefined> {
+  return handleFetch(promiseRetry(() => fetchWithTimeout(url, timeoutMs)))
+}
 
-  return handleFetch(promiseRetry(() => fetch(url, options)))
+async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+
+  try {
+    return await fetch(url, buildOptions("GET", getHeaders, controller.signal))
+  } finally {
+    clearTimeout(timer)
+  }
 }
 
 async function handleFetch<T>(promise: Promise<Response>): Promise<T | undefined> {
