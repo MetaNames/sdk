@@ -114,6 +114,16 @@ export const createTransactionFromPartisiaClient = async (
   return buildTransactionResult(rpc, rpcShard, transaction.trxHash)
 }
 
+/**
+ * The nonce comes from a reader node, which trails the chain by a moment: a
+ * transaction signed right after another one, or from a wallet that is also in
+ * use elsewhere, can carry a nonce the chain has already spent. The node then
+ * rejects the broadcast with 400 Bad Request. A rejected transaction never
+ * reaches the chain, so re-reading the nonce and signing again is safe and
+ * costs nothing.
+ */
+const BROADCAST_ATTEMPTS = 3
+
 export const createTransactionFromPrivateKey = async (
   rpc: PartisiaAccountClass,
   contractAddress: string,
@@ -125,21 +135,32 @@ export const createTransactionFromPrivateKey = async (
   const walletAddress = privateKeyToAccountAddress(privateKey)
   const shardId = rpc.deriveShardId(walletAddress)
   const url = rpc.getShardUrl(shardId)
-
-  const serializedTransaction = await serializeTransaction(rpc, walletAddress, contractAddress, payload, cost)
-
-  const digest = deriveDigest(
-    `Partisia Blockchain${isMainnet ? '' : ' Testnet'}`,
-    serializedTransaction
-  )
-  const signature = signTransaction(digest, privateKey)
-  const trx = getTransactionPayloadData(serializedTransaction, signature)
-
-  const transactionHash = getTrxHash(digest, signature)
   const rpcShard = PartisiaRpc({ baseURL: url })
 
-  const isValid = await rpcShard.broadcastTransaction(trx)
-  assert(isValid, 'Unknown Error')
+  let lastError: unknown
+  for (let attempt = 0; attempt < BROADCAST_ATTEMPTS; attempt++) {
+    if (attempt > 0) await new Promise((resolve) => setTimeout(resolve, 1_000 * attempt))
 
-  return buildTransactionResult(rpc, rpcShard, transactionHash)
+    const serializedTransaction = await serializeTransaction(rpc, walletAddress, contractAddress, payload, cost)
+
+    const digest = deriveDigest(
+      `Partisia Blockchain${isMainnet ? '' : ' Testnet'}`,
+      serializedTransaction
+    )
+    const signature = signTransaction(digest, privateKey)
+    const trx = getTransactionPayloadData(serializedTransaction, signature)
+
+    const transactionHash = getTrxHash(digest, signature)
+
+    try {
+      const isValid = await rpcShard.broadcastTransaction(trx)
+      assert(isValid, 'Unknown Error')
+
+      return buildTransactionResult(rpc, rpcShard, transactionHash)
+    } catch (error) {
+      lastError = error
+    }
+  }
+
+  throw lastError
 }
