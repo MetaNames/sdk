@@ -1,4 +1,4 @@
-import { toUnicode } from 'tr46'
+import { toUnicode } from './idna'
 import { IValidatorInterface, IValidatorOptions } from '../interface'
 import { BaseValidator } from './base-validator'
 
@@ -48,9 +48,7 @@ export class DomainValidator extends BaseValidator implements IValidatorInterfac
     if (reverse) name = name.split('.').reverse().join('.')
     if (name.includes('..')) name = name.replace(/\.\./g, '.')
 
-    // For some reason the toUnicode returns an object instead of a string
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { domain, error } = toUnicode(name, { useSTD3ASCIIRules: true }) as any
+    const { domain, error } = toUnicode(name)
 
     return error ? '' : domain
   }
