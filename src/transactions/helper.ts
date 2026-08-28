@@ -1,7 +1,6 @@
-import { RpcContractBuilder } from "@partisiablockchain/abi-client"
-import { serializedTransaction } from "partisia-blockchain-applications-crypto/lib/main/transaction"
-import { PartisiaAccountClass } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
-import { PartisiaRpcClass } from "partisia-blockchain-applications-rpc/lib/main/rpc"
+import type { RpcContractBuilder } from "@partisiablockchain/abi-client"
+import type { PartisiaAccountClass } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
+import type { PartisiaRpcClass } from "partisia-blockchain-applications-rpc/lib/main/rpc"
 
 export const builderToBytesBe = (rpc: RpcContractBuilder) => {
   return rpc.getBytes()
@@ -17,6 +16,11 @@ export const serializeTransaction = async (
   cost: number | string,
   validityInMillis: number = 120_000
 ) => {
+  // `builderToBytesBe` is imported from this module by the record and domain
+  // actions, which are on the read path. Keeping the crypto import dynamic means
+  // reading state never loads it.
+  const { serializedTransaction } = await import("partisia-blockchain-applications-crypto/lib/main/transaction")
+
   const shardId = rpc.deriveShardId(walletAddress)
   const nonce = await rpc.getNonce(walletAddress, shardId)
   // Need to pass a number otherwise the internal library will throw an error

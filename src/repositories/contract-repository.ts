@@ -7,7 +7,6 @@ import { SecretsProvider } from '../providers/secrets'
 import { convertAvlTree as convertAvlTrees } from './helpers/contract'
 import { AvlClient } from './helpers/avl-client'
 import { getRequest, promiseRetry } from './helpers/client'
-import { createTransactionFromLedgerClient, createTransactionFromMetaMaskClient, createTransactionFromPartisiaClient, createTransactionFromPrivateKey } from '../transactions'
 
 
 /**
@@ -116,18 +115,29 @@ export class ContractRepository implements IContractRepository {
     // Remove contract cache as the state will change
     this.cleanCache(contractAddress)
 
+    // Loaded on demand. Signing pulls in the crypto stack -- several hundred
+    // kilobytes -- and reading contract state, which is what most consumers do,
+    // never reaches this method.
     switch (this.secrets.strategy) {
-      case 'privateKey':
+      case 'privateKey': {
+        const { createTransactionFromPrivateKey } = await import('../transactions')
         return createTransactionFromPrivateKey(this.rpc, contractAddress, this.secrets.privateKey, payload, isMainnet, gas)
+      }
 
-      case 'partisiaSdk':
+      case 'partisiaSdk': {
+        const { createTransactionFromPartisiaClient } = await import('../transactions')
         return createTransactionFromPartisiaClient(this.rpc, this.secrets.partisiaSdk, contractAddress, payload, gas)
+      }
 
-      case 'MetaMask':
+      case 'MetaMask': {
+        const { createTransactionFromMetaMaskClient } = await import('../transactions')
         return createTransactionFromMetaMaskClient(this.rpc, this.secrets.metaMask, contractAddress, payload, isMainnet, gas)
+      }
 
-      case 'Ledger':
+      case 'Ledger': {
+        const { createTransactionFromLedgerClient } = await import('../transactions')
         return createTransactionFromLedgerClient(this.rpc, this.secrets.ledger, contractAddress, payload, isMainnet, gas)
+      }
 
       default:
         throw new Error('Signing strategy not found')
