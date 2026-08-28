@@ -6,7 +6,7 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   eslint:
@@ -59,4 +59,27 @@ jobs:
 
   docs:
     needs: test
+    permissions:
+      contents: write
     uses: ./.github/workflows/docs.yml
+
+  audit:
+    name: Audit production dependencies
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "yarn"
+
+      - name: Install project dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Fail on high or critical advisories
+        run: yarn audit-ci

@@ -6,12 +6,14 @@ on:
       - 'v*'
 
 permissions:
-  id-token: write  # Required for OIDC
   contents: read
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Required for npm provenance via OIDC
+      contents: read
     steps:
       - uses: actions/checkout@v6
 
@@ -19,5 +21,17 @@ jobs:
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
-      - run: yarn install --frozen-lockfile
-      - run: npm publish
+
+      - name: Install project dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Audit production dependencies
+        run: yarn audit-ci
+
+      - name: Build
+        run: yarn build
+
+      # Authentication uses npm trusted publishing (OIDC) via `id-token: write`
+      # above, so no NPM_TOKEN secret is required.
+      - name: Publish to npm with provenance
+        run: npm publish --provenance --access public
