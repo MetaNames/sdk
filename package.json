@@ -7,6 +7,9 @@
   "repository": "https://github.com/MetaNames/sdk.git",
   "author": "Yeboster <marco@yeboster.com>",
   "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
   "files": [
     "dist"
   ],
@@ -15,7 +18,8 @@
     "docs": "typedoc --out docs src",
     "format": "eslint --fix src",
     "test": "jest -i",
-    "prepublishOnly": "yarn build"
+    "prepublishOnly": "yarn build",
+    "audit-ci": "bash scripts/audit-ci.sh"
   },
   "dependencies": {
     "@ledgerhq/hw-transport": "^6.34.0",
@@ -50,5 +54,11 @@
   },
   "publishConfig": {
     "directory": "dist"
+  },
+  "resolutions": {
+    "minimatch": "^9.0.7",
+    "**/ethjs-unit/bn.js": "^4.12.3",
+    "**/number-to-bn/bn.js": "^4.12.3",
+    "elliptic": "^6.6.1"
   }
 }

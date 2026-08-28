@@ -5,7 +5,7 @@ const domainName = 'name.mpc'
 beforeAll(async () => {
   const domain = await config.sdk.domainRepository.find(domainName)
   if (!domain) await mintDomain(domainName)
-}, 15_000)
+})
 
 test('analyze domain', () => {
   const domainName = 'sub.name.mpc'
@@ -61,7 +61,7 @@ test('findByOwner returns the correct domains', async () => {
   expect(domain!.owner).toEqual(config.address)
   expect(domain!.tld).toEqual('mpc')
   expect(domain!.createdAt).toBeInstanceOf(Date)
-}, 20_000)
+})
 
 test('run action count', async () => {
   const count = await config.sdk.domainRepository.count()
@@ -75,7 +75,7 @@ test('get owners', async () => {
   expect(owners).toBeDefined()
   expect(owners.length).toBeGreaterThan(0)
   expect(owners).toContain(config.address)
-}, 20_000)
+})
 
 test('toJson', async () => {
   const domain = await config.sdk.domainRepository.find(domainName)

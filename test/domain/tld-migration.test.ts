@@ -6,7 +6,7 @@ const domainName = 'name.mpc'
 beforeAll(async () => {
   const domain = await config.sdk.domainRepository.find(domainName)
   if (!domain) await mintDomain(domainName)
-}, 15_000)
+})
 
 
 test('domain lookup with old tld works', async () => {

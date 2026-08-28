@@ -32,7 +32,9 @@ jobs:
 
   test:
     needs: eslint
-    permissions: write-all
+    permissions:
+      contents: read
+      pull-requests: write
     runs-on: ubuntu-latest
 
     steps:
@@ -60,6 +62,27 @@ jobs:
           path: coverage/lcov.info
 
       - name: Code Coverage Report
-        uses: romeovs/lcov-reporter-action@v0.2.11
+        uses: romeovs/lcov-reporter-action@90fd2b751de87c16edf5ae1d5878b73755c497b0 # v0.2.11
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  audit:
+    name: Audit production dependencies
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "yarn"
+
+      - name: Install project dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Fail on high or critical advisories
+        run: yarn audit-ci
