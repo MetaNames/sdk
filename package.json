@@ -28,13 +28,11 @@
     "bip32-path": "^0.4.2",
     "partisia-blockchain-applications-crypto": "^1.0.34",
     "partisia-blockchain-applications-rpc": "^1.0.13",
-    "partisia-blockchain-applications-sdk": "^0.1.4",
-    "tr46": "^4.1.1"
+    "partisia-blockchain-applications-sdk": "^0.1.4"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "@types/node": "^20.19.9",
-    "@types/tr46": "^3.0.3",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "dotenv": "^16.6.1",
