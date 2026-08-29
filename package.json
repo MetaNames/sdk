@@ -76,7 +76,6 @@
     "@secata-public/bitmanipulation-ts": "^3.4.0",
     "bip32-path": "^0.4.2",
     "partisia-blockchain-applications-crypto": "^1.0.34",
-    "partisia-blockchain-applications-rpc": "^1.0.13",
     "partisia-blockchain-applications-sdk": "^0.1.4"
   },
   "devDependencies": {

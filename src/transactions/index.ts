@@ -1,8 +1,7 @@
-import type { PartisiaAccountClass } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
 import type LedgerTransport from "@ledgerhq/hw-transport"
 import type { ITransactionIntent, MetaMaskSdk } from "../interface"
 import { buildTransactionResult, getChainId, serializeTransaction } from "./helper"
-import { PartisiaRpc } from "partisia-blockchain-applications-rpc"
+import type { ShardedClient } from "../repositories/helpers/sharded-client"
 import assert from "assert"
 import type PartisiaSdk from "partisia-blockchain-applications-sdk"
 
@@ -22,7 +21,7 @@ const loadWalletCrypto = () => import("partisia-blockchain-applications-crypto/l
 const loadLedgerClient = () => import("./ledger")
 
 export const createTransactionFromLedgerClient = async (
-  rpc: PartisiaAccountClass,
+  rpc: ShardedClient,
   transport: LedgerTransport,
   contractAddress: string,
   payload: Buffer,
@@ -37,7 +36,6 @@ export const createTransactionFromLedgerClient = async (
   const client = new PartisiaLedgerClient(transport)
   const walletAddress: string = await client.getAddress()
   const shardId = rpc.deriveShardId(walletAddress)
-  const url = rpc.getShardUrl(shardId)
 
   const serializedTransaction = await serializeTransaction(rpc, walletAddress, contractAddress, payload, cost)
   const chainId = getChainId(isMainnet)
@@ -49,16 +47,15 @@ export const createTransactionFromLedgerClient = async (
 
   const transactionPayload = Buffer.concat([signatureBuffer, serializedTransaction]).toString('base64')
 
-  const rpcShard = PartisiaRpc({ baseURL: url })
   const transactionHash = getTrxHash(digest, signatureBuffer)
-  const isValid = await rpcShard.broadcastTransaction(transactionPayload)
+  const isValid = await rpc.broadcastTransaction(walletAddress, transactionPayload)
   assert(isValid, 'Unknown Error')
 
-  return buildTransactionResult(rpc, rpcShard, transactionHash)
+  return buildTransactionResult(rpc, shardId, transactionHash)
 }
 
 export const createTransactionFromMetaMaskClient = async (
-  rpc: PartisiaAccountClass,
+  rpc: ShardedClient,
   client: MetaMaskSdk,
   contractAddress: string,
   payload: Buffer,
@@ -73,7 +70,6 @@ export const createTransactionFromMetaMaskClient = async (
     params: { snapId, request: { method: "get_address" } },
   })
   const shardId = rpc.deriveShardId(walletAddress)
-  const url = rpc.getShardUrl(shardId)
 
   const serializedTransaction = await serializeTransaction(rpc, walletAddress, contractAddress, payload, cost)
   const chainId = getChainId(isMainnet)
@@ -100,16 +96,15 @@ export const createTransactionFromMetaMaskClient = async (
 
   const transactionPayload = Buffer.concat([signature, serializedTransaction]).toString('base64')
 
-  const rpcShard = PartisiaRpc({ baseURL: url })
   const transactionHash = getTrxHash(digest, signature)
-  const isValid = await rpcShard.broadcastTransaction(transactionPayload)
+  const isValid = await rpc.broadcastTransaction(walletAddress, transactionPayload)
   assert(isValid, 'Unknown Error')
 
-  return buildTransactionResult(rpc, rpcShard, transactionHash)
+  return buildTransactionResult(rpc, shardId, transactionHash)
 }
 
 export const createTransactionFromPartisiaClient = async (
-  rpc: PartisiaAccountClass,
+  rpc: ShardedClient,
   client: PartisiaSdk,
   contractAddress: string,
   payload: Buffer,
@@ -127,10 +122,8 @@ export const createTransactionFromPartisiaClient = async (
   })
 
   const shardId = rpc.deriveShardId(walletAddress)
-  const url = rpc.getShardUrl(shardId)
-  const rpcShard = PartisiaRpc({ baseURL: url })
 
-  return buildTransactionResult(rpc, rpcShard, transaction.trxHash)
+  return buildTransactionResult(rpc, shardId, transaction.trxHash)
 }
 
 /**
@@ -144,7 +137,7 @@ export const createTransactionFromPartisiaClient = async (
 const BROADCAST_ATTEMPTS = 3
 
 export const createTransactionFromPrivateKey = async (
-  rpc: PartisiaAccountClass,
+  rpc: ShardedClient,
   contractAddress: string,
   privateKey: string,
   payload: Buffer,
@@ -158,8 +151,6 @@ export const createTransactionFromPrivateKey = async (
 
   const walletAddress = privateKeyToAccountAddress(privateKey)
   const shardId = rpc.deriveShardId(walletAddress)
-  const url = rpc.getShardUrl(shardId)
-  const rpcShard = PartisiaRpc({ baseURL: url })
 
   let lastError: unknown
   for (let attempt = 0; attempt < BROADCAST_ATTEMPTS; attempt++) {
@@ -177,10 +168,10 @@ export const createTransactionFromPrivateKey = async (
     const transactionHash = getTrxHash(digest, signature)
 
     try {
-      const isValid = await rpcShard.broadcastTransaction(trx)
+      const isValid = await rpc.broadcastTransaction(walletAddress, trx)
       assert(isValid, 'Unknown Error')
 
-      return buildTransactionResult(rpc, rpcShard, transactionHash)
+      return buildTransactionResult(rpc, shardId, transactionHash)
     } catch (error) {
       lastError = error
     }
