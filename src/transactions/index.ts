@@ -6,6 +6,19 @@ export type { SigningBackend } from "./authentication"
 export { privateKeyBackend, ledgerBackend, metaMaskBackend, partisiaSdkBackend } from "./authentication"
 
 /**
+ * The blockchain address a private key signs for.
+ *
+ * Consumers derived this from `partisia-blockchain-applications-crypto`, which
+ * is unmaintained and worth 300 KB of bundle; this is the same derivation over
+ * the official client, and lives on the lazily loaded signing path.
+ */
+export const privateKeyToAddress = async (privateKey: string): Promise<string> => {
+  const { privateKeyBackend } = await import("./authentication")
+
+  return (await privateKeyBackend(privateKey)).authentication.getAddress()
+}
+
+/**
  * The nonce comes from a reader node, which trails the chain by a moment: a
  * transaction signed right after another one, or from a wallet that is also in
  * use elsewhere, can carry a nonce the chain has already spent. The node then
