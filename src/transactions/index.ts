@@ -1,11 +1,22 @@
-import type { SenderAuthentication } from "@partisiablockchain/blockchain-api-transaction-client"
-import type { ITransactionIntent } from "../interface"
-import type { ShardedClient } from "../repositories/helpers/sharded-client"
-import { buildTransactionResult, getChainId } from "./helper"
-import assert from "assert"
+import type { BlockchainTransactionClient, SentTransaction, TransactionTree } from "@partisiablockchain/blockchain-api-transaction-client"
+import type { ITransactionIntent, ITransactionResult } from "../interface"
+import type { SigningBackend } from "./authentication"
 
 export type { SigningBackend } from "./authentication"
 export { privateKeyBackend, ledgerBackend, metaMaskBackend, partisiaSdkBackend } from "./authentication"
+
+/**
+ * The blockchain address a private key signs for.
+ *
+ * Consumers derived this from `partisia-blockchain-applications-crypto`, which
+ * is unmaintained and worth 300 KB of bundle; this is the same derivation over
+ * the official client, and lives on the lazily loaded signing path.
+ */
+export const privateKeyToAddress = async (privateKey: string): Promise<string> => {
+  const { privateKeyBackend } = await import("./authentication")
+
+  return (await privateKeyBackend(privateKey)).authentication.getAddress()
+}
 
 /**
  * The nonce comes from a reader node, which trails the chain by a moment: a
@@ -18,13 +29,22 @@ export { privateKeyBackend, ledgerBackend, metaMaskBackend, partisiaSdkBackend }
  */
 const BROADCAST_ATTEMPTS = 3
 
+/** How long the chain will accept the transaction for. */
+const DEFAULT_VALIDITY_MS = 120_000
+
+/**
+ * How long to wait for a single spawned event to be included in a block. The
+ * client's own default is ten minutes, which outlives any caller that is
+ * waiting on `fetchResult`.
+ */
+const DEFAULT_EVENT_TIMEOUT_MS = 30_000
+
 export interface CreateTransactionParams {
   contractAddress: string
   payload: Buffer
   cost: number
-  isMainnet?: boolean
-  /** How long the chain will accept the transaction for. */
   validityInMillis?: number
+  eventTimeoutInMillis?: number
   /** Interactive signers are asked once; see `BROADCAST_ATTEMPTS`. */
   attempts?: number
 }
@@ -32,48 +52,79 @@ export interface CreateTransactionParams {
 /**
  * Sign a transaction with any of the signing backends and broadcast it.
  *
- * `SignedTransaction` comes from the official
- * `@partisiablockchain/blockchain-api-transaction-client`, which replaces the
- * unmaintained `partisia-blockchain-applications-crypto`. It produces the same
- * bytes: an inner part of nonce, valid-to and gas as big-endian i64s followed
- * by the contract address and the length-prefixed payload, signed over the
- * SHA-256 of those bytes concatenated with the length-prefixed chain id.
+ * Signing, broadcasting and the wait for execution are all handled by the
+ * official `@partisiablockchain/blockchain-api-transaction-client`, which talks
+ * to the reader node's `/chain` API. The chain id is read from the node rather
+ * than derived from the environment.
  */
 export const createTransaction = async (
-  client: ShardedClient,
-  { authentication, interactive }: { authentication: SenderAuthentication, interactive: boolean },
-  { contractAddress, payload, cost, isMainnet = false, validityInMillis = 120_000, attempts }: CreateTransactionParams
+  hostUrl: string,
+  { authentication, interactive }: SigningBackend,
+  { contractAddress, payload, cost, validityInMillis = DEFAULT_VALIDITY_MS, eventTimeoutInMillis = DEFAULT_EVENT_TIMEOUT_MS, attempts }: CreateTransactionParams
 ): Promise<ITransactionIntent> => {
-  const { SignedTransaction } = await import("@partisiablockchain/blockchain-api-transaction-client")
+  const { BlockchainTransactionClient } = await import("@partisiablockchain/blockchain-api-transaction-client")
 
-  const walletAddress = authentication.getAddress()
-  const shardId = client.deriveShardId(walletAddress)
-  const chainId = getChainId(isMainnet)
+  const client = BlockchainTransactionClient.create(hostUrl, authentication, validityInMillis, eventTimeoutInMillis)
+  const transaction = { address: contractAddress, rpc: payload }
   const broadcastAttempts = attempts ?? (interactive ? 1 : BROADCAST_ATTEMPTS)
 
   let lastError: unknown
   for (let attempt = 0; attempt < broadcastAttempts; attempt++) {
     if (attempt > 0) await new Promise((resolve) => setTimeout(resolve, 1_000 * attempt))
 
-    const nonce = await client.getNonce(walletAddress, shardId)
-    const signedTransaction = await SignedTransaction.create(
-      authentication,
-      nonce,
-      Date.now() + validityInMillis,
-      cost,
-      chainId,
-      { address: contractAddress, rpc: payload }
-    )
-
     try {
-      const isValid = await client.broadcastTransaction(walletAddress, signedTransaction.serialize())
-      assert(isValid, 'Unknown Error')
+      const sentTransaction = await client.signAndSend(transaction, cost)
 
-      return buildTransactionResult(client, shardId, signedTransaction.identifier())
+      return {
+        transactionHash: sentTransaction.transactionPointer.identifier,
+        fetchResult: transactionResult(client, sentTransaction),
+      }
     } catch (error) {
       lastError = error
     }
   }
 
   throw lastError
+}
+
+const transactionResult = async (
+  client: BlockchainTransactionClient,
+  sentTransaction: SentTransaction
+): Promise<ITransactionResult> => {
+  const transactionHash = sentTransaction.transactionPointer.identifier
+
+  try {
+    const tree = await client.waitForSpawnedEvents(sentTransaction)
+
+    return {
+      transactionHash,
+      hasError: tree.hasFailures(),
+      errorMessage: tree.getFirstFailure()?.errorMessage,
+      eventTrace: eventTrace(tree),
+    }
+  } catch (error) {
+    // A transaction that never lands in a block, or an event that never
+    // executes, is reported rather than thrown: callers await `fetchResult`
+    // for the outcome, not for the network.
+    return {
+      transactionHash,
+      hasError: true,
+      errorMessage: error instanceof Error ? error.message : 'unable to broadcast to chain',
+      eventTrace: [],
+    }
+  }
+}
+
+/**
+ * Every event spawned by the transaction and by its events, in the order the
+ * client walked them. The shard is the event's destination, which is not
+ * necessarily the shard the parent executed on.
+ */
+const eventTrace = (tree: TransactionTree) => {
+  return [tree.transaction, ...tree.events]
+    .flatMap((transaction) => transaction.executionStatus?.events ?? [])
+    .map((event) => ({
+      txHash: event.identifier,
+      shardId: Number(event.destinationShardId.replace('Shard', '')),
+    }))
 }

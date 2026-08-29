@@ -2,7 +2,6 @@ import type LedgerTransport from "@ledgerhq/hw-transport"
 import type PartisiaSdk from "partisia-blockchain-applications-sdk"
 import type { SenderAuthentication } from "@partisiablockchain/blockchain-api-transaction-client"
 import type { MetaMaskSdk } from "../interface"
-import assert from "assert"
 
 /**
  * A signing backend, expressed as the official client's `SenderAuthentication`.
@@ -80,7 +79,9 @@ export const metaMaskBackend = async (client: MetaMaskSdk): Promise<SigningBacke
             },
           },
         })
-        assert(Buffer.from(signature, "hex").length === 65)
+        // Node's `assert` would drag a polyfill into every browser bundle for
+        // this one check.
+        if (Buffer.from(signature, "hex").length !== 65) throw new Error('MetaMask returned a malformed signature')
 
         return signature
       },

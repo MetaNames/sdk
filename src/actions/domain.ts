@@ -1,6 +1,5 @@
 import { BN, ContractAbi, RpcContractBuilder } from '@partisiablockchain/abi-client'
 import { IActionApproveMintFees, IActionDomainMintPayload, IActionDomainTransferPayload, IActionRenewDomainPayload } from '../interface'
-import { builderToBytesBe } from '../transactions/helper'
 
 export const actionDomainMintPayload = (contractAbi: ContractAbi, params: IActionDomainMintPayload): Buffer => {
   const rpc = new RpcContractBuilder(contractAbi, 'mint')
@@ -20,7 +19,7 @@ export const actionDomainMintPayload = (contractAbi: ContractAbi, params: IActio
   const subscriptionYearsOption = rpc.addOption()
   if (params.subscriptionYears) subscriptionYearsOption.addU32(params.subscriptionYears)
 
-  return builderToBytesBe(rpc)
+  return rpc.getBytes()
 }
 
 export const actionDomainMintBatchPayload = (contractAbi: ContractAbi, params: IActionDomainMintPayload[]): Buffer => {
@@ -47,7 +46,7 @@ export const actionDomainMintBatchPayload = (contractAbi: ContractAbi, params: I
     if (param.subscriptionYears) subscriptionYearsOption.addU32(param.subscriptionYears)
   })
 
-  return builderToBytesBe(rpc)
+  return rpc.getBytes()
 }
 
 export const actionApproveMintFeesPayload = (contractAbi: ContractAbi, params: IActionApproveMintFees): Buffer => {
@@ -59,7 +58,7 @@ export const actionApproveMintFeesPayload = (contractAbi: ContractAbi, params: I
   const amount = new BN(params.amount)
   rpc.addU128(amount)
 
-  return builderToBytesBe(rpc)
+  return rpc.getBytes()
 }
 
 export const actionDomainRenewalPayload = (contractAbi: ContractAbi, params: IActionRenewDomainPayload): Buffer => {
@@ -73,7 +72,7 @@ export const actionDomainRenewalPayload = (contractAbi: ContractAbi, params: IAc
 
   rpc.addU32(params.subscriptionYears ?? 1)
 
-  return builderToBytesBe(rpc)
+  return rpc.getBytes()
 }
 
 export const actionDomainTransferFromPayload = (contractAbi: ContractAbi, params: IActionDomainTransferPayload): Buffer => {
@@ -85,5 +84,5 @@ export const actionDomainTransferFromPayload = (contractAbi: ContractAbi, params
   rpc.addAddress(to)
   rpc.addU128(new BN(tokenId))
 
-  return builderToBytesBe(rpc)
+  return rpc.getBytes()
 }
