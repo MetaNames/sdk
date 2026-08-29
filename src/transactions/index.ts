@@ -1,130 +1,11 @@
-import type LedgerTransport from "@ledgerhq/hw-transport"
-import type { ITransactionIntent, MetaMaskSdk } from "../interface"
-import { buildTransactionResult, getChainId, serializeTransaction } from "./helper"
+import type { SenderAuthentication } from "@partisiablockchain/blockchain-api-transaction-client"
+import type { ITransactionIntent } from "../interface"
 import type { ShardedClient } from "../repositories/helpers/sharded-client"
+import { buildTransactionResult, getChainId } from "./helper"
 import assert from "assert"
-import type PartisiaSdk from "partisia-blockchain-applications-sdk"
 
-/**
- * The signing backends are loaded on demand.
- *
- * `partisia-blockchain-applications-crypto` pulls in bip39, elliptic and
- * tiny-secp256k1 (~500 KB); the Ledger client pulls in `bip32-path` and the
- * `@ledgerhq` transport. All three stay regular dependencies, so nothing extra
- * has to be installed, but a bundler splits them out of the entry chunk: a
- * consumer that only reads contract state never downloads them, one that signs
- * with MetaMask does not pay for the Ledger transport, and one that signs with
- * a Ledger does not pay for the BIP-39 wordlists.
- */
-const loadTransactionCrypto = () => import("partisia-blockchain-applications-crypto/lib/main/transaction")
-const loadWalletCrypto = () => import("partisia-blockchain-applications-crypto/lib/main/wallet")
-const loadLedgerClient = () => import("./ledger")
-
-export const createTransactionFromLedgerClient = async (
-  rpc: ShardedClient,
-  transport: LedgerTransport,
-  contractAddress: string,
-  payload: Buffer,
-  isMainnet = false,
-  cost: number | string = 10490
-): Promise<ITransactionIntent> => {
-  const [{ PartisiaLedgerClient, signatureToBuffer }, { deriveDigest, getTrxHash }] = await Promise.all([
-    loadLedgerClient(),
-    loadTransactionCrypto()
-  ])
-
-  const client = new PartisiaLedgerClient(transport)
-  const walletAddress: string = await client.getAddress()
-  const shardId = rpc.deriveShardId(walletAddress)
-
-  const serializedTransaction = await serializeTransaction(rpc, walletAddress, contractAddress, payload, cost)
-  const chainId = getChainId(isMainnet)
-  const digest = deriveDigest( chainId, serializedTransaction)
-
-  const signature = await client.signTransaction(serializedTransaction, chainId)
-
-  const signatureBuffer = signatureToBuffer(signature)
-
-  const transactionPayload = Buffer.concat([signatureBuffer, serializedTransaction]).toString('base64')
-
-  const transactionHash = getTrxHash(digest, signatureBuffer)
-  const isValid = await rpc.broadcastTransaction(walletAddress, transactionPayload)
-  assert(isValid, 'Unknown Error')
-
-  return buildTransactionResult(rpc, shardId, transactionHash)
-}
-
-export const createTransactionFromMetaMaskClient = async (
-  rpc: ShardedClient,
-  client: MetaMaskSdk,
-  contractAddress: string,
-  payload: Buffer,
-  isMainnet = false,
-  cost: number | string = 10490
-): Promise<ITransactionIntent> => {
-  const { deriveDigest, getTrxHash } = await loadTransactionCrypto()
-
-  const snapId = "npm:@partisiablockchain/snap"
-  const walletAddress: string = await client.request({
-    method: "wallet_invokeSnap",
-    params: { snapId, request: { method: "get_address" } },
-  })
-  const shardId = rpc.deriveShardId(walletAddress)
-
-  const serializedTransaction = await serializeTransaction(rpc, walletAddress, contractAddress, payload, cost)
-  const chainId = getChainId(isMainnet)
-  const digest = deriveDigest(
-    chainId,
-    serializedTransaction
-  )
-
-  const signatureHex: string = await client.request({
-    method: "wallet_invokeSnap",
-    params: {
-      snapId,
-      request: {
-        method: "sign_transaction",
-        params: {
-          payload: serializedTransaction.toString("hex"),
-          chainId
-        },
-      },
-    },
-  })
-  const signature = Buffer.from(signatureHex, "hex")
-  assert(signature.length === 65)
-
-  const transactionPayload = Buffer.concat([signature, serializedTransaction]).toString('base64')
-
-  const transactionHash = getTrxHash(digest, signature)
-  const isValid = await rpc.broadcastTransaction(walletAddress, transactionPayload)
-  assert(isValid, 'Unknown Error')
-
-  return buildTransactionResult(rpc, shardId, transactionHash)
-}
-
-export const createTransactionFromPartisiaClient = async (
-  rpc: ShardedClient,
-  client: PartisiaSdk,
-  contractAddress: string,
-  payload: Buffer,
-  cost: number | string = 8490
-): Promise<ITransactionIntent> => {
-  if (!client.connection) throw new Error('Client is not connected')
-
-  const walletAddress = client.connection.account.address
-  const serializedTransaction = await serializeTransaction(rpc, walletAddress, contractAddress, payload, cost)
-
-  const transaction = await client.signMessage({
-    payload: serializedTransaction.toString("hex"),
-    payloadType: "hex",
-    dontBroadcast: false,
-  })
-
-  const shardId = rpc.deriveShardId(walletAddress)
-
-  return buildTransactionResult(rpc, shardId, transaction.trxHash)
-}
+export type { SigningBackend } from "./authentication"
+export { privateKeyBackend, ledgerBackend, metaMaskBackend, partisiaSdkBackend } from "./authentication"
 
 /**
  * The nonce comes from a reader node, which trails the chain by a moment: a
@@ -132,46 +13,63 @@ export const createTransactionFromPartisiaClient = async (
  * use elsewhere, can carry a nonce the chain has already spent. The node then
  * rejects the broadcast with 400 Bad Request. A rejected transaction never
  * reaches the chain, so re-reading the nonce and signing again is safe and
- * costs nothing.
+ * costs nothing -- as long as signing does not prompt a human, which is why
+ * interactive backends get a single attempt.
  */
 const BROADCAST_ATTEMPTS = 3
 
-export const createTransactionFromPrivateKey = async (
-  rpc: ShardedClient,
-  contractAddress: string,
-  privateKey: string,
-  payload: Buffer,
-  isMainnet = false,
-  cost: number | string = 8490
-): Promise<ITransactionIntent> => {
-  const [{ deriveDigest, getTransactionPayloadData, getTrxHash }, { privateKeyToAccountAddress, signTransaction }] = await Promise.all([
-    loadTransactionCrypto(),
-    loadWalletCrypto()
-  ])
+export interface CreateTransactionParams {
+  contractAddress: string
+  payload: Buffer
+  cost: number
+  isMainnet?: boolean
+  /** How long the chain will accept the transaction for. */
+  validityInMillis?: number
+  /** Interactive signers are asked once; see `BROADCAST_ATTEMPTS`. */
+  attempts?: number
+}
 
-  const walletAddress = privateKeyToAccountAddress(privateKey)
-  const shardId = rpc.deriveShardId(walletAddress)
+/**
+ * Sign a transaction with any of the signing backends and broadcast it.
+ *
+ * `SignedTransaction` comes from the official
+ * `@partisiablockchain/blockchain-api-transaction-client`, which replaces the
+ * unmaintained `partisia-blockchain-applications-crypto`. It produces the same
+ * bytes: an inner part of nonce, valid-to and gas as big-endian i64s followed
+ * by the contract address and the length-prefixed payload, signed over the
+ * SHA-256 of those bytes concatenated with the length-prefixed chain id.
+ */
+export const createTransaction = async (
+  client: ShardedClient,
+  { authentication, interactive }: { authentication: SenderAuthentication, interactive: boolean },
+  { contractAddress, payload, cost, isMainnet = false, validityInMillis = 120_000, attempts }: CreateTransactionParams
+): Promise<ITransactionIntent> => {
+  const { SignedTransaction } = await import("@partisiablockchain/blockchain-api-transaction-client")
+
+  const walletAddress = authentication.getAddress()
+  const shardId = client.deriveShardId(walletAddress)
+  const chainId = getChainId(isMainnet)
+  const broadcastAttempts = attempts ?? (interactive ? 1 : BROADCAST_ATTEMPTS)
 
   let lastError: unknown
-  for (let attempt = 0; attempt < BROADCAST_ATTEMPTS; attempt++) {
+  for (let attempt = 0; attempt < broadcastAttempts; attempt++) {
     if (attempt > 0) await new Promise((resolve) => setTimeout(resolve, 1_000 * attempt))
 
-    const serializedTransaction = await serializeTransaction(rpc, walletAddress, contractAddress, payload, cost)
-
-    const digest = deriveDigest(
-      `Partisia Blockchain${isMainnet ? '' : ' Testnet'}`,
-      serializedTransaction
+    const nonce = await client.getNonce(walletAddress, shardId)
+    const signedTransaction = await SignedTransaction.create(
+      authentication,
+      nonce,
+      Date.now() + validityInMillis,
+      cost,
+      chainId,
+      { address: contractAddress, rpc: payload }
     )
-    const signature = signTransaction(digest, privateKey)
-    const trx = getTransactionPayloadData(serializedTransaction, signature)
-
-    const transactionHash = getTrxHash(digest, signature)
 
     try {
-      const isValid = await rpc.broadcastTransaction(walletAddress, trx)
+      const isValid = await client.broadcastTransaction(walletAddress, signedTransaction.serialize())
       assert(isValid, 'Unknown Error')
 
-      return buildTransactionResult(rpc, shardId, transactionHash)
+      return buildTransactionResult(client, shardId, signedTransaction.identifier())
     } catch (error) {
       lastError = error
     }

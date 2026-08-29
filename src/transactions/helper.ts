@@ -8,31 +8,6 @@ export const builderToBytesBe = (rpc: RpcContractBuilder) => {
 
 export const getChainId = (isMainnet: boolean): string => `Partisia Blockchain${isMainnet ? '' : ' Testnet'}`
 
-export const serializeTransaction = async (
-  client: ShardedClient,
-  walletAddress: string,
-  contractAddress: string,
-  payload: Buffer,
-  cost: number | string,
-  validityInMillis: number = 120_000
-) => {
-  // `builderToBytesBe` is imported from this module by the record and domain
-  // actions, which are on the read path. Keeping the crypto import dynamic means
-  // reading state never loads it.
-  const { serializedTransaction } = await import("partisia-blockchain-applications-crypto/lib/main/transaction")
-
-  const shardId = client.deriveShardId(walletAddress)
-  const nonce = await client.getNonce(walletAddress, shardId)
-  // Need to pass a number otherwise the internal library will throw an error
-  const validTo = (new Date().getTime() + validityInMillis) as unknown as string
-
-  return serializedTransaction(
-    { nonce, cost, validTo },
-    { contract: contractAddress },
-    payload
-  )
-}
-
 export const buildTransactionResult = (
   client: ShardedClient,
   shardId: number,
