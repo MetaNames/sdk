@@ -670,7 +670,7 @@
     bn.js "^5.2.1"
     hash.js "^1.1.7"
 
-"@partisiablockchain/blockchain-api-transaction-client@6.142.0":
+"@partisiablockchain/blockchain-api-transaction-client@6.142.0", "@partisiablockchain/blockchain-api-transaction-client@^6.142.0":
   version "6.142.0"
   resolved "https://registry.yarnpkg.com/@partisiablockchain/blockchain-api-transaction-client/-/blockchain-api-transaction-client-6.142.0.tgz#c7a0b705f060ccee61145ea2fc424be4d511fc4a"
   integrity sha512-3VOVBlinzZq815aTfNmO9DnN3gkIVo6N70JN61zPCgT1GQz8leror1Z4jAq7q8bAQOvZgZQlRMLDudFxm57Arw==
@@ -3602,7 +3602,7 @@ parse-json@^5.2.0:
     json-parse-even-better-errors "^2.3.0"
     lines-and-columns "^1.1.6"
 
-partisia-blockchain-applications-crypto@^1.0.23, partisia-blockchain-applications-crypto@^1.0.34:
+partisia-blockchain-applications-crypto@^1.0.23:
   version "1.0.34"
   resolved "https://registry.yarnpkg.com/partisia-blockchain-applications-crypto/-/partisia-blockchain-applications-crypto-1.0.34.tgz#2ae58363e39455aae54d0f6e201490ad9fbb1cc4"
   integrity sha512-XGmbJ2OSy0mkCIxV7HcbrqfwcYXY9KPLX4LYRVLtcScDRa9f9GF7vQl5XSKo94mxNgGUk16Rh7demIp+0P9JXg==

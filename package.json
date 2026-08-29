@@ -73,9 +73,9 @@
   "dependencies": {
     "@ledgerhq/hw-transport": "^6.34.0",
     "@partisiablockchain/abi-client": "^6.0.0",
+    "@partisiablockchain/blockchain-api-transaction-client": "^6.142.0",
     "@secata-public/bitmanipulation-ts": "^3.4.0",
     "bip32-path": "^0.4.2",
-    "partisia-blockchain-applications-crypto": "^1.0.34",
     "partisia-blockchain-applications-sdk": "^0.1.4"
   },
   "devDependencies": {

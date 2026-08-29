@@ -114,29 +114,32 @@ export class ContractRepository implements IContractRepository {
     // Remove contract cache as the state will change
     this.cleanCache(contractAddress)
 
-    // Loaded on demand. Signing pulls in the crypto stack -- several hundred
-    // kilobytes -- and reading contract state, which is what most consumers do,
-    // never reaches this method.
+    const { createTransaction } = await import('../transactions')
+    const backend = await this.signingBackend()
+
+    return createTransaction(this.rpc, backend, { contractAddress, payload, cost: gas, isMainnet })
+  }
+
+  /**
+   * Loaded on demand. Signing pulls in the crypto stack -- several hundred
+   * kilobytes -- and reading contract state, which is what most consumers do,
+   * never reaches this method.
+   */
+  private async signingBackend() {
+    const backends = await import('../transactions/authentication')
+
     switch (this.secrets.strategy) {
-      case 'privateKey': {
-        const { createTransactionFromPrivateKey } = await import('../transactions')
-        return createTransactionFromPrivateKey(this.rpc, contractAddress, this.secrets.privateKey, payload, isMainnet, gas)
-      }
+      case 'privateKey':
+        return backends.privateKeyBackend(this.secrets.privateKey)
 
-      case 'partisiaSdk': {
-        const { createTransactionFromPartisiaClient } = await import('../transactions')
-        return createTransactionFromPartisiaClient(this.rpc, this.secrets.partisiaSdk, contractAddress, payload, gas)
-      }
+      case 'partisiaSdk':
+        return backends.partisiaSdkBackend(this.secrets.partisiaSdk)
 
-      case 'MetaMask': {
-        const { createTransactionFromMetaMaskClient } = await import('../transactions')
-        return createTransactionFromMetaMaskClient(this.rpc, this.secrets.metaMask, contractAddress, payload, isMainnet, gas)
-      }
+      case 'MetaMask':
+        return backends.metaMaskBackend(this.secrets.metaMask)
 
-      case 'Ledger': {
-        const { createTransactionFromLedgerClient } = await import('../transactions')
-        return createTransactionFromLedgerClient(this.rpc, this.secrets.ledger, contractAddress, payload, isMainnet, gas)
-      }
+      case 'Ledger':
+        return backends.ledgerBackend(this.secrets.ledger)
 
       default:
         throw new Error('Signing strategy not found')
