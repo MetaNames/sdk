@@ -1,6 +1,6 @@
 {
   "name": "@metanames/sdk",
-  "version": "6.3.1",
+  "version": "7.0.0",
   "description": "Meta Names SDK",
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
