@@ -43,6 +43,42 @@
       "require": "./dist/transactions/ledger.js",
       "default": "./dist/transactions/ledger.js"
     },
+    "./dist/models": {
+      "types": "./dist/models/index.d.ts",
+      "import": "./dist/esm/models/index.js",
+      "require": "./dist/models/index.js",
+      "default": "./dist/models/index.js"
+    },
+    "./dist/providers": {
+      "types": "./dist/providers/index.d.ts",
+      "import": "./dist/esm/providers/index.js",
+      "require": "./dist/providers/index.js",
+      "default": "./dist/providers/index.js"
+    },
+    "./dist/repositories": {
+      "types": "./dist/repositories/index.d.ts",
+      "import": "./dist/esm/repositories/index.js",
+      "require": "./dist/repositories/index.js",
+      "default": "./dist/repositories/index.js"
+    },
+    "./dist/transactions": {
+      "types": "./dist/transactions/index.d.ts",
+      "import": "./dist/esm/transactions/index.js",
+      "require": "./dist/transactions/index.js",
+      "default": "./dist/transactions/index.js"
+    },
+    "./dist/validators": {
+      "types": "./dist/validators/index.d.ts",
+      "import": "./dist/esm/validators/index.js",
+      "require": "./dist/validators/index.js",
+      "default": "./dist/validators/index.js"
+    },
+    "./dist/validators/idna": {
+      "types": "./dist/validators/idna/index.d.ts",
+      "import": "./dist/esm/validators/idna/index.js",
+      "require": "./dist/validators/idna/index.js",
+      "default": "./dist/validators/idna/index.js"
+    },
     "./dist/*.js": {
       "types": "./dist/*.d.ts",
       "import": "./dist/esm/*.js",
