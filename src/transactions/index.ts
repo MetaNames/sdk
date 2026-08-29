@@ -1,13 +1,25 @@
-import { PartisiaAccountClass } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
+import type { PartisiaAccountClass } from "partisia-blockchain-applications-rpc/lib/main/accountInfo"
 import type LedgerTransport from "@ledgerhq/hw-transport"
-import { ITransactionIntent, MetaMaskSdk } from "../interface"
-import { PartisiaLedgerClient, signatureToBuffer } from "./ledger"
+import type { ITransactionIntent, MetaMaskSdk } from "../interface"
 import { buildTransactionResult, getChainId, serializeTransaction } from "./helper"
-import { deriveDigest, getTransactionPayloadData, getTrxHash } from "partisia-blockchain-applications-crypto/lib/main/transaction"
 import { PartisiaRpc } from "partisia-blockchain-applications-rpc"
 import assert from "assert"
-import PartisiaSdk from "partisia-blockchain-applications-sdk"
-import { privateKeyToAccountAddress, signTransaction } from "partisia-blockchain-applications-crypto/lib/main/wallet"
+import type PartisiaSdk from "partisia-blockchain-applications-sdk"
+
+/**
+ * The signing backends are loaded on demand.
+ *
+ * `partisia-blockchain-applications-crypto` pulls in bip39, elliptic and
+ * tiny-secp256k1 (~500 KB); the Ledger client pulls in `bip32-path` and the
+ * `@ledgerhq` transport. All three stay regular dependencies, so nothing extra
+ * has to be installed, but a bundler splits them out of the entry chunk: a
+ * consumer that only reads contract state never downloads them, one that signs
+ * with MetaMask does not pay for the Ledger transport, and one that signs with
+ * a Ledger does not pay for the BIP-39 wordlists.
+ */
+const loadTransactionCrypto = () => import("partisia-blockchain-applications-crypto/lib/main/transaction")
+const loadWalletCrypto = () => import("partisia-blockchain-applications-crypto/lib/main/wallet")
+const loadLedgerClient = () => import("./ledger")
 
 export const createTransactionFromLedgerClient = async (
   rpc: PartisiaAccountClass,
@@ -17,6 +29,11 @@ export const createTransactionFromLedgerClient = async (
   isMainnet = false,
   cost: number | string = 10490
 ): Promise<ITransactionIntent> => {
+  const [{ PartisiaLedgerClient, signatureToBuffer }, { deriveDigest, getTrxHash }] = await Promise.all([
+    loadLedgerClient(),
+    loadTransactionCrypto()
+  ])
+
   const client = new PartisiaLedgerClient(transport)
   const walletAddress: string = await client.getAddress()
   const shardId = rpc.deriveShardId(walletAddress)
@@ -48,6 +65,8 @@ export const createTransactionFromMetaMaskClient = async (
   isMainnet = false,
   cost: number | string = 10490
 ): Promise<ITransactionIntent> => {
+  const { deriveDigest, getTrxHash } = await loadTransactionCrypto()
+
   const snapId = "npm:@partisiablockchain/snap"
   const walletAddress: string = await client.request({
     method: "wallet_invokeSnap",
@@ -132,6 +151,11 @@ export const createTransactionFromPrivateKey = async (
   isMainnet = false,
   cost: number | string = 8490
 ): Promise<ITransactionIntent> => {
+  const [{ deriveDigest, getTransactionPayloadData, getTrxHash }, { privateKeyToAccountAddress, signTransaction }] = await Promise.all([
+    loadTransactionCrypto(),
+    loadWalletCrypto()
+  ])
+
   const walletAddress = privateKeyToAccountAddress(privateKey)
   const shardId = rpc.deriveShardId(walletAddress)
   const url = rpc.getShardUrl(shardId)
