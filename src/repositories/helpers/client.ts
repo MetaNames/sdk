@@ -7,7 +7,7 @@ const jsonBodyHeaders = {
   "Content-Type": "application/json",
 }
 
-export type RequestType = "GET" | "POST" | "PUT"
+export type RequestType = "GET" | "POST"
 
 /**
  * Requests that never settle would otherwise pin a retry chain open forever,
@@ -28,16 +28,6 @@ export function getRequest<R>(url: string, timeoutMs = DEFAULT_TIMEOUT_MS): Prom
 
 export function postRequest<R>(url: string, body: unknown, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<R | undefined> {
   return handleFetch(promiseRetry(() => fetchWithTimeout(url, "POST", jsonBodyHeaders, body, timeoutMs)))
-}
-
-/**
- * Sends a request without retrying. Used where a retry would resubmit a
- * side effect, such as broadcasting a transaction.
- */
-export async function putRequestOnce(url: string, body: unknown, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<boolean> {
-  const response = await fetchWithTimeout(url, "PUT", jsonBodyHeaders, body, timeoutMs)
-
-  return response.ok
 }
 
 async function fetchWithTimeout(url: string, method: RequestType, headers: Record<string, string>, body: unknown, timeoutMs: number): Promise<Response> {

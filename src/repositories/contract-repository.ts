@@ -100,7 +100,6 @@ export class ContractRepository implements IContractRepository {
   async createTransaction({ contractAddress, payload, gasCost }: TransactionParams): Promise<ITransactionIntent> {
     if (!contractAddress) throw new Error('Contract address not found')
 
-    const isMainnet = this.environment === Enviroment.mainnet
     const gasTable: Record<GasCost, number> = {
       'low': 8_000,
       'medium': 40_000,
@@ -117,7 +116,7 @@ export class ContractRepository implements IContractRepository {
     const { createTransaction } = await import('../transactions')
     const backend = await this.signingBackend()
 
-    return createTransaction(this.rpc, backend, { contractAddress, payload, cost: gas, isMainnet })
+    return createTransaction(this.hostUrl, backend, { contractAddress, payload, cost: gas })
   }
 
   /**

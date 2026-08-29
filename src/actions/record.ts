@@ -1,13 +1,12 @@
 import { AbstractBuilder, ContractAbi, RpcContractBuilder } from '@partisiablockchain/abi-client'
 import { IActionRecordDelete, IActionRecordMint, IActionRecordUpdate } from '../interface'
-import { builderToBytesBe } from '../transactions/helper'
 
 export const actionRecordMintPayload = (contractAbi: ContractAbi, params: IActionRecordMint): Buffer => {
   const rpc = new RpcContractBuilder(contractAbi, 'mint_record')
   addCommonRecordArgs(rpc, params)
   addDataArg(rpc, params.data)
 
-  return builderToBytesBe(rpc)
+  return rpc.getBytes()
 }
 
 export const actionRecordMintBatchPayload = (contractAbi: ContractAbi, params: IActionRecordMint[]): Buffer => {
@@ -21,7 +20,7 @@ export const actionRecordMintBatchPayload = (contractAbi: ContractAbi, params: I
     addDataArg(structBuilder, param.data)
   })
 
-  return builderToBytesBe(rpc)
+  return rpc.getBytes()
 }
 
 export const actionRecordUpdatePayload = (contractAbi: ContractAbi, params: IActionRecordUpdate): Buffer => {
@@ -29,14 +28,14 @@ export const actionRecordUpdatePayload = (contractAbi: ContractAbi, params: IAct
   addCommonRecordArgs(rpc, params)
   addDataArg(rpc, params.data)
 
-  return builderToBytesBe(rpc)
+  return rpc.getBytes()
 }
 
 export const actionRecordDeletePayload = (contractAbi: ContractAbi, params: IActionRecordDelete): Buffer => {
   const rpc = new RpcContractBuilder(contractAbi, 'delete_record')
   addCommonRecordArgs(rpc, params)
 
-  return builderToBytesBe(rpc)
+  return rpc.getBytes()
 }
 
 const addCommonRecordArgs = (rpc: AbstractBuilder, params: IActionRecordMint | IActionRecordUpdate | IActionRecordDelete) => {
