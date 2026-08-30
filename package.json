@@ -31,23 +31,17 @@
       "require": "./dist/interface.js",
       "default": "./dist/interface.js"
     },
+    "./transactions": {
+      "types": "./dist/transactions/index.d.ts",
+      "import": "./dist/esm/transactions/index.js",
+      "require": "./dist/transactions/index.js",
+      "default": "./dist/transactions/index.js"
+    },
     "./transactions/ledger": {
       "types": "./dist/transactions/ledger.d.ts",
       "import": "./dist/esm/transactions/ledger.js",
       "require": "./dist/transactions/ledger.js",
       "default": "./dist/transactions/ledger.js"
-    },
-    "./dist/*.js": {
-      "types": "./dist/*.d.ts",
-      "import": "./dist/esm/*.js",
-      "require": "./dist/*.js",
-      "default": "./dist/*.js"
-    },
-    "./dist/*": {
-      "types": "./dist/*.d.ts",
-      "import": "./dist/esm/*.js",
-      "require": "./dist/*.js",
-      "default": "./dist/*.js"
     },
     "./package.json": "./package.json"
   },
@@ -61,14 +55,15 @@
     "dist"
   ],
   "scripts": {
-    "build": "yarn build:cjs && yarn build:esm",
+    "build": "yarn clean && yarn build:cjs && yarn build:esm",
     "docs": "typedoc --out docs src",
     "format": "eslint --fix src",
     "test": "jest -i",
     "prepublishOnly": "yarn build",
     "audit-ci": "bash scripts/audit-ci.sh",
     "build:cjs": "tsc",
-    "build:esm": "tsc -p tsconfig.esm.json && node scripts/finalize-esm.js"
+    "build:esm": "tsc -p tsconfig.esm.json && node scripts/finalize-esm.js",
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@ledgerhq/hw-transport": "^6.34.0",

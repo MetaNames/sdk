@@ -23,11 +23,27 @@ function buildOptions(method: RequestType, headers: Record<string, string>, sign
 }
 
 export function getRequest<R>(url: string, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<R | undefined> {
-  return handleFetch(promiseRetry(() => fetchWithTimeout(url, "GET", jsonHeaders, undefined, timeoutMs)))
+  return handleFetch(promiseRetry(() => request(url, "GET", jsonHeaders, undefined, timeoutMs)))
 }
 
 export function postRequest<R>(url: string, body: unknown, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<R | undefined> {
-  return handleFetch(promiseRetry(() => fetchWithTimeout(url, "POST", jsonBodyHeaders, body, timeoutMs)))
+  return handleFetch(promiseRetry(() => request(url, "POST", jsonBodyHeaders, body, timeoutMs)))
+}
+
+/**
+ * A reader node under load answers 429 or 503. That answer is not the
+ * contract's state, but returning it as `undefined` made every caller report a
+ * missing contract: `getAll()` against a busy node surfaced as "Contract not
+ * found". Those statuses are retried instead. 404 and the other client errors
+ * still fall through to `undefined`, which is how a missing AVL value is
+ * reported.
+ */
+function request(url: string, method: RequestType, headers: Record<string, string>, body: unknown, timeoutMs: number): Promise<Response> {
+  return fetchWithTimeout(url, method, headers, body, timeoutMs).then((response) => {
+    if (response.status === 429 || response.status >= 500) throw new Error(`${method} ${url} failed with HTTP ${response.status}`)
+
+    return response
+  })
 }
 
 async function fetchWithTimeout(url: string, method: RequestType, headers: Record<string, string>, body: unknown, timeoutMs: number): Promise<Response> {
