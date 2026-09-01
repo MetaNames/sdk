@@ -39,5 +39,10 @@ export const mainNetConfig: Config = {
     id: 4,
     symbol: 'BNB',
     decimals: 18
+  },{
+    address: '01d3442c797b2a4d5b8e7af9ad40edd5006ba2a0b3',
+    id: 5,
+    symbol: 'WMPC',
+    decimals: 4
   }]
 }
