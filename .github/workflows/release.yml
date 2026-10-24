@@ -17,21 +17,23 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v6
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install project dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Audit production dependencies
-        run: yarn audit-ci
+        run: pnpm audit-ci
 
       - name: Build
-        run: yarn build
+        run: pnpm build
 
       # Authentication uses npm trusted publishing (OIDC) via `id-token: write`
       # above, so no NPM_TOKEN secret is required.
       - name: Publish to npm with provenance
-        run: npm publish --provenance --access public
+        run: pnpm publish --provenance --access public --no-git-checks

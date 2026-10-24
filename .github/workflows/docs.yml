@@ -16,17 +16,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: "yarn"
+          cache: "pnpm"
 
       - name: Install project dependencies
-        run: yarn
+        run: pnpm install --frozen-lockfile
 
       - name: Build docs
-        run: yarn docs
+        run: pnpm run docs
 
       - name: Deploy docs
         uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4

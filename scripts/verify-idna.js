@@ -6,7 +6,7 @@
  *
  * tr46 is no longer a dependency, so install it just for the run:
  *
- *   yarn add --dev tr46 @types/tr46 && node scripts/verify-idna.js
+ *   pnpm add -D tr46 @types/tr46 && node scripts/verify-idna.js
  */
 require('ts-node').register({ compilerOptions: { module: 'CommonJS', esModuleInterop: true, target: 'ES2022' } })
 const { toUnicode: mine } = require('../src/validators/idna')

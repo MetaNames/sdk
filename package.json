@@ -55,11 +55,11 @@
     "dist"
   ],
   "scripts": {
-    "build": "yarn clean && yarn build:cjs && yarn build:esm",
+    "build": "pnpm clean && pnpm build:cjs && pnpm build:esm",
     "docs": "typedoc --out docs src",
     "format": "eslint --fix src",
     "test": "jest -i",
-    "prepublishOnly": "yarn build",
+    "prepublishOnly": "pnpm build",
     "audit-ci": "bash scripts/audit-ci.sh",
     "build:cjs": "tsc",
     "build:esm": "tsc -p tsconfig.esm.json && node scripts/finalize-esm.js",
@@ -90,13 +90,16 @@
     "typedoc": "^0.24.8",
     "typescript": "^5.4.0"
   },
-  "publishConfig": {
-    "directory": "dist"
-  },
-  "resolutions": {
-    "minimatch": "^9.0.7",
-    "**/ethjs-unit/bn.js": "^4.12.3",
-    "**/number-to-bn/bn.js": "^4.12.3",
-    "elliptic": "^6.6.1"
+  "packageManager": "pnpm@10.34.5",
+  "pnpm": {
+    "overrides": {
+      "minimatch": "^9.0.7",
+      "ethjs-unit>bn.js": "^4.12.3",
+      "number-to-bn>bn.js": "^4.12.3",
+      "elliptic": "^6.6.1"
+    },
+    "onlyBuiltDependencies": [
+      "tiny-secp256k1"
+    ]
   }
 }
